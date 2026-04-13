@@ -39,6 +39,14 @@ Los parámetros opcionales se desbloquean según el modelo activo:
 - `app.js`: interacción y gráficas con `Plotly`
 - `simulator.py`: motor numérico ejecutado por `Pyodide`
 
+## GitHub Pages
+
+Con GitHub Pages configurado como `Deploy from a branch` sobre `main`, la app queda servida directamente desde:
+
+`https://ebalderasr.github.io/MicrobialKineticsLab/`
+
+La app es estática y usa rutas relativas, así que no requiere backend para funcionar en Pages.
+
 ## Ejecución local
 
 Como el navegador bloquea `fetch()` desde `file://`, sirve el directorio con un servidor simple:
