@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Microbial Kinetics Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.27.2/full/pyodide.js"></script>
+</head>
+<body>
+  <div class="page-shell">
+    <header class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Pyodide Teaching App</p>
+        <h1>Microbial Kinetics Lab</h1>
+        <p class="lede">
+          Explora la cinética de crecimiento microbiano en cultivo batch.
+          Ajusta parámetros fisiológicos y observa cómo cambian biomasa,
+          sustrato, tasa específica y velocidad de crecimiento.
+        </p>
+      </div>
+      <div class="hero-card">
+        <div class="hero-metric">
+          <span>Modelo</span>
+          <strong>Monod + decaimiento</strong>
+        </div>
+        <div class="hero-metric">
+          <span>Entorno</span>
+          <strong>Python en navegador</strong>
+        </div>
+        <div class="hero-metric">
+          <span>Objetivo</span>
+          <strong>Aprendizaje visual</strong>
+        </div>
+      </div>
+    </header>
+
+    <main class="layout">
+      <aside class="control-panel">
+        <section class="panel-section">
+          <div class="section-title">
+            <h2>Escenarios</h2>
+            <p>Presets para comparar comportamientos.</p>
+          </div>
+          <div class="preset-grid">
+            <button class="preset-button" data-preset="balanced">Base</button>
+            <button class="preset-button" data-preset="substrate_limited">S limitado</button>
+            <button class="preset-button" data-preset="fast_growth">Crecimiento rápido</button>
+            <button class="preset-button" data-preset="high_decay">Alta muerte</button>
+          </div>
+        </section>
+
+        <section class="panel-section">
+          <div class="section-title">
+            <h2>Parámetros</h2>
+            <p>Cada control actualiza la simulación.</p>
+          </div>
+          <div class="control-list">
+            <label class="control">
+              <span>Ecuación de crecimiento</span>
+              <select id="growth_model" class="select-control">
+                <option value="monod">Monod</option>
+                <option value="haldane">Inhibición por sustrato</option>
+                <option value="moser">Moser</option>
+              </select>
+            </label>
+            <label class="control">
+              <span>&mu;<sub>max</sub> (h<sup>-1</sup>)</span>
+              <input id="mu_max" type="range" min="0.05" max="1.8" step="0.01" value="0.6">
+              <output for="mu_max" id="mu_max_value"></output>
+            </label>
+            <label class="control">
+              <span>K<sub>s</sub> (g/L)</span>
+              <input id="Ks" type="range" min="0.01" max="8" step="0.01" value="0.8">
+              <output for="Ks" id="Ks_value"></output>
+            </label>
+            <label class="control parameter-conditional" data-models="haldane">
+              <span>K<sub>i</sub> (g/L)</span>
+              <input id="Ki" type="range" min="0.1" max="120" step="0.1" value="25">
+              <output for="Ki" id="Ki_value"></output>
+            </label>
+            <label class="control parameter-conditional" data-models="moser">
+              <span>n (-)</span>
+              <input id="n" type="range" min="0.2" max="3" step="0.05" value="1.2">
+              <output for="n" id="n_value"></output>
+            </label>
+            <label class="control">
+              <span>Y<sub>x/s</sub> (g/g)</span>
+              <input id="Yxs" type="range" min="0.05" max="0.95" step="0.01" value="0.45">
+              <output for="Yxs" id="Yxs_value"></output>
+            </label>
+            <label class="control">
+              <span>k<sub>d</sub> (h<sup>-1</sup>)</span>
+              <input id="kd" type="range" min="0" max="0.4" step="0.005" value="0.02">
+              <output for="kd" id="kd_value"></output>
+            </label>
+            <label class="control">
+              <span>X<sub>0</sub> (g/L)</span>
+              <input id="X0" type="range" min="0.01" max="4" step="0.01" value="0.15">
+              <output for="X0" id="X0_value"></output>
+            </label>
+            <label class="control">
+              <span>S<sub>0</sub> (g/L)</span>
+              <input id="S0" type="range" min="0.1" max="80" step="0.1" value="18">
+              <output for="S0" id="S0_value"></output>
+            </label>
+            <label class="control">
+              <span>&Delta;t (h)</span>
+              <input id="dt" type="range" min="0.01" max="0.5" step="0.01" value="0.05">
+              <output for="dt" id="dt_value"></output>
+            </label>
+            <label class="control">
+              <span>Tiempo final (h)</span>
+              <input id="t_final" type="range" min="4" max="72" step="1" value="24">
+              <output for="t_final" id="t_final_value"></output>
+            </label>
+          </div>
+        </section>
+
+        <section class="panel-section note-panel">
+          <h2>Lectura rápida</h2>
+          <p id="insight-text">Cargando interpretación...</p>
+        </section>
+      </aside>
+
+      <section class="content">
+        <div class="status-bar">
+          <div class="status-chip" id="runtime-status">Inicializando Pyodide...</div>
+          <div class="status-chip neutral" id="model-status">Monod en lote</div>
+        </div>
+
+        <section class="metrics-grid">
+          <article class="metric-card">
+            <span>Biomasa final</span>
+            <strong id="final-x">-</strong>
+          </article>
+          <article class="metric-card">
+            <span>Sustrato final</span>
+            <strong id="final-s">-</strong>
+          </article>
+          <article class="metric-card">
+            <span>&mu; pico</span>
+            <strong id="peak-mu">-</strong>
+          </article>
+          <article class="metric-card">
+            <span>Tiempo de agotamiento</span>
+            <strong id="depletion-time">-</strong>
+          </article>
+        </section>
+
+        <section class="plot-card">
+          <div class="card-header">
+            <h2>Trayectorias temporales</h2>
+            <p>El alumno ve la evolución conjunta de biomasa, sustrato y &mu;.</p>
+          </div>
+          <div id="time-series-plot" class="plot"></div>
+        </section>
+
+        <section class="plot-card">
+          <div class="card-header">
+            <h2>Velocidad de crecimiento</h2>
+            <p>Comparación entre tasa específica y velocidad neta de biomasa.</p>
+          </div>
+          <div id="rate-plot" class="plot"></div>
+        </section>
+
+        <section class="explain-grid">
+          <article class="explain-card">
+            <h3>Ecuaciones</h3>
+            <p id="equation-label">&mu;(S) = &mu;<sub>max</sub>S / (K<sub>s</sub> + S)</p>
+            <p>dX/dt = (&mu; - k<sub>d</sub>)X</p>
+            <p>dS/dt = -(1 / Y<sub>x/s</sub>)&mu;X</p>
+          </article>
+          <article class="explain-card">
+            <h3>Qué aprende el alumno</h3>
+            <p>Cómo K<sub>s</sub> cambia la afinidad, cómo Y<sub>x/s</sub> modula el consumo de sustrato y cómo k<sub>d</sub> limita la acumulación celular.</p>
+          </article>
+          <article class="explain-card">
+            <h3>Arquitectura</h3>
+            <p>La simulación corre en Python con Pyodide; la interfaz y las gráficas viven en HTML, CSS y JavaScript.</p>
+          </article>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
