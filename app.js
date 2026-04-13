@@ -2,7 +2,7 @@ const controls = [
   "mu_max",
   "Ks",
   "Ki",
-  "n",
+  "Kp",
   "Yxs",
   "kd",
   "X0",
@@ -12,23 +12,50 @@ const controls = [
 ];
 
 const modelMeta = {
-  monod: {
+  monod_simple: {
     label: "Monod en lote",
-    cardTitle: "Ecuación de crecimiento: Monod",
+    cardTitle: "Ecuación de crecimiento: Monod sin muerte celular",
     equationHtml: "μ(S) = <span class=\"frac\"><span class=\"top\">μ<sub>max</sub>S</span><span class=\"bottom\">K<sub>s</sub> + S</span></span>",
-    description: "La velocidad específica de crecimiento aumenta con el sustrato y se aproxima a μmax cuando la limitación desaparece.",
+    description: "La forma clásica de Monod asume que el crecimiento está limitado solo por la disponibilidad de sustrato.",
+    biomassBalanceHtml: "<span class=\"derivative\">dX/dt</span> = μX",
+    productBalanceHtml: "",
+    showProductBalance: false,
+  },
+  monod_decay: {
+    label: "Monod con muerte celular",
+    cardTitle: "Ecuación de crecimiento: Monod con muerte celular",
+    equationHtml: "μ(S) = <span class=\"frac\"><span class=\"top\">μ<sub>max</sub>S</span><span class=\"bottom\">K<sub>s</sub> + S</span></span>",
+    description: "La cinética de Monod se conserva, pero la biomasa neta disminuye por el término de decaimiento celular k<sub>d</sub>.",
+    biomassBalanceHtml: "<span class=\"derivative\">dX/dt</span> = (μ - k<sub>d</sub>)X",
+    productBalanceHtml: "",
+    showProductBalance: false,
   },
   haldane: {
-    label: "Inhibición por sustrato en lote",
-    cardTitle: "Ecuación de crecimiento: Haldane",
+    label: "Haldane / Andrews en lote",
+    cardTitle: "Ecuación de crecimiento: Haldane / Andrews",
     equationHtml: "μ(S) = <span class=\"frac\"><span class=\"top\">μ<sub>max</sub>S</span><span class=\"bottom\">K<sub>s</sub> + S + S<sup>2</sup>/K<sub>i</sub></span></span>",
-    description: "A concentraciones moderadas el sustrato favorece el crecimiento, pero a concentraciones altas aparece un efecto inhibitorio.",
+    description: "Describe inhibición por sustrato: al inicio más sustrato favorece el crecimiento, pero a concentraciones altas lo frena.",
+    biomassBalanceHtml: "<span class=\"derivative\">dX/dt</span> = (μ - k<sub>d</sub>)X",
+    productBalanceHtml: "",
+    showProductBalance: false,
   },
-  moser: {
-    label: "Moser en lote",
-    cardTitle: "Ecuación de crecimiento: Moser",
-    equationHtml: "μ(S) = <span class=\"frac\"><span class=\"top\">μ<sub>max</sub>S<sup>n</sup></span><span class=\"bottom\">K<sub>s</sub> + S<sup>n</sup></span></span>",
-    description: "El exponente n modifica la curvatura de la respuesta al sustrato y permite representar transiciones más suaves o más abruptas.",
+  product_competitive: {
+    label: "Inhibición competitiva por producto",
+    cardTitle: "Ecuación de crecimiento: inhibición competitiva por producto",
+    equationHtml: "μ(S,P) = <span class=\"frac\"><span class=\"top\">μ<sub>max</sub>S</span><span class=\"bottom\">K<sub>s</sub>(1 + P/K<sub>p</sub>) + S</span></span>",
+    description: "El producto acumulado hace que el sistema se comporte como si aumentara la constante aparente de saturación por sustrato.",
+    biomassBalanceHtml: "<span class=\"derivative\">dX/dt</span> = (μ - k<sub>d</sub>)X",
+    productBalanceHtml: "P &asymp; X - X<sub>0</sub>",
+    showProductBalance: true,
+  },
+  product_noncompetitive: {
+    label: "Inhibición no competitiva por producto",
+    cardTitle: "Ecuación de crecimiento: inhibición no competitiva por producto",
+    equationHtml: "μ(S,P) = <span class=\"frac\"><span class=\"top\">μ<sub>max</sub></span><span class=\"bottom\">1 + P/K<sub>p</sub></span></span><span class=\"frac\"><span class=\"top\">S</span><span class=\"bottom\">K<sub>s</sub> + S</span></span>",
+    description: "El producto acumulado reduce la capacidad máxima de crecimiento sin desplazar directamente la afinidad por sustrato.",
+    biomassBalanceHtml: "<span class=\"derivative\">dX/dt</span> = (μ - k<sub>d</sub>)X",
+    productBalanceHtml: "P &asymp; X - X<sub>0</sub>",
+    showProductBalance: true,
   },
 };
 
@@ -52,8 +79,15 @@ function collectParams() {
 
 function syncOutputs() {
   for (const id of controls) {
-    document.getElementById(`${id}_value`).textContent = fmt(document.getElementById(id).value);
+    const node = document.getElementById(`${id}_value`);
+    if (node) {
+      node.textContent = fmt(document.getElementById(id).value);
+    }
   }
+}
+
+function effectiveKd(params) {
+  return params.growth_model === "monod_simple" ? 0 : params.kd;
 }
 
 function updateConditionalControls() {
@@ -72,7 +106,10 @@ function updateModelText(model) {
   document.getElementById("hero-model-name").textContent = meta.label;
   document.getElementById("equation-card-title").textContent = meta.cardTitle;
   document.getElementById("equation-label").innerHTML = meta.equationHtml;
-  document.getElementById("equation-description").textContent = meta.description;
+  document.getElementById("equation-description").innerHTML = meta.description;
+  document.getElementById("biomass-balance").innerHTML = meta.biomassBalanceHtml;
+  document.getElementById("product-balance").innerHTML = meta.productBalanceHtml;
+  document.getElementById("product-balance").classList.toggle("parameter-hidden", !meta.showProductBalance);
 }
 
 function setRuntimeStatus(message, ready = false) {
@@ -84,17 +121,19 @@ function setRuntimeStatus(message, ready = false) {
 function updateInsight(summary, params) {
   let message;
   if (params.growth_model === "haldane" && params.S0 > params.Ki) {
-    message = "La concentración inicial de sustrato entra a la zona inhibitoria. El alumno puede ver que más sustrato no siempre implica más crecimiento.";
-  } else if (params.growth_model === "moser" && params.n > 1.5) {
-    message = "El exponente n hace más abrupta la transición entre limitación y saturación. La respuesta del cultivo se vuelve más sensible al sustrato.";
+    message = "La concentración inicial de sustrato cae en la zona inhibitoria. Esta es la idea central del modelo de Haldane o Andrews.";
+  } else if (params.growth_model === "product_competitive") {
+    message = "El producto acumulado desplaza la cinética de forma competitiva: el cultivo parece necesitar más sustrato para sostener la misma tasa.";
+  } else if (params.growth_model === "product_noncompetitive") {
+    message = "El producto acumulado reduce la capacidad global de crecimiento. Aunque aún haya sustrato, μ cae conforme aumenta P.";
+  } else if (params.growth_model === "monod_decay" && params.kd >= params.mu_max * 0.35) {
+    message = "El decaimiento celular compite fuertemente con el crecimiento. La biomasa neta puede estancarse o incluso disminuir.";
   } else if (summary.depletion_time !== null) {
-    message = `El sustrato cae a niveles casi agotados cerca de t=${fmt(summary.depletion_time, 2, " h")}. La afinidad definida por Ks y el rendimiento Yx/s controlan qué tan rápido ocurre.`;
-  } else if (params.kd >= params.mu_max * 0.35) {
-    message = "La muerte celular es suficientemente alta como para frenar la acumulación de biomasa, aunque todavía exista sustrato disponible.";
+    message = `El sustrato cae a niveles casi agotados cerca de t=${fmt(summary.depletion_time, 2, " h")}. La afinidad definida por Ks controla qué tan rápido ocurre.`;
   } else if (params.Ks > params.S0 * 0.2) {
     message = "Ks es grande respecto al sustrato inicial. El cultivo opera lejos de saturación y la tasa específica queda limitada desde el inicio.";
   } else {
-    message = "La cinética arranca en una zona favorable: el sustrato inicial permite una tasa específica cercana a μmax y la biomasa crece con rapidez.";
+    message = "El cultivo arranca en una zona favorable: el sustrato inicial permite una tasa específica alta y la biomasa crece con rapidez.";
   }
   document.getElementById("insight-text").textContent = message;
 }
@@ -132,7 +171,7 @@ function renderTimeSeries(series) {
         y: series.mu,
         type: "scatter",
         mode: "lines",
-        name: "μ(S)",
+        name: "μ(S,P)",
         yaxis: "y2",
         line: { color: "#9a3d57", width: 2, dash: "dot" },
       },
@@ -157,7 +196,8 @@ function renderTimeSeries(series) {
 }
 
 function renderRatePlot(series, params) {
-  const netMu = series.mu.map((value) => value - params.kd);
+  const kd = effectiveKd(params);
+  const netMu = series.mu.map((value) => value - kd);
   Plotly.newPlot(
     "rate-plot",
     [
@@ -166,7 +206,7 @@ function renderRatePlot(series, params) {
         y: netMu,
         type: "scatter",
         mode: "lines",
-        name: "μ - kd",
+        name: "μ neta",
         line: { color: "#0d7c66", width: 3 },
       },
       {

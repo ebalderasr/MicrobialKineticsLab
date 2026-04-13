@@ -48,15 +48,7 @@
       <div class="hero-card">
         <div class="hero-metric">
           <span>Modelo</span>
-          <strong id="hero-model-name">Monod + decaimiento</strong>
-        </div>
-        <div class="hero-metric">
-          <span>Entorno</span>
-          <strong>Python en navegador</strong>
-        </div>
-        <div class="hero-metric">
-          <span>Objetivo</span>
-          <strong>Aprendizaje visual</strong>
+          <strong id="hero-model-name">Monod en lote</strong>
         </div>
       </div>
     </header>
@@ -72,9 +64,11 @@
             <label class="control">
               <span>Ecuación de crecimiento</span>
               <select id="growth_model" class="select-control">
-                <option value="monod">Monod</option>
-                <option value="haldane">Inhibición por sustrato</option>
-                <option value="moser">Moser</option>
+                <option value="monod_simple">Monod sin muerte celular</option>
+                <option value="monod_decay">Monod con muerte celular</option>
+                <option value="haldane">Haldane / Andrews</option>
+                <option value="product_competitive">Inhibición competitiva por producto</option>
+                <option value="product_noncompetitive">Inhibición no competitiva por producto</option>
               </select>
             </label>
             <label class="control">
@@ -92,17 +86,17 @@
               <input id="Ki" type="range" min="0.1" max="120" step="0.1" value="25">
               <output for="Ki" id="Ki_value"></output>
             </label>
-            <label class="control parameter-conditional" data-models="moser">
-              <span>n (-)</span>
-              <input id="n" type="range" min="0.2" max="3" step="0.05" value="1.2">
-              <output for="n" id="n_value"></output>
+            <label class="control parameter-conditional" data-models="product_competitive,product_noncompetitive">
+              <span>K<sub>p</sub> (g/L)</span>
+              <input id="Kp" type="range" min="0.1" max="80" step="0.1" value="12">
+              <output for="Kp" id="Kp_value"></output>
             </label>
             <label class="control">
               <span>Y<sub>x/s</sub> (g/g)</span>
               <input id="Yxs" type="range" min="0.05" max="0.95" step="0.01" value="0.45">
               <output for="Yxs" id="Yxs_value"></output>
             </label>
-            <label class="control">
+            <label class="control parameter-conditional" data-models="monod_decay,haldane,product_competitive,product_noncompetitive">
               <span>k<sub>d</sub> (h<sup>-1</sup>)</span>
               <input id="kd" type="range" min="0" max="0.4" step="0.005" value="0.02">
               <output for="kd" id="kd_value"></output>
@@ -197,11 +191,14 @@
             </p>
             <div class="equation-system">
               <div class="system-title">Balances del cultivo en lote</div>
-              <div class="textbook-equation">
+              <div class="textbook-equation" id="biomass-balance">
                 <span class="derivative">dX/dt</span> = (&mu; - k<sub>d</sub>)X
               </div>
               <div class="textbook-equation">
                 <span class="derivative">dS/dt</span> = - <span class="frac"><span class="top">&mu;X</span><span class="bottom">Y<sub>x/s</sub></span></span>
+              </div>
+              <div class="textbook-equation parameter-hidden" id="product-balance">
+                P &asymp; X - X<sub>0</sub>
               </div>
             </div>
           </article>

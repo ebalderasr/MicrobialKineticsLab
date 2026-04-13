@@ -21,34 +21,57 @@ def haldane_mu(substrate: float, mu_max: float, ks: float, ki: float) -> float:
     return mu_max * substrate / denominator
 
 
-def moser_mu(substrate: float, mu_max: float, ks: float, exponent: float) -> float:
+def product_competitive_mu(substrate: float, product: float, mu_max: float, ks: float, kp: float) -> float:
     substrate = max(float(substrate), 0.0)
-    exponent = max(float(exponent), 1e-9)
-    powered = substrate ** exponent
-    denominator = ks + powered
+    product = max(float(product), 0.0)
+    kp = max(float(kp), 1e-9)
+    denominator = ks * (1.0 + product / kp) + substrate
     if denominator <= 0:
         return 0.0
-    return mu_max * powered / denominator
+    return mu_max * substrate / denominator
 
 
-def growth_mu(substrate: float, params: dict[str, float | str]) -> float:
+def product_noncompetitive_mu(substrate: float, product: float, mu_max: float, ks: float, kp: float) -> float:
+    substrate = max(float(substrate), 0.0)
+    product = max(float(product), 0.0)
+    kp = max(float(kp), 1e-9)
+    inhibition = 1.0 + product / kp
+    denominator = ks + substrate
+    if denominator <= 0 or inhibition <= 0:
+        return 0.0
+    return (mu_max / inhibition) * substrate / denominator
+
+
+def product_proxy(x: float, x0: float) -> float:
+    return max(float(x) - float(x0), 0.0)
+
+
+def effective_kd(params: dict[str, float | str]) -> float:
+    return 0.0 if params["growth_model"] == "monod_simple" else float(params["kd"])
+
+
+def growth_mu(x: float, substrate: float, params: dict[str, float | str]) -> float:
     model = params["growth_model"]
     if model == "haldane":
         return haldane_mu(substrate, params["mu_max"], params["Ks"], params["Ki"])
-    if model == "moser":
-        return moser_mu(substrate, params["mu_max"], params["Ks"], params["n"])
+    if model == "product_competitive":
+        product = product_proxy(x, params["X0"])
+        return product_competitive_mu(substrate, product, params["mu_max"], params["Ks"], params["Kp"])
+    if model == "product_noncompetitive":
+        product = product_proxy(x, params["X0"])
+        return product_noncompetitive_mu(substrate, product, params["mu_max"], params["Ks"], params["Kp"])
     return monod_mu(substrate, params["mu_max"], params["Ks"])
 
 
-def rhs(x: float, s: float, params: dict[str, float]) -> tuple[float, float, float]:
-    mu = growth_mu(s, params)
-    net_mu = mu - params["kd"]
+def rhs(x: float, s: float, params: dict[str, float | str]) -> tuple[float, float, float]:
+    mu = growth_mu(x, s, params)
+    net_mu = mu - effective_kd(params)
     dx_dt = net_mu * x
     ds_dt = -(mu * x) / params["Yxs"]
     return dx_dt, ds_dt, mu
 
 
-def rk4_step(x: float, s: float, params: dict[str, float], dt: float) -> tuple[float, float, float, float]:
+def rk4_step(x: float, s: float, params: dict[str, float | str], dt: float) -> tuple[float, float, float, float]:
     k1x, k1s, mu1 = rhs(x, s, params)
     k2x, k2s, mu2 = rhs(x + 0.5 * dt * k1x, s + 0.5 * dt * k1s, params)
     k3x, k3s, mu3 = rhs(x + 0.5 * dt * k2x, s + 0.5 * dt * k2s, params)
@@ -72,8 +95,8 @@ def simulate_batch(params: dict[str, float | str]) -> dict[str, object]:
     times = [0.0]
     biomass = [x]
     substrate = [s]
-    mu_values = [growth_mu(s, params)]
-    growth_rates = [(mu_values[0] - params["kd"]) * x]
+    mu_values = [growth_mu(x, s, params)]
+    growth_rates = [(mu_values[0] - effective_kd(params)) * x]
 
     depletion_time = None
     n_steps = int(math.ceil(t_final / dt))
