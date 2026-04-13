@@ -14,23 +14,22 @@ const controls = [
 const modelMeta = {
   monod: {
     label: "Monod en lote",
-    equation: "μ(S) = μmax S / (Ks + S)",
+    cardTitle: "Ecuación de crecimiento: Monod",
+    equationHtml: "μ(S) = <span class=\"frac\"><span class=\"top\">μ<sub>max</sub>S</span><span class=\"bottom\">K<sub>s</sub> + S</span></span>",
+    description: "La velocidad específica de crecimiento aumenta con el sustrato y se aproxima a μmax cuando la limitación desaparece.",
   },
   haldane: {
     label: "Inhibición por sustrato en lote",
-    equation: "μ(S) = μmax S / (Ks + S + S² / Ki)",
+    cardTitle: "Ecuación de crecimiento: Haldane",
+    equationHtml: "μ(S) = <span class=\"frac\"><span class=\"top\">μ<sub>max</sub>S</span><span class=\"bottom\">K<sub>s</sub> + S + S<sup>2</sup>/K<sub>i</sub></span></span>",
+    description: "A concentraciones moderadas el sustrato favorece el crecimiento, pero a concentraciones altas aparece un efecto inhibitorio.",
   },
   moser: {
     label: "Moser en lote",
-    equation: "μ(S) = μmax Sⁿ / (Ks + Sⁿ)",
+    cardTitle: "Ecuación de crecimiento: Moser",
+    equationHtml: "μ(S) = <span class=\"frac\"><span class=\"top\">μ<sub>max</sub>S<sup>n</sup></span><span class=\"bottom\">K<sub>s</sub> + S<sup>n</sup></span></span>",
+    description: "El exponente n modifica la curvatura de la respuesta al sustrato y permite representar transiciones más suaves o más abruptas.",
   },
-};
-
-const presets = {
-  balanced: { growth_model: "monod", mu_max: 0.6, Ks: 0.8, Ki: 25, n: 1.2, Yxs: 0.45, kd: 0.02, X0: 0.15, S0: 18, dt: 0.05, t_final: 24 },
-  substrate_limited: { growth_model: "monod", mu_max: 0.65, Ks: 2.8, Ki: 25, n: 1.2, Yxs: 0.42, kd: 0.02, X0: 0.2, S0: 6, dt: 0.05, t_final: 24 },
-  fast_growth: { growth_model: "monod", mu_max: 1.2, Ks: 0.35, Ki: 25, n: 1.2, Yxs: 0.52, kd: 0.01, X0: 0.12, S0: 20, dt: 0.03, t_final: 18 },
-  high_decay: { growth_model: "haldane", mu_max: 0.95, Ks: 0.8, Ki: 8, n: 1.2, Yxs: 0.45, kd: 0.18, X0: 0.2, S0: 24, dt: 0.05, t_final: 30 },
 };
 
 let pyodide;
@@ -70,7 +69,10 @@ function updateConditionalControls() {
 function updateModelText(model) {
   const meta = modelMeta[model];
   document.getElementById("model-status").textContent = meta.label;
-  document.getElementById("equation-label").textContent = meta.equation;
+  document.getElementById("hero-model-name").textContent = meta.label;
+  document.getElementById("equation-card-title").textContent = meta.cardTitle;
+  document.getElementById("equation-label").innerHTML = meta.equationHtml;
+  document.getElementById("equation-description").textContent = meta.description;
 }
 
 function setRuntimeStatus(message, ready = false) {
@@ -214,17 +216,6 @@ async function runSimulation() {
   setRuntimeStatus("Pyodide listo", true);
 }
 
-function applyPreset(name) {
-  const preset = presets[name];
-  for (const [key, value] of Object.entries(preset)) {
-    document.getElementById(key).value = value;
-  }
-  updateConditionalControls();
-  updateModelText(document.getElementById("growth_model").value);
-  syncOutputs();
-  runSimulation();
-}
-
 async function initPyodideApp() {
   syncOutputs();
   setRuntimeStatus("Cargando runtime de Python...", false);
@@ -251,10 +242,6 @@ document.getElementById("growth_model").addEventListener("input", () => {
   updateConditionalControls();
   updateModelText(document.getElementById("growth_model").value);
   runSimulation();
-});
-
-document.querySelectorAll(".preset-button").forEach((button) => {
-  button.addEventListener("click", () => applyPreset(button.dataset.preset));
 });
 
 initPyodideApp().catch((error) => {

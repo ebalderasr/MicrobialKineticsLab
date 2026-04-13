@@ -48,7 +48,7 @@
       <div class="hero-card">
         <div class="hero-metric">
           <span>Modelo</span>
-          <strong>Monod + decaimiento</strong>
+          <strong id="hero-model-name">Monod + decaimiento</strong>
         </div>
         <div class="hero-metric">
           <span>Entorno</span>
@@ -65,33 +65,8 @@
       <aside class="control-panel">
         <section class="panel-section">
           <div class="section-title">
-            <h2>Escenarios</h2>
-            <p>Presets para comparar comportamientos.</p>
-          </div>
-          <div class="preset-grid">
-            <button class="preset-button" data-preset="balanced">
-              <strong>Base</strong>
-              <span>Modelo Monod</span>
-            </button>
-            <button class="preset-button" data-preset="substrate_limited">
-              <strong>S limitado</strong>
-              <span>Modelo Monod</span>
-            </button>
-            <button class="preset-button" data-preset="fast_growth">
-              <strong>Crecimiento rápido</strong>
-              <span>Modelo Monod</span>
-            </button>
-            <button class="preset-button" data-preset="high_decay">
-              <strong>Alta muerte</strong>
-              <span>Modelo Haldane</span>
-            </button>
-          </div>
-        </section>
-
-        <section class="panel-section">
-          <div class="section-title">
-            <h2>Parámetros</h2>
-            <p>Cada control actualiza la simulación.</p>
+            <h2>Modelo y parámetros</h2>
+            <p>Selecciona la ecuación cinética y ajusta sus parámetros.</p>
           </div>
           <div class="control-list">
             <label class="control">
@@ -202,20 +177,65 @@
           <div id="rate-plot" class="plot"></div>
         </section>
 
-        <section class="explain-grid">
-          <article class="explain-card">
-            <h3>Ecuaciones</h3>
-            <p id="equation-label">&mu;(S) = &mu;<sub>max</sub>S / (K<sub>s</sub> + S)</p>
-            <p>dX/dt = (&mu; - k<sub>d</sub>)X</p>
-            <p>dS/dt = -(1 / Y<sub>x/s</sub>)&mu;X</p>
+        <section class="guide-intro">
+          <span class="guide-kicker">Guía de interpretación</span>
+          <h2 class="guide-title">Entiende cómo se hacen los cálculos y por qué el modelo se comporta así</h2>
+          <p class="guide-copy">
+            Esta sección resume la ecuación cinética seleccionada, los balances diferenciales del cultivo en lote
+            y el procedimiento numérico con el que la app construye las curvas de biomasa y sustrato.
+          </p>
+        </section>
+
+        <section class="teaching-panel">
+          <article class="teaching-card equation-card">
+            <h3 id="equation-card-title">Ecuación de crecimiento: Monod</h3>
+            <div class="textbook-equation" id="equation-label">
+              &mu;(S) = <span class="frac"><span class="top">&mu;<sub>max</sub>S</span><span class="bottom">K<sub>s</sub> + S</span></span>
+            </div>
+            <p id="equation-description">
+              La velocidad específica de crecimiento aumenta con el sustrato y se aproxima a un máximo cuando el medio deja de ser limitante.
+            </p>
+            <div class="equation-system">
+              <div class="system-title">Balances del cultivo en lote</div>
+              <div class="textbook-equation">
+                <span class="derivative">dX/dt</span> = (&mu; - k<sub>d</sub>)X
+              </div>
+              <div class="textbook-equation">
+                <span class="derivative">dS/dt</span> = - <span class="frac"><span class="top">&mu;X</span><span class="bottom">Y<sub>x/s</sub></span></span>
+              </div>
+            </div>
           </article>
-          <article class="explain-card">
-            <h3>Qué aprende el alumno</h3>
-            <p>Cómo K<sub>s</sub> cambia la afinidad, cómo Y<sub>x/s</sub> modula el consumo de sustrato y cómo k<sub>d</sub> limita la acumulación celular.</p>
+
+          <article class="teaching-card">
+            <h3>¿Qué significa la simulación?</h3>
+            <p>
+              La app no usa una solución analítica cerrada. En su lugar, parte de las condiciones iniciales
+              <strong>X<sub>0</sub></strong> y <strong>S<sub>0</sub></strong> y avanza el sistema paso a paso en el tiempo.
+              En cada paso calcula primero &mu;(S), luego estima las pendientes <strong>dX/dt</strong> y <strong>dS/dt</strong>,
+              y con ellas actualiza el estado del cultivo.
+            </p>
+            <p>
+              El resultado final es una aproximación numérica de las trayectorias <strong>X(t)</strong> y <strong>S(t)</strong>.
+              Si cambias un parámetro, cambias la pendiente local del sistema y por eso cambian todas las curvas.
+            </p>
           </article>
-          <article class="explain-card">
-            <h3>Arquitectura</h3>
-            <p>La simulación corre en Python con Pyodide; la interfaz y las gráficas viven en HTML, CSS y JavaScript.</p>
+
+          <article class="teaching-card">
+            <h3>Integración numérica: Runge-Kutta de cuarto orden</h3>
+            <p>
+              Para cada intervalo de tiempo &Delta;t, la app evalúa cuatro pendientes intermedias y las combina
+              en una sola actualización. Esto reduce el error respecto a métodos más simples como Euler.
+            </p>
+            <div class="rk-block">
+              <div>k<sub>1</sub> = &Delta;t f(t<sub>n</sub>, y<sub>n</sub>)</div>
+              <div>k<sub>2</sub> = &Delta;t f(t<sub>n</sub> + &Delta;t/2, y<sub>n</sub> + k<sub>1</sub>/2)</div>
+              <div>k<sub>3</sub> = &Delta;t f(t<sub>n</sub> + &Delta;t/2, y<sub>n</sub> + k<sub>2</sub>/2)</div>
+              <div>k<sub>4</sub> = &Delta;t f(t<sub>n</sub> + &Delta;t, y<sub>n</sub> + k<sub>3</sub>)</div>
+              <div class="rk-result">y<sub>n+1</sub> = y<sub>n</sub> + (k<sub>1</sub> + 2k<sub>2</sub> + 2k<sub>3</sub> + k<sub>4</sub>) / 6</div>
+            </div>
+            <p>
+              Aquí <strong>y</strong> representa el vector de estado del cultivo, es decir, biomasa y sustrato.
+            </p>
           </article>
         </section>
       </section>

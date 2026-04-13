@@ -148,7 +148,7 @@ a {
 
 .section-title h2,
 .card-header h2,
-.explain-card h3,
+.teaching-card h3,
 .note-panel h2 {
   margin: 0 0 6px;
   font-family: "Google Sans", "Roboto", sans-serif;
@@ -158,48 +158,10 @@ a {
 .section-title p,
 .card-header p,
 .note-panel p,
-.explain-card p {
+.teaching-card p {
   margin: 0;
   color: var(--text-secondary);
   line-height: 1.55;
-}
-
-.preset-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-  margin-top: 14px;
-}
-
-.preset-button {
-  display: grid;
-  gap: 4px;
-  text-align: left;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--text-primary);
-  border-radius: var(--radius-md);
-  padding: 12px;
-  font: inherit;
-  cursor: pointer;
-  transition: transform 110ms ease, border-color 130ms ease, box-shadow 130ms ease, background 130ms ease;
-}
-
-.preset-button:hover {
-  transform: translateY(-1px);
-  border-color: var(--g-blue);
-  background: #f5f9ff;
-  box-shadow: var(--shadow-md);
-}
-
-.preset-button strong {
-  font-size: 0.88rem;
-  font-weight: 700;
-}
-
-.preset-button span {
-  font-size: 0.76rem;
-  color: var(--text-secondary);
 }
 
 .control-list {
@@ -326,7 +288,8 @@ a {
 }
 
 .plot-card,
-.explain-card {
+.teaching-card,
+.guide-intro {
   border-radius: var(--radius-lg);
   padding: 20px;
 }
@@ -343,14 +306,116 @@ a {
   margin-bottom: 12px;
 }
 
-.explain-grid {
+.guide-intro {
+  background: linear-gradient(135deg, #e8f0fe 0%, #f5f9ff 100%);
+  border: 1px solid #c5d9fb;
+  box-shadow: var(--shadow-sm);
+}
+
+.guide-kicker {
+  display: inline-block;
+  margin-bottom: 0.4rem;
+  color: var(--g-blue);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.guide-title {
+  margin: 0 0 0.32rem;
+  font-family: "Google Sans", "Roboto", sans-serif;
+  font-size: 1.1rem;
+}
+
+.guide-copy {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.teaching-panel {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: 1.25fr 1fr 1fr;
   gap: 16px;
 }
 
-.explain-card {
+.teaching-card {
   background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+}
+
+.teaching-card h3 {
+  margin: 0 0 0.85rem;
+}
+
+.teaching-card p {
+  margin: 0 0 0.85rem;
+}
+
+.equation-card {
+  background: linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
+}
+
+.textbook-equation {
+  margin: 0.8rem 0;
+  font-family: "Google Sans", "Roboto", sans-serif;
+  font-size: 1.7rem;
+  line-height: 1.35;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.frac {
+  display: inline-grid;
+  grid-template-rows: auto auto;
+  vertical-align: middle;
+  margin: 0 0.12em;
+}
+
+.frac .top {
+  border-bottom: 2px solid var(--text-primary);
+  padding: 0 0.22em 0.06em;
+  text-align: center;
+}
+
+.frac .bottom {
+  padding: 0.06em 0.22em 0;
+  text-align: center;
+}
+
+.derivative {
+  font-weight: 700;
+}
+
+.equation-system {
+  margin-top: 1.1rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--border);
+}
+
+.system-title {
+  margin-bottom: 0.55rem;
+  color: var(--g-blue);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.rk-block {
+  margin: 0.9rem 0;
+  padding: 0.95rem 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid #c5d9fb;
+  background: linear-gradient(135deg, #f5f9ff 0%, #eef5ff 100%);
+  color: var(--text-primary);
+  font-family: "Google Sans", "Roboto", sans-serif;
+  line-height: 1.7;
+}
+
+.rk-result {
+  margin-top: 0.35rem;
+  font-weight: 700;
 }
 
 .hc-header {
@@ -546,7 +611,7 @@ a {
   .hero,
   .layout,
   .metrics-grid,
-  .explain-grid {
+  .teaching-panel {
     grid-template-columns: 1fr;
   }
 
@@ -594,7 +659,8 @@ a {
   .control-panel,
   .plot-card,
   .metric-card,
-  .explain-card {
+  .teaching-card,
+  .guide-intro {
     border-radius: var(--radius-lg);
   }
 
