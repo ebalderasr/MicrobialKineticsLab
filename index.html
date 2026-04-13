@@ -12,6 +12,28 @@
   <script src="https://cdn.jsdelivr.net/pyodide/v0.27.2/full/pyodide.js"></script>
 </head>
 <body>
+  <header class="hc-header">
+    <div class="hc-header-brand">
+      <div class="g-logo">
+        <div class="g-dot" style="background:#4285F4"></div>
+        <div class="g-dot" style="background:#EA4335"></div>
+        <div class="g-dot" style="background:#FBBC05"></div>
+        <div class="g-dot" style="background:#34A853"></div>
+      </div>
+      <div class="hc-header-text">
+        <div class="hc-title-line">
+          <h1>Microbial Kinetics Lab</h1>
+          <p class="hc-tagline">Cinética microbiana en lote con exploración interactiva de modelos de crecimiento</p>
+        </div>
+      </div>
+    </div>
+    <div class="hc-header-right">
+      <a class="hc-suite-pill" href="https://www.hostcell.app">
+        <span class="hc-suite-label">HostCell Lab Suite</span>
+      </a>
+    </div>
+  </header>
+
   <div class="page-shell">
     <header class="hero">
       <div class="hero-copy">
@@ -47,10 +69,22 @@
             <p>Presets para comparar comportamientos.</p>
           </div>
           <div class="preset-grid">
-            <button class="preset-button" data-preset="balanced">Base</button>
-            <button class="preset-button" data-preset="substrate_limited">S limitado</button>
-            <button class="preset-button" data-preset="fast_growth">Crecimiento rápido</button>
-            <button class="preset-button" data-preset="high_decay">Alta muerte</button>
+            <button class="preset-button" data-preset="balanced">
+              <strong>Base</strong>
+              <span>Modelo Monod</span>
+            </button>
+            <button class="preset-button" data-preset="substrate_limited">
+              <strong>S limitado</strong>
+              <span>Modelo Monod</span>
+            </button>
+            <button class="preset-button" data-preset="fast_growth">
+              <strong>Crecimiento rápido</strong>
+              <span>Modelo Monod</span>
+            </button>
+            <button class="preset-button" data-preset="high_decay">
+              <strong>Alta muerte</strong>
+              <span>Modelo Haldane</span>
+            </button>
           </div>
         </section>
 
@@ -187,6 +221,22 @@
       </section>
     </main>
   </div>
+
+  <footer class="hc-footer">
+    <div class="hc-footer-inner">
+      <div class="hc-footer-suite">
+        <span class="hc-footer-name">HostCell Lab Suite</span>
+        <span class="hc-footer-slogan">Where bioprocess intuition becomes visible</span>
+      </div>
+      <span class="hc-footer-author">Emiliano Balderas Ramírez</span>
+      <a class="hc-footer-github" href="https://github.com/ebalderasr/MicrobialKineticsLab">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+          <path d="M8 0C3.58 0 0 3.73 0 8.33c0 3.68 2.29 6.79 5.47 7.9.4.08.55-.18.55-.4 0-.2-.01-.86-.01-1.56-2.01.45-2.53-.51-2.69-.98-.09-.25-.48-.98-.81-1.18-.27-.15-.66-.53-.01-.54.61-.01 1.04.58 1.18.82.7 1.23 1.82.88 2.27.67.07-.53.27-.88.49-1.08-1.78-.21-3.64-.93-3.64-4.14 0-.91.31-1.66.82-2.25-.08-.21-.36-1.07.08-2.23 0 0 .67-.22 2.2.86a7.3 7.3 0 0 1 4 0c1.53-1.08 2.2-.86 2.2-.86.44 1.16.16 2.02.08 2.23.51.59.82 1.34.82 2.25 0 3.22-1.87 3.93-3.65 4.14.28.25.53.73.53 1.48 0 1.07-.01 1.93-.01 2.2 0 .22.15.49.55.4A8.34 8.34 0 0 0 16 8.33C16 3.73 12.42 0 8 0Z"></path>
+        </svg>
+        GitHub
+      </a>
+    </div>
+  </footer>
 
   <script type="module" src="./app.js"></script>
 </body>
