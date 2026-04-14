@@ -135,7 +135,7 @@ def simulate_batch(params: dict[str, float | str]) -> dict[str, object]:
     product = [p]
     mu_values = [initial_mu]
     qp_values = [initial_qp]
-    growth_rates = [initial_mu * x]
+    growth_rates = [effective_mu_for_biomass(initial_mu, params) * x]
     product_rates = [initial_qp * x]
 
     depletion_time = None

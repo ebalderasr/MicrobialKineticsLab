@@ -63,6 +63,16 @@ const modelMeta = {
 let pyodide;
 let isReady = false;
 
+function debounce(fn, delay) {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), delay);
+  };
+}
+
+const debouncedRun = debounce(runSimulation, 100);
+
 function fmt(value, digits = 3, unit = "") {
   if (value === null || value === undefined || Number.isNaN(value)) {
     return "-";
@@ -299,7 +309,7 @@ for (const id of controls) {
   const input = document.getElementById(id);
   input.addEventListener("input", () => {
     syncOutputs();
-    runSimulation();
+    debouncedRun();
   });
 }
 
@@ -309,7 +319,7 @@ document.getElementById("growth_model").addEventListener("input", () => {
     document.getElementById("growth_model").value,
     document.getElementById("product_mode").value,
   );
-  runSimulation();
+  debouncedRun();
 });
 
 document.getElementById("product_mode").addEventListener("input", () => {
@@ -318,7 +328,7 @@ document.getElementById("product_mode").addEventListener("input", () => {
     document.getElementById("growth_model").value,
     document.getElementById("product_mode").value,
   );
-  runSimulation();
+  debouncedRun();
 });
 
 initPyodideApp().catch((error) => {
