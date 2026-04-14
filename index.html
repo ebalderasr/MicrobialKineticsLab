@@ -65,6 +65,7 @@
               <span>Ecuación de crecimiento</span>
               <select id="growth_model" class="select-control">
                 <option value="monod">Monod</option>
+                <option value="monod_cell_death">Monod con muerte celular</option>
                 <option value="haldane">Haldane / Andrews</option>
                 <option value="product_competitive">Inhibición competitiva por producto</option>
                 <option value="product_noncompetitive">Inhibición no competitiva por producto</option>
@@ -101,6 +102,11 @@
               <span>Y<sub>x/s</sub> (g/g)</span>
               <input id="Yxs" type="range" min="0.05" max="0.95" step="0.01" value="0.45">
               <output for="Yxs" id="Yxs_value"></output>
+            </label>
+            <label class="control parameter-conditional" data-models="monod_cell_death">
+              <span>k<sub>d</sub> (h<sup>-1</sup>)</span>
+              <input id="kd" type="range" min="0" max="0.4" step="0.005" value="0.02">
+              <output for="kd" id="kd_value"></output>
             </label>
             <label class="control">
               <span>Modo de q<sub>p</sub></span>

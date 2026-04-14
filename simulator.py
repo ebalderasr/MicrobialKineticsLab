@@ -70,6 +70,12 @@ def growth_mu(substrate: float, product: float, params: dict[str, float | str]) 
     return monod_mu(substrate, params["mu_max"], params["Ks"])
 
 
+def effective_mu_for_biomass(mu: float, params: dict[str, float | str]) -> float:
+    if params["growth_model"] == "monod_cell_death":
+        return mu - params["kd"]
+    return mu
+
+
 def qp_value(mu: float, params: dict[str, float | str]) -> float:
     if params["product_mode"] == "growth_associated":
         return params["alpha"] * mu
@@ -79,7 +85,7 @@ def qp_value(mu: float, params: dict[str, float | str]) -> float:
 def rhs(x: float, s: float, p: float, params: dict[str, float | str]) -> tuple[float, float, float, float, float]:
     mu = growth_mu(s, p, params)
     qp = qp_value(mu, params)
-    dx_dt = mu * x
+    dx_dt = effective_mu_for_biomass(mu, params) * x
     ds_dt = -(mu * x) / params["Yxs"]
     dp_dt = qp * x
     return dx_dt, ds_dt, dp_dt, mu, qp

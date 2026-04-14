@@ -5,6 +5,7 @@ const controls = [
   "Kip",
   "kp",
   "Yxs",
+  "kd",
   "alpha",
   "beta",
   "X0",
@@ -20,6 +21,12 @@ const modelMeta = {
     cardTitle: "Ecuación de crecimiento: Monod",
     equationHtml: "μ(S) = <span class=\"frac\"><span class=\"top\">μ<sub>max</sub>S</span><span class=\"bottom\">K<sub>s</sub> + S</span></span>",
     description: "Modelo de saturación simple. La tasa específica aumenta con el sustrato y se aproxima a μmax cuando el medio deja de ser limitante.",
+  },
+  monod_cell_death: {
+    label: "Monod con muerte celular",
+    cardTitle: "Ecuación de crecimiento: Monod con muerte celular",
+    equationHtml: "μ(S) = <span class=\"frac\"><span class=\"top\">μ<sub>max</sub>S</span><span class=\"bottom\">K<sub>s</sub> + S</span></span>",
+    description: "Mantiene la cinética de Monod, pero el balance de biomasa incorpora un término de muerte o decaimiento celular k<sub>d</sub>.",
   },
   haldane: {
     label: "Haldane / Andrews en lote",
@@ -102,7 +109,10 @@ function updateModelText(model, productMode) {
   document.getElementById("equation-card-title").textContent = meta.cardTitle;
   document.getElementById("equation-label").innerHTML = meta.equationHtml;
   document.getElementById("equation-description").textContent = meta.description;
-  document.getElementById("biomass-balance").innerHTML = "<span class=\"derivative\">dX/dt</span> = μX";
+  document.getElementById("biomass-balance").innerHTML =
+    model === "monod_cell_death"
+      ? "<span class=\"derivative\">dX/dt</span> = (μ - k<sub>d</sub>)X"
+      : "<span class=\"derivative\">dX/dt</span> = μX";
   document.getElementById("product-balance").innerHTML = "<span class=\"derivative\">dP/dt</span> = q<sub>p</sub>X";
   document.getElementById("product-mode-equation").innerHTML =
     productMode === "growth_associated"
@@ -128,6 +138,8 @@ function updateInsight(summary, params) {
     message = "La inhibición crece proporcionalmente con P. El modelo predice anulación del crecimiento cuando P alcanza 1/k_p.";
   } else if (params.growth_model === "product_exponential") {
     message = "La inhibición por producto es progresiva y asintótica: la tasa cae de forma exponencial conforme aumenta P.";
+  } else if (params.growth_model === "monod_cell_death" && params.kd >= params.mu_max * 0.35) {
+    message = "El término de muerte celular compite fuertemente con el crecimiento. La biomasa neta puede frenarse aun con sustrato disponible.";
   } else if (summary.depletion_time !== null) {
     message = `El sustrato cae a niveles casi agotados cerca de t=${fmt(summary.depletion_time, 2, " h")}.`;
   } else {
