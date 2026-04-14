@@ -153,11 +153,12 @@ def simulate(params: dict) -> dict:
     s = params["S0"]
     p = params["P0"]
     mode = params.get("culture_mode", "batch")
+    working_volume = params.get("V_working", 1.0)
 
     if mode == "fedbatch":
-        v: float | None = params.get("V0", 1.0)
+        v: float | None = working_volume
     else:
-        v = params.get("V_reactor", 1.0)
+        v = working_volume
 
     if mode == "fedbatch" and v is not None:
         d0 = _d_fedbatch(params, v)

@@ -11,8 +11,7 @@ const controls = [
   "X0",
   "S0",
   "P0",
-  "V_reactor",
-  "V0",
+  "V_working",
   "F",
   "S_in",
   "D",
@@ -114,6 +113,14 @@ function updateConditionalControls() {
   const model       = document.getElementById("growth_model").value;
   const productMode = document.getElementById("product_mode").value;
   const cultureMode = document.getElementById("culture_mode").value;
+  const volumeLabel = document.getElementById("working-volume-label");
+
+  if (volumeLabel) {
+    volumeLabel.innerHTML =
+      cultureMode === "fedbatch"
+        ? "Volumen de trabajo inicial (L)"
+        : "Volumen de trabajo (L)";
+  }
 
   document.querySelectorAll(".parameter-conditional").forEach((node) => {
     let isActive = true;
@@ -217,12 +224,12 @@ function updateInsight(summary, params) {
       message = `En continuo el sistema tiende a un estado estacionario donde μ = D. El sustrato residual depende de K_s y la cinética elegida.`;
     }
   } else if (culture_mode === "fedbatch") {
-    const d0 = params.F / params.V0;
+    const d0 = params.F / params.V_working;
     if (d0 > mu_max * 0.5) {
       message = `La dilución inicial (F/V₀ = ${fmt(d0, 3)} h⁻¹) es alta. La alimentación puede superar la capacidad de crecimiento al inicio.`;
     } else {
       const vFinal = summary.final_V != null ? fmt(summary.final_V, 1) : "?";
-      message = `El fed-batch extiende la fase productiva reponiendo sustrato. El volumen crece de ${fmt(params.V0, 1)} a ${vFinal} L.`;
+      message = `El fed-batch extiende la fase productiva reponiendo sustrato. El volumen crece de ${fmt(params.V_working, 1)} a ${vFinal} L.`;
     }
   } else if (growth_model === "haldane" && S0 > Ki) {
     message = "El sistema arranca en una zona de inhibición por sustrato. Más sustrato no implica necesariamente más crecimiento.";
