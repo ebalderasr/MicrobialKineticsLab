@@ -108,7 +108,7 @@ def rk4_step(
     params: dict,
     dt: float,
     v: float | None = None,
-) -> tuple[float, float, float, float, float, float, float, float | None]:
+) -> tuple[float, float, float, float, float, float, float, float, float | None]:
     mode = params.get("culture_mode", "batch")
     F = params.get("F", 0.0)
 
@@ -143,9 +143,10 @@ def rk4_step(
     avg_mu = (mu1 + 2 * mu2 + 2 * mu3 + mu4) / 6.0
     avg_qp = (qp1 + 2 * qp2 + 2 * qp3 + qp4) / 6.0
     avg_dx = (k1x + 2 * k2x + 2 * k3x + k4x) / 6.0
+    avg_ds = (k1s + 2 * k2s + 2 * k3s + k4s) / 6.0
     avg_dp = (k1p + 2 * k2p + 2 * k3p + k4p) / 6.0
 
-    return next_x, next_s, next_p, avg_mu, avg_qp, avg_dx, avg_dp, v_next
+    return next_x, next_s, next_p, avg_mu, avg_qp, avg_dx, avg_ds, avg_dp, v_next
 
 
 def simulate(params: dict) -> dict:
@@ -179,6 +180,7 @@ def simulate(params: dict) -> dict:
     mu_values = [initial_mu]
     qp_values = [initial_qp]
     growth_rates = [effective_mu_for_biomass(initial_mu, params) * x - d0 * x]
+    substrate_rates = [-(initial_mu * x) / params["Yxs"] + d0 * (params.get("S_r", 0.0) - s)]
     product_rates = [initial_qp * x - d0 * p]
     volumes = [v if v is not None else 0.0]
 
@@ -188,7 +190,7 @@ def simulate(params: dict) -> dict:
     for step in range(1, n_steps + 1):
         current_time = min(step * dt, t_final)
         step_dt = current_time - times[-1]
-        x, s, p, mu, qp, dx_dt, dp_dt, v = rk4_step(x, s, p, params, step_dt, v)
+        x, s, p, mu, qp, dx_dt, ds_dt, dp_dt, v = rk4_step(x, s, p, params, step_dt, v)
         times.append(current_time)
         biomass.append(x)
         substrate.append(s)
@@ -196,6 +198,7 @@ def simulate(params: dict) -> dict:
         mu_values.append(mu)
         qp_values.append(qp)
         growth_rates.append(dx_dt)
+        substrate_rates.append(ds_dt)
         product_rates.append(dp_dt)
         volumes.append(v if v is not None else 0.0)
         if depletion_time is None and s <= max(0.02 * params["S0"], 0.05):
@@ -210,6 +213,7 @@ def simulate(params: dict) -> dict:
             "mu": mu_values,
             "qp": qp_values,
             "dXdt": growth_rates,
+            "dSdt": substrate_rates,
             "dPdt": product_rates,
             "V": volumes,
         },

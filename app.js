@@ -308,6 +308,7 @@ function renderTimeSeries(series) {
       type: "scatter",
       mode: "lines",
       name: "Producto P",
+      yaxis: "y2",
       line: { color: "#4285f4", width: 3 },
     },
     {
@@ -316,7 +317,7 @@ function renderTimeSeries(series) {
       type: "scatter",
       mode: "lines",
       name: "μ",
-      yaxis: "y2",
+      yaxis: "y3",
       line: { color: "#9a3d57", width: 2, dash: "dot" },
     },
   ];
@@ -324,12 +325,20 @@ function renderTimeSeries(series) {
   const layout = {
     paper_bgcolor: "rgba(0,0,0,0)",
     plot_bgcolor:  "rgba(0,0,0,0)",
-    margin: { l: 52, r: 52, t: 14, b: 52 },
+    margin: { l: 52, r: 108, t: 14, b: 52 },
     font: { family: "IBM Plex Sans, sans-serif", color: "#1f2a1f" },
     legend: { orientation: "h", y: 1.12, x: 0 },
     xaxis:  { title: "Tiempo (h)", gridcolor: "rgba(31,42,31,0.08)" },
-    yaxis:  { title: "Concentración (g/L)", gridcolor: "rgba(31,42,31,0.08)" },
-    yaxis2: { title: "μ (h⁻¹)", overlaying: "y", side: "right", showgrid: false },
+    yaxis:  { title: "Biomasa y sustrato (g/L)", gridcolor: "rgba(31,42,31,0.08)" },
+    yaxis2: { title: "Producto P (g/L)", overlaying: "y", side: "right", showgrid: false },
+    yaxis3: {
+      title: "μ (h⁻¹)",
+      overlaying: "y",
+      side: "right",
+      anchor: "free",
+      position: 0.92,
+      showgrid: false,
+    },
   };
 
   Plotly.newPlot("time-series-plot", traces, layout, { responsive: true, displayModeBar: false });
@@ -344,16 +353,16 @@ function renderRatePlot(series) {
         y: series.dXdt,
         type: "scatter",
         mode: "lines",
-        name: "Cambio neto de X",
+        name: "dX/dt",
         line: { color: "#0d7c66", width: 3 },
       },
       {
         x: series.t,
-        y: series.dPdt,
+        y: series.dSdt,
         type: "scatter",
         mode: "lines",
-        name: "Cambio neto de P",
-        line: { color: "#4285f4", width: 3 },
+        name: "dS/dt",
+        line: { color: "#ee8b42", width: 3 },
       },
       {
         x: series.t,
@@ -372,7 +381,7 @@ function renderRatePlot(series) {
       font: { family: "IBM Plex Sans, sans-serif", color: "#1f2a1f" },
       legend: { orientation: "h", y: 1.12, x: 0 },
       xaxis:  { title: "Tiempo (h)", gridcolor: "rgba(31,42,31,0.08)" },
-      yaxis:  { title: "Cambios netos (g/L/h)", gridcolor: "rgba(31,42,31,0.08)" },
+      yaxis:  { title: "dX/dt y dS/dt (g/L/h)", gridcolor: "rgba(31,42,31,0.08)" },
       yaxis2: { title: "q_p (gP/gX/h)", overlaying: "y", side: "right", showgrid: false },
     },
     { responsive: true, displayModeBar: false },
