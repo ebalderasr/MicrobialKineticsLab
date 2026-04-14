@@ -61,18 +61,10 @@
       <aside class="control-panel">
         <section class="panel-section">
           <div class="section-title">
-            <h2>Modelo y parámetros</h2>
-            <p>Selecciona la ecuación cinética y ajusta sus parámetros.</p>
+            <h2>Microorganismo</h2>
+            <p>Modelo de crecimiento y parámetros cinéticos.</p>
           </div>
           <div class="control-list">
-            <label class="control">
-              <span>Modo de cultivo</span>
-              <select id="culture_mode" class="select-control">
-                <option value="batch">Lote (Batch)</option>
-                <option value="fedbatch">Lote alimentado (Fed-batch)</option>
-                <option value="continuous">Continuo (Chemostat)</option>
-              </select>
-            </label>
             <label class="control">
               <span>Ecuación de crecimiento</span>
               <select id="growth_model" class="select-control">
@@ -137,23 +129,30 @@
               <input id="beta" type="range" min="0.001" max="1" step="0.001" value="0.04">
               <output for="beta" id="beta_value"></output>
             </label>
+          </div>
+        </section>
+
+        <section class="panel-section">
+          <div class="section-title">
+            <h2>Biorreactor</h2>
+            <p>Modo de operación y condiciones del reactor.</p>
+          </div>
+          <div class="control-list">
             <label class="control">
-              <span>X<sub>0</sub> (g/L)</span>
-              <input id="X0" type="range" min="0.01" max="4" step="0.01" value="0.15">
-              <output for="X0" id="X0_value"></output>
+              <span>Modo de cultivo</span>
+              <select id="culture_mode" class="select-control">
+                <option value="batch">Lote (Batch)</option>
+                <option value="fedbatch">Lote alimentado (Fed-batch)</option>
+                <option value="continuous">Continuo (Chemostat)</option>
+              </select>
             </label>
-            <label class="control">
-              <span>S<sub>0</sub> (g/L)</span>
-              <input id="S0" type="range" min="0.1" max="80" step="0.1" value="18">
-              <output for="S0" id="S0_value"></output>
-            </label>
-            <label class="control">
-              <span>P<sub>0</sub> (g/L)</span>
-              <input id="P0" type="range" min="0" max="40" step="0.1" value="0">
-              <output for="P0" id="P0_value"></output>
+            <label class="control parameter-conditional" data-culture="batch,continuous">
+              <span>Volumen del reactor (L)</span>
+              <input id="V_reactor" type="range" min="0.5" max="20" step="0.5" value="2">
+              <output for="V_reactor" id="V_reactor_value"></output>
             </label>
             <label class="control parameter-conditional" data-culture="fedbatch">
-              <span>V<sub>0</sub> (L)</span>
+              <span>V<sub>0</sub> inicial (L)</span>
               <input id="V0" type="range" min="0.5" max="10" step="0.1" value="2">
               <output for="V0" id="V0_value"></output>
             </label>
@@ -171,6 +170,30 @@
               <span>D (h<sup>-1</sup>)</span>
               <input id="D" type="range" min="0.01" max="1.5" step="0.01" value="0.1">
               <output for="D" id="D_value"></output>
+            </label>
+          </div>
+        </section>
+
+        <section class="panel-section">
+          <div class="section-title">
+            <h2>Simulación</h2>
+            <p>Condiciones iniciales y configuración numérica.</p>
+          </div>
+          <div class="control-list">
+            <label class="control">
+              <span>X<sub>0</sub> (g/L)</span>
+              <input id="X0" type="range" min="0.01" max="4" step="0.01" value="0.15">
+              <output for="X0" id="X0_value"></output>
+            </label>
+            <label class="control">
+              <span>S<sub>0</sub> (g/L)</span>
+              <input id="S0" type="range" min="0.1" max="80" step="0.1" value="18">
+              <output for="S0" id="S0_value"></output>
+            </label>
+            <label class="control">
+              <span>P<sub>0</sub> (g/L)</span>
+              <input id="P0" type="range" min="0" max="40" step="0.1" value="0">
+              <output for="P0" id="P0_value"></output>
             </label>
             <label class="control">
               <span>&Delta;t (h)</span>
@@ -228,7 +251,6 @@
         <section class="plot-card">
           <div class="card-header">
             <h2>Trayectorias temporales</h2>
-            <p>El alumno ve la evolución conjunta de biomasa, sustrato, producto y &mu;.</p>
           </div>
           <div id="time-series-plot" class="plot"></div>
         </section>
@@ -236,7 +258,6 @@
         <section class="plot-card">
           <div class="card-header">
             <h2>Velocidades de formación</h2>
-            <p>Comparación entre dX/dt, dP/dt y q<sub>p</sub> durante el lote.</p>
           </div>
           <div id="rate-plot" class="plot"></div>
         </section>

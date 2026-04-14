@@ -217,7 +217,11 @@ a { color: inherit; }
   box-shadow: none;
 }
 
-.panel-section + .panel-section { margin-top: 24px; }
+.panel-section + .panel-section {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--md-outline-variant);
+}
 
 /* ── Section / card headings ────────────────────────────── */
 .section-title h2,

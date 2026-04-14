@@ -11,6 +11,7 @@ const controls = [
   "X0",
   "S0",
   "P0",
+  "V_reactor",
   "V0",
   "F",
   "S_in",
