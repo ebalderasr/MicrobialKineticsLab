@@ -516,14 +516,17 @@ a { color: inherit; }
 /* ── Teaching panel grid ────────────────────────────────── */
 .teaching-panel {
   display: grid;
-  grid-template-columns: 1.25fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 16px;
 }
+
+.teaching-card.span-2 { grid-column: span 2; }
 
 @media (max-width: 1024px) {
   .teaching-panel {
     grid-template-columns: 1fr;
   }
+  .teaching-card.span-2 { grid-column: span 1; }
 }
 
 /* MD3 Outlined Card */
@@ -602,6 +605,60 @@ a { color: inherit; }
   margin-top: 0.35rem;
   font-weight: 700;
   color: var(--md-primary);
+}
+
+/* ── Concept highlight box ──────────────────────────────── */
+.concept-box {
+  margin: 0.75rem 0 0.2rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--md-shape-medium);
+  background: var(--md-secondary-container);
+  color: var(--md-on-secondary-container);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+/* ── Balance table (mass balance equation rows) ─────────── */
+.balance-table {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0.75rem 0 0.2rem;
+}
+
+.balance-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: baseline;
+  gap: 0 12px;
+  padding: 8px 12px;
+  border-radius: var(--md-shape-small);
+  background: var(--md-surface-container-low);
+  border-left: 3px solid var(--md-primary);
+}
+
+.balance-mode {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--md-primary);
+  white-space: nowrap;
+}
+
+.balance-eq {
+  font-family: "Space Grotesk", "IBM Plex Sans", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--md-on-surface);
+}
+
+.balance-note {
+  grid-column: 2;
+  margin-top: 2px;
+  font-size: 0.8rem;
+  color: var(--md-on-surface-variant);
+  line-height: 1.45;
 }
 
 /* ================================================================
