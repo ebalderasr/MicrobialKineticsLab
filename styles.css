@@ -606,7 +606,7 @@ a { color: inherit; }
 }
 
 .guide-panel-inner > .teaching-panel {
-  padding: 20px;
+  padding: 24px;
 }
 
 /* ── Teaching divider (group separator inside panel) ─────── */
@@ -614,7 +614,9 @@ a { color: inherit; }
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 6px 0;
+  width: 100%;
+  margin: 6px 0 2px;
+  padding: 14px 0;
   color: var(--md-on-surface-variant);
   font-size: 0.74rem;
   font-weight: 700;
@@ -633,11 +635,13 @@ a { color: inherit; }
 /* ── Teaching panel grid ────────────────────────────────── */
 .teaching-panel {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  grid-template-columns: 1fr;
+  gap: 18px;
+  max-width: 980px;
+  margin: 0 auto;
 }
 
-.teaching-card.span-2 { grid-column: span 2; }
+.teaching-card.span-2 { grid-column: span 1; }
 
 @media (max-width: 1024px) {
   .teaching-panel {
@@ -662,6 +666,28 @@ a { color: inherit; }
 
 .equation-card { background: var(--md-surface-container-lowest); }
 
+.inline-math {
+  display: inline-block;
+  margin: 0 0.08em;
+  font-family: "Space Grotesk", "IBM Plex Sans", sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--md-on-surface);
+  white-space: nowrap;
+}
+
+.inline-math sub,
+.inline-math sup,
+.balance-eq sub,
+.balance-eq sup,
+.textbook-equation sub,
+.textbook-equation sup,
+.rk-block sub,
+.rk-block sup {
+  font-size: 0.7em;
+  line-height: 0;
+}
+
 /* ── Math typography ────────────────────────────────────── */
 .textbook-equation {
   margin: 0.8rem 0;
@@ -670,6 +696,11 @@ a { color: inherit; }
   line-height: 1.35;
   color: var(--md-on-surface);
   letter-spacing: -0.02em;
+}
+
+.textbook-equation-compact {
+  margin: 0.5rem 0 0.8rem;
+  font-size: 1.3rem;
 }
 
 .frac {
@@ -735,6 +766,15 @@ a { color: inherit; }
   line-height: 1.5;
 }
 
+.concept-box-equation {
+  padding: 1rem;
+  text-align: center;
+  font-family: "Space Grotesk", "IBM Plex Sans", sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
 /* ── Balance table (mass balance equation rows) ─────────── */
 .balance-table {
   display: flex;
@@ -765,9 +805,10 @@ a { color: inherit; }
 
 .balance-eq {
   font-family: "Space Grotesk", "IBM Plex Sans", sans-serif;
-  font-size: 0.95rem;
+  font-size: 1.02rem;
   font-weight: 600;
   color: var(--md-on-surface);
+  letter-spacing: -0.02em;
 }
 
 .balance-note {
