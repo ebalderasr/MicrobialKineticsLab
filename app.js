@@ -256,7 +256,10 @@ function updateInsight(summary, params) {
   } else {
     message = "La tasa específica queda dominada por la relación entre μmax, Ks y la acumulación de producto en el lote.";
   }
-  document.getElementById("insight-text").textContent = message;
+  const insightNode = document.getElementById("insight-text");
+  if (insightNode) {
+    insightNode.textContent = message;
+  }
 }
 
 function updateMetrics(summary) {
@@ -506,6 +509,9 @@ document.getElementById("culture_mode").addEventListener("input", () => {
 initPyodideApp().catch((error) => {
   console.error(error);
   setRuntimeStatus("Error al inicializar Pyodide", false);
-  document.getElementById("insight-text").textContent =
-    "La app no pudo cargar el runtime de Python. Revisa el acceso a la red o ejecuta desde un servidor local.";
+  const insightNode = document.getElementById("insight-text");
+  if (insightNode) {
+    insightNode.textContent =
+      "La app no pudo cargar el runtime de Python. Revisa el acceso a la red o ejecuta desde un servidor local.";
+  }
 });
