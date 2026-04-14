@@ -50,6 +50,10 @@
           <span>Modelo</span>
           <strong id="hero-model-name">Monod en lote</strong>
         </div>
+        <div class="hero-metric">
+          <span>Modo de cultivo</span>
+          <strong id="hero-culture-name">Lote (Batch)</strong>
+        </div>
       </div>
     </header>
 
@@ -61,6 +65,14 @@
             <p>Selecciona la ecuación cinética y ajusta sus parámetros.</p>
           </div>
           <div class="control-list">
+            <label class="control">
+              <span>Modo de cultivo</span>
+              <select id="culture_mode" class="select-control">
+                <option value="batch">Lote (Batch)</option>
+                <option value="fedbatch">Lote alimentado (Fed-batch)</option>
+                <option value="continuous">Continuo (Chemostat)</option>
+              </select>
+            </label>
             <label class="control">
               <span>Ecuación de crecimiento</span>
               <select id="growth_model" class="select-control">
@@ -140,6 +152,26 @@
               <input id="P0" type="range" min="0" max="40" step="0.1" value="0">
               <output for="P0" id="P0_value"></output>
             </label>
+            <label class="control parameter-conditional" data-culture="fedbatch">
+              <span>V<sub>0</sub> (L)</span>
+              <input id="V0" type="range" min="0.5" max="10" step="0.1" value="2">
+              <output for="V0" id="V0_value"></output>
+            </label>
+            <label class="control parameter-conditional" data-culture="fedbatch">
+              <span>F (L/h)</span>
+              <input id="F" type="range" min="0.01" max="2" step="0.01" value="0.1">
+              <output for="F" id="F_value"></output>
+            </label>
+            <label class="control parameter-conditional" data-culture="fedbatch,continuous">
+              <span>S<sub>in</sub> (g/L)</span>
+              <input id="S_in" type="range" min="1" max="200" step="1" value="50">
+              <output for="S_in" id="S_in_value"></output>
+            </label>
+            <label class="control parameter-conditional" data-culture="continuous">
+              <span>D (h<sup>-1</sup>)</span>
+              <input id="D" type="range" min="0.01" max="1.5" step="0.01" value="0.1">
+              <output for="D" id="D_value"></output>
+            </label>
             <label class="control">
               <span>&Delta;t (h)</span>
               <input id="dt" type="range" min="0.01" max="0.5" step="0.01" value="0.05">
@@ -163,6 +195,7 @@
         <div class="status-bar">
           <div class="status-chip" id="runtime-status">Inicializando Pyodide...</div>
           <div class="status-chip neutral" id="model-status">Monod en lote</div>
+          <div class="status-chip neutral" id="culture-status">Lote (Batch)</div>
         </div>
 
         <section class="metrics-grid">
@@ -185,6 +218,10 @@
           <article class="metric-card">
             <span>Tiempo de agotamiento</span>
             <strong id="depletion-time">-</strong>
+          </article>
+          <article class="metric-card parameter-hidden" id="final-v-card">
+            <span>Volumen final</span>
+            <strong id="final-v">-</strong>
           </article>
         </section>
 
@@ -223,15 +260,18 @@
               La velocidad específica de crecimiento aumenta con el sustrato y se aproxima a un máximo cuando el medio deja de ser limitante.
             </p>
             <div class="equation-system">
-              <div class="system-title">Balances del cultivo en lote</div>
+              <div class="system-title" id="system-title">Balances del cultivo en lote</div>
               <div class="textbook-equation" id="biomass-balance">
                 <span class="derivative">dX/dt</span> = &mu;X
               </div>
-              <div class="textbook-equation">
-                <span class="derivative">dS/dt</span> = - <span class="frac"><span class="top">&mu;X</span><span class="bottom">Y<sub>x/s</sub></span></span>
+              <div class="textbook-equation" id="substrate-balance">
+                <span class="derivative">dS/dt</span> = &minus;<span class="frac"><span class="top">&mu;X</span><span class="bottom">Y<sub>x/s</sub></span></span>
               </div>
               <div class="textbook-equation" id="product-balance">
                 <span class="derivative">dP/dt</span> = q<sub>p</sub>X
+              </div>
+              <div class="textbook-equation parameter-hidden" id="volume-balance">
+                <span class="derivative">dV/dt</span> = F
               </div>
               <div class="textbook-equation" id="product-mode-equation">
                 q<sub>p</sub> = &alpha;&mu;

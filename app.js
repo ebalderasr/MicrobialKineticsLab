@@ -11,6 +11,10 @@ const controls = [
   "X0",
   "S0",
   "P0",
+  "V0",
+  "F",
+  "S_in",
+  "D",
   "dt",
   "t_final",
 ];
@@ -60,6 +64,12 @@ const modelMeta = {
   },
 };
 
+const cultureMeta = {
+  batch:      { label: "Lote (Batch)",               systemTitle: "Balances del cultivo en lote" },
+  fedbatch:   { label: "Lote alimentado (Fed-batch)", systemTitle: "Balances del lote alimentado" },
+  continuous: { label: "Continuo (Chemostat)",        systemTitle: "Balances del cultivo continuo" },
+};
+
 let pyodide;
 let isReady = false;
 
@@ -84,8 +94,9 @@ function collectParams() {
   const params = Object.fromEntries(
     controls.map((id) => [id, Number(document.getElementById(id).value)]),
   );
-  params.growth_model = document.getElementById("growth_model").value;
-  params.product_mode = document.getElementById("product_mode").value;
+  params.growth_model  = document.getElementById("growth_model").value;
+  params.product_mode  = document.getElementById("product_mode").value;
+  params.culture_mode  = document.getElementById("culture_mode").value;
   return params;
 }
 
@@ -99,31 +110,89 @@ function syncOutputs() {
 }
 
 function updateConditionalControls() {
-  const model = document.getElementById("growth_model").value;
+  const model       = document.getElementById("growth_model").value;
   const productMode = document.getElementById("product_mode").value;
+  const cultureMode = document.getElementById("culture_mode").value;
+
   document.querySelectorAll(".parameter-conditional").forEach((node) => {
-    const enabledFlags = node.dataset.models.split(",");
-    const isActive = enabledFlags.includes(model) || enabledFlags.includes(`product_mode_${productMode}`);
+    let isActive = true;
+
+    if (node.dataset.models) {
+      const modelFlags = node.dataset.models.split(",");
+      isActive = modelFlags.includes(model) || modelFlags.includes(`product_mode_${productMode}`);
+    }
+
+    if (node.dataset.culture) {
+      const cultureFlags = node.dataset.culture.split(",");
+      isActive = isActive && cultureFlags.includes(cultureMode);
+    }
+
     node.classList.toggle("parameter-hidden", !isActive);
     const input = node.querySelector("input");
     if (input) {
       input.disabled = !isActive;
     }
   });
+
+  // V_final metric card: only visible in fed-batch
+  const vCard = document.getElementById("final-v-card");
+  if (vCard) {
+    vCard.classList.toggle("parameter-hidden", cultureMode !== "fedbatch");
+  }
 }
 
-function updateModelText(model, productMode) {
+function updateCultureText(model, productMode, cultureMode) {
+  const hasDeathTerm = model === "monod_cell_death";
+  const hasDilution  = cultureMode === "fedbatch" || cultureMode === "continuous";
+
+  // System title
+  const titleEl = document.getElementById("system-title");
+  if (titleEl) titleEl.textContent = cultureMeta[cultureMode].systemTitle;
+
+  // Biomass balance
+  let biomassHtml = `<span class="derivative">dX/dt</span> = `;
+  if (hasDilution && hasDeathTerm) {
+    biomassHtml += "(μ &minus; k<sub>d</sub> &minus; D)X";
+  } else if (hasDilution) {
+    biomassHtml += "(μ &minus; D)X";
+  } else if (hasDeathTerm) {
+    biomassHtml += "(μ &minus; k<sub>d</sub>)X";
+  } else {
+    biomassHtml += "μX";
+  }
+  document.getElementById("biomass-balance").innerHTML = biomassHtml;
+
+  // Substrate balance
+  let substrateHtml = `<span class="derivative">dS/dt</span> = &minus;<span class="frac"><span class="top">μX</span><span class="bottom">Y<sub>x/s</sub></span></span>`;
+  if (hasDilution) {
+    substrateHtml += " + D(S<sub>in</sub> &minus; S)";
+  }
+  document.getElementById("substrate-balance").innerHTML = substrateHtml;
+
+  // Product balance
+  let productHtml = `<span class="derivative">dP/dt</span> = q<sub>p</sub>X`;
+  if (hasDilution) {
+    productHtml += " &minus; DP";
+  }
+  document.getElementById("product-balance").innerHTML = productHtml;
+
+  // Volume balance (fed-batch only)
+  const volEl = document.getElementById("volume-balance");
+  if (volEl) {
+    volEl.classList.toggle("parameter-hidden", cultureMode !== "fedbatch");
+  }
+}
+
+function updateModelText(model, productMode, cultureMode) {
   const meta = modelMeta[model];
-  document.getElementById("model-status").textContent = meta.label;
-  document.getElementById("hero-model-name").textContent = meta.label;
+  document.getElementById("model-status").textContent   = meta.label;
+  document.getElementById("culture-status").textContent = cultureMeta[cultureMode].label;
+  document.getElementById("hero-model-name").textContent   = meta.label;
+  document.getElementById("hero-culture-name").textContent = cultureMeta[cultureMode].label;
   document.getElementById("equation-card-title").textContent = meta.cardTitle;
-  document.getElementById("equation-label").innerHTML = meta.equationHtml;
+  document.getElementById("equation-label").innerHTML       = meta.equationHtml;
   document.getElementById("equation-description").textContent = meta.description;
-  document.getElementById("biomass-balance").innerHTML =
-    model === "monod_cell_death"
-      ? "<span class=\"derivative\">dX/dt</span> = (μ - k<sub>d</sub>)X"
-      : "<span class=\"derivative\">dX/dt</span> = μX";
-  document.getElementById("product-balance").innerHTML = "<span class=\"derivative\">dP/dt</span> = q<sub>p</sub>X";
+  updateCultureText(model, productMode, cultureMode);
   document.getElementById("product-mode-equation").innerHTML =
     productMode === "growth_associated"
       ? "q<sub>p</sub> = αμ"
@@ -138,17 +207,33 @@ function setRuntimeStatus(message, ready = false) {
 
 function updateInsight(summary, params) {
   let message;
-  if (params.growth_model === "haldane" && params.S0 > params.Ki) {
+  const { culture_mode, growth_model, mu_max, Ki, S0, kd, Kip, kp } = params;
+
+  if (culture_mode === "continuous") {
+    if (params.D >= mu_max * 0.9) {
+      message = `La tasa de dilución está cerca del lavado (D ≈ μmax). Si D supera μ, la biomasa tenderá a cero.`;
+    } else {
+      message = `En continuo el sistema tiende a un estado estacionario donde μ = D. El sustrato residual depende de K_s y la cinética elegida.`;
+    }
+  } else if (culture_mode === "fedbatch") {
+    const d0 = params.F / params.V0;
+    if (d0 > mu_max * 0.5) {
+      message = `La dilución inicial (F/V₀ = ${fmt(d0, 3)} h⁻¹) es alta. La alimentación puede superar la capacidad de crecimiento al inicio.`;
+    } else {
+      const vFinal = summary.final_V != null ? fmt(summary.final_V, 1) : "?";
+      message = `El fed-batch extiende la fase productiva reponiendo sustrato. El volumen crece de ${fmt(params.V0, 1)} a ${vFinal} L.`;
+    }
+  } else if (growth_model === "haldane" && S0 > Ki) {
     message = "El sistema arranca en una zona de inhibición por sustrato. Más sustrato no implica necesariamente más crecimiento.";
-  } else if (params.growth_model === "product_competitive") {
+  } else if (growth_model === "product_competitive") {
     message = "El producto acumulado aumenta la K_s aparente. El cultivo se comporta como si perdiera afinidad por el sustrato.";
-  } else if (params.growth_model === "product_noncompetitive") {
+  } else if (growth_model === "product_noncompetitive") {
     message = "El producto acumulado reduce la μ_max efectiva. Aun con sustrato disponible, la capacidad de crecer cae.";
-  } else if (params.growth_model === "product_linear") {
+  } else if (growth_model === "product_linear") {
     message = "La inhibición crece proporcionalmente con P. El modelo predice anulación del crecimiento cuando P alcanza 1/k_p.";
-  } else if (params.growth_model === "product_exponential") {
+  } else if (growth_model === "product_exponential") {
     message = "La inhibición por producto es progresiva y asintótica: la tasa cae de forma exponencial conforme aumenta P.";
-  } else if (params.growth_model === "monod_cell_death" && params.kd >= params.mu_max * 0.35) {
+  } else if (growth_model === "monod_cell_death" && kd >= mu_max * 0.35) {
     message = "El término de muerte celular compite fuertemente con el crecimiento. La biomasa neta puede frenarse aun con sustrato disponible.";
   } else if (summary.depletion_time !== null) {
     message = `El sustrato cae a niveles casi agotados cerca de t=${fmt(summary.depletion_time, 2, " h")}.`;
@@ -165,63 +250,84 @@ function updateMetrics(summary) {
   document.getElementById("peak-mu").textContent = fmt(summary.peak_mu, 3, " h⁻¹");
   document.getElementById("depletion-time").textContent =
     summary.depletion_time === null ? "No agotado" : fmt(summary.depletion_time, 2, " h");
+  const vEl = document.getElementById("final-v");
+  if (vEl && summary.final_V !== null && summary.final_V !== undefined) {
+    vEl.textContent = fmt(summary.final_V, 2, " L");
+  }
 }
 
 function renderTimeSeries(series) {
-  Plotly.newPlot(
-    "time-series-plot",
-    [
-      {
-        x: series.t,
-        y: series.X,
-        type: "scatter",
-        mode: "lines",
-        name: "Biomasa X",
-        line: { color: "#0d7c66", width: 3 },
-      },
-      {
-        x: series.t,
-        y: series.S,
-        type: "scatter",
-        mode: "lines",
-        name: "Sustrato S",
-        line: { color: "#ee8b42", width: 3 },
-      },
-      {
-        x: series.t,
-        y: series.P,
-        type: "scatter",
-        mode: "lines",
-        name: "Producto P",
-        line: { color: "#4285f4", width: 3 },
-      },
-      {
-        x: series.t,
-        y: series.mu,
-        type: "scatter",
-        mode: "lines",
-        name: "μ",
-        yaxis: "y2",
-        line: { color: "#9a3d57", width: 2, dash: "dot" },
-      },
-    ],
+  const traces = [
     {
-      paper_bgcolor: "rgba(0,0,0,0)",
-      plot_bgcolor: "rgba(0,0,0,0)",
-      margin: { l: 52, r: 52, t: 14, b: 52 },
-      font: { family: "IBM Plex Sans, sans-serif", color: "#1f2a1f" },
-      legend: { orientation: "h", y: 1.12, x: 0 },
-      xaxis: { title: "Tiempo (h)", gridcolor: "rgba(31,42,31,0.08)" },
-      yaxis: { title: "Concentración (g/L)", gridcolor: "rgba(31,42,31,0.08)" },
-      yaxis2: {
-        title: "μ (h⁻¹)",
-        overlaying: "y",
-        side: "right",
-        showgrid: false,
-      },
+      x: series.t,
+      y: series.X,
+      type: "scatter",
+      mode: "lines",
+      name: "Biomasa X",
+      line: { color: "#0d7c66", width: 3 },
     },
-    { responsive: true, displayModeBar: false },
-  );
+    {
+      x: series.t,
+      y: series.S,
+      type: "scatter",
+      mode: "lines",
+      name: "Sustrato S",
+      line: { color: "#ee8b42", width: 3 },
+    },
+    {
+      x: series.t,
+      y: series.P,
+      type: "scatter",
+      mode: "lines",
+      name: "Producto P",
+      line: { color: "#4285f4", width: 3 },
+    },
+    {
+      x: series.t,
+      y: series.mu,
+      type: "scatter",
+      mode: "lines",
+      name: "μ",
+      yaxis: "y2",
+      line: { color: "#9a3d57", width: 2, dash: "dot" },
+    },
+  ];
+
+  if (series.V) {
+    traces.push({
+      x: series.t,
+      y: series.V,
+      type: "scatter",
+      mode: "lines",
+      name: "Volumen V",
+      yaxis: "y3",
+      line: { color: "#795548", width: 2, dash: "dash" },
+    });
+  }
+
+  const layout = {
+    paper_bgcolor: "rgba(0,0,0,0)",
+    plot_bgcolor:  "rgba(0,0,0,0)",
+    margin: { l: 52, r: series.V ? 96 : 52, t: 14, b: 52 },
+    font: { family: "IBM Plex Sans, sans-serif", color: "#1f2a1f" },
+    legend: { orientation: "h", y: 1.12, x: 0 },
+    xaxis:  { title: "Tiempo (h)", gridcolor: "rgba(31,42,31,0.08)" },
+    yaxis:  { title: "Concentración (g/L)", gridcolor: "rgba(31,42,31,0.08)" },
+    yaxis2: { title: "μ (h⁻¹)", overlaying: "y", side: "right", showgrid: false },
+  };
+
+  if (series.V) {
+    layout.yaxis3 = {
+      title: "V (L)",
+      overlaying: "y",
+      side: "right",
+      anchor: "free",
+      position: 1.0,
+      showgrid: false,
+    };
+  }
+
+  Plotly.newPlot("time-series-plot", traces, layout, { responsive: true, displayModeBar: false });
 }
 
 function renderRatePlot(series) {
@@ -256,18 +362,13 @@ function renderRatePlot(series) {
     ],
     {
       paper_bgcolor: "rgba(0,0,0,0)",
-      plot_bgcolor: "rgba(0,0,0,0)",
+      plot_bgcolor:  "rgba(0,0,0,0)",
       margin: { l: 52, r: 52, t: 14, b: 52 },
       font: { family: "IBM Plex Sans, sans-serif", color: "#1f2a1f" },
       legend: { orientation: "h", y: 1.12, x: 0 },
-      xaxis: { title: "Tiempo (h)", gridcolor: "rgba(31,42,31,0.08)" },
-      yaxis: { title: "Velocidades (g/L/h)", gridcolor: "rgba(31,42,31,0.08)" },
-      yaxis2: {
-        title: "q_p",
-        overlaying: "y",
-        side: "right",
-        showgrid: false,
-      },
+      xaxis:  { title: "Tiempo (h)", gridcolor: "rgba(31,42,31,0.08)" },
+      yaxis:  { title: "Velocidades (g/L/h)", gridcolor: "rgba(31,42,31,0.08)" },
+      yaxis2: { title: "q_p", overlaying: "y", side: "right", showgrid: false },
     },
     { responsive: true, displayModeBar: false },
   );
@@ -301,6 +402,7 @@ async function initPyodideApp() {
   updateModelText(
     document.getElementById("growth_model").value,
     document.getElementById("product_mode").value,
+    document.getElementById("culture_mode").value,
   );
   runSimulation();
 }
@@ -318,6 +420,7 @@ document.getElementById("growth_model").addEventListener("input", () => {
   updateModelText(
     document.getElementById("growth_model").value,
     document.getElementById("product_mode").value,
+    document.getElementById("culture_mode").value,
   );
   debouncedRun();
 });
@@ -327,6 +430,17 @@ document.getElementById("product_mode").addEventListener("input", () => {
   updateModelText(
     document.getElementById("growth_model").value,
     document.getElementById("product_mode").value,
+    document.getElementById("culture_mode").value,
+  );
+  debouncedRun();
+});
+
+document.getElementById("culture_mode").addEventListener("input", () => {
+  updateConditionalControls();
+  updateModelText(
+    document.getElementById("growth_model").value,
+    document.getElementById("product_mode").value,
+    document.getElementById("culture_mode").value,
   );
   debouncedRun();
 });

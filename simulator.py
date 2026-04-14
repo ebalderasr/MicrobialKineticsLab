@@ -55,7 +55,7 @@ def product_exponential_mu(substrate: float, product: float, mu_max: float, ks: 
     return monod * math.exp(-kp * product)
 
 
-def growth_mu(substrate: float, product: float, params: dict[str, float | str]) -> float:
+def growth_mu(substrate: float, product: float, params: dict) -> float:
     model = params["growth_model"]
     if model == "haldane":
         return haldane_mu(substrate, params["mu_max"], params["Ks"], params["Ki"])
@@ -70,38 +70,65 @@ def growth_mu(substrate: float, product: float, params: dict[str, float | str]) 
     return monod_mu(substrate, params["mu_max"], params["Ks"])
 
 
-def effective_mu_for_biomass(mu: float, params: dict[str, float | str]) -> float:
+def effective_mu_for_biomass(mu: float, params: dict) -> float:
     if params["growth_model"] == "monod_cell_death":
         return mu - params["kd"]
     return mu
 
 
-def qp_value(mu: float, params: dict[str, float | str]) -> float:
+def qp_value(mu: float, params: dict) -> float:
     if params["product_mode"] == "growth_associated":
         return params["alpha"] * mu
     return params["beta"]
 
 
-def rhs(x: float, s: float, p: float, params: dict[str, float | str]) -> tuple[float, float, float, float, float]:
+def rhs(
+    x: float, s: float, p: float, params: dict, d_dilution: float = 0.0
+) -> tuple[float, float, float, float, float]:
+    s_in = params.get("S_in", 0.0)
     mu = growth_mu(s, p, params)
     qp = qp_value(mu, params)
-    dx_dt = effective_mu_for_biomass(mu, params) * x
-    ds_dt = -(mu * x) / params["Yxs"]
-    dp_dt = qp * x
+    dx_dt = effective_mu_for_biomass(mu, params) * x - d_dilution * x
+    ds_dt = -(mu * x) / params["Yxs"] + d_dilution * (s_in - s)
+    dp_dt = qp * x - d_dilution * p
     return dx_dt, ds_dt, dp_dt, mu, qp
+
+
+def _d_fedbatch(params: dict, v: float) -> float:
+    """Instantaneous dilution rate for fed-batch given current volume."""
+    return params.get("F", 0.0) / max(v, 1e-9)
 
 
 def rk4_step(
     x: float,
     s: float,
     p: float,
-    params: dict[str, float | str],
+    params: dict,
     dt: float,
-) -> tuple[float, float, float, float, float, float, float]:
-    k1x, k1s, k1p, mu1, qp1 = rhs(x, s, p, params)
-    k2x, k2s, k2p, mu2, qp2 = rhs(x + 0.5 * dt * k1x, s + 0.5 * dt * k1s, p + 0.5 * dt * k1p, params)
-    k3x, k3s, k3p, mu3, qp3 = rhs(x + 0.5 * dt * k2x, s + 0.5 * dt * k2s, p + 0.5 * dt * k2p, params)
-    k4x, k4s, k4p, mu4, qp4 = rhs(x + dt * k3x, s + dt * k3s, p + dt * k3p, params)
+    v: float | None = None,
+) -> tuple[float, float, float, float, float, float, float, float | None]:
+    mode = params.get("culture_mode", "batch")
+    F = params.get("F", 0.0)
+
+    if mode == "fedbatch" and v is not None:
+        # V varies linearly within step (dV/dt = F = const), so we can compute
+        # the exact volume at each RK4 sub-step without integrating V itself.
+        d1 = _d_fedbatch(params, v)
+        d2 = _d_fedbatch(params, v + 0.5 * dt * F)
+        d3 = d2
+        d4 = _d_fedbatch(params, v + dt * F)
+        v_next = v + dt * F
+    elif mode == "continuous":
+        d1 = d2 = d3 = d4 = params.get("D", 0.0)
+        v_next = v
+    else:
+        d1 = d2 = d3 = d4 = 0.0
+        v_next = v
+
+    k1x, k1s, k1p, mu1, qp1 = rhs(x, s, p, params, d1)
+    k2x, k2s, k2p, mu2, qp2 = rhs(x + 0.5 * dt * k1x, s + 0.5 * dt * k1s, p + 0.5 * dt * k1p, params, d2)
+    k3x, k3s, k3p, mu3, qp3 = rhs(x + 0.5 * dt * k2x, s + 0.5 * dt * k2s, p + 0.5 * dt * k2p, params, d3)
+    k4x, k4s, k4p, mu4, qp4 = rhs(x + dt * k3x, s + dt * k3s, p + dt * k3p, params, d4)
 
     next_x = x + (dt / 6.0) * (k1x + 2 * k2x + 2 * k3x + k4x)
     next_s = s + (dt / 6.0) * (k1s + 2 * k2s + 2 * k3s + k4s)
@@ -116,15 +143,25 @@ def rk4_step(
     avg_dx = (k1x + 2 * k2x + 2 * k3x + k4x) / 6.0
     avg_dp = (k1p + 2 * k2p + 2 * k3p + k4p) / 6.0
 
-    return next_x, next_s, next_p, avg_mu, avg_qp, avg_dx, avg_dp
+    return next_x, next_s, next_p, avg_mu, avg_qp, avg_dx, avg_dp, v_next
 
 
-def simulate_batch(params: dict[str, float | str]) -> dict[str, object]:
+def simulate(params: dict) -> dict:
     dt = params["dt"]
     t_final = params["t_final"]
     x = params["X0"]
     s = params["S0"]
     p = params["P0"]
+    mode = params.get("culture_mode", "batch")
+
+    v: float | None = params.get("V0", 1.0) if mode == "fedbatch" else None
+
+    if mode == "fedbatch" and v is not None:
+        d0 = _d_fedbatch(params, v)
+    elif mode == "continuous":
+        d0 = params.get("D", 0.0)
+    else:
+        d0 = 0.0
 
     initial_mu = growth_mu(s, p, params)
     initial_qp = qp_value(initial_mu, params)
@@ -135,8 +172,9 @@ def simulate_batch(params: dict[str, float | str]) -> dict[str, object]:
     product = [p]
     mu_values = [initial_mu]
     qp_values = [initial_qp]
-    growth_rates = [effective_mu_for_biomass(initial_mu, params) * x]
-    product_rates = [initial_qp * x]
+    growth_rates = [effective_mu_for_biomass(initial_mu, params) * x - d0 * x]
+    product_rates = [initial_qp * x - d0 * p]
+    volumes = [v if v is not None else 0.0]
 
     depletion_time = None
     n_steps = int(math.ceil(t_final / dt))
@@ -144,7 +182,7 @@ def simulate_batch(params: dict[str, float | str]) -> dict[str, object]:
     for step in range(1, n_steps + 1):
         current_time = min(step * dt, t_final)
         step_dt = current_time - times[-1]
-        x, s, p, mu, qp, dx_dt, dp_dt = rk4_step(x, s, p, params, step_dt)
+        x, s, p, mu, qp, dx_dt, dp_dt, v = rk4_step(x, s, p, params, step_dt, v)
         times.append(current_time)
         biomass.append(x)
         substrate.append(s)
@@ -153,10 +191,11 @@ def simulate_batch(params: dict[str, float | str]) -> dict[str, object]:
         qp_values.append(qp)
         growth_rates.append(dx_dt)
         product_rates.append(dp_dt)
+        volumes.append(v if v is not None else 0.0)
         if depletion_time is None and s <= max(0.02 * params["S0"], 0.05):
             depletion_time = current_time
 
-    return {
+    result: dict = {
         "series": {
             "t": times,
             "X": biomass,
@@ -173,11 +212,17 @@ def simulate_batch(params: dict[str, float | str]) -> dict[str, object]:
             "final_P": product[-1],
             "peak_mu": max(mu_values),
             "depletion_time": depletion_time,
+            "final_V": volumes[-1] if mode == "fedbatch" else None,
         },
     }
+
+    if mode == "fedbatch":
+        result["series"]["V"] = volumes
+
+    return result
 
 
 def run_simulation(raw_params: str) -> str:
     params = json.loads(raw_params)
-    result = simulate_batch(params)
+    result = simulate(params)
     return json.dumps(result)
