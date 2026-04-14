@@ -353,6 +353,23 @@ function renderRatePlot(series) {
 }
 
 function renderVolumePlot(series) {
+  const volumeValues = Array.isArray(series.V) ? series.V : [];
+  const vMin = Math.min(...volumeValues);
+  const vMax = Math.max(...volumeValues);
+  const isConstantVolume = volumeValues.length > 0 && Math.abs(vMax - vMin) < 1e-9;
+  const constantPadding = Math.max(vMax * 0.12, 0.5);
+
+  const yaxis = {
+    title: "Volumen (L)",
+    gridcolor: "rgba(31,42,31,0.08)",
+  };
+
+  if (isConstantVolume) {
+    yaxis.range = [Math.max(0, vMin - constantPadding), vMax + constantPadding];
+  } else {
+    yaxis.rangemode = "tozero";
+  }
+
   Plotly.newPlot(
     "volume-plot",
     [
@@ -363,7 +380,7 @@ function renderVolumePlot(series) {
         mode: "lines",
         name: "Volumen V",
         line: { color: "#795548", width: 3 },
-        fill: "tozeroy",
+        fill: isConstantVolume ? "none" : "tozeroy",
         fillcolor: "rgba(121,85,72,0.12)",
       },
     ],
@@ -374,7 +391,7 @@ function renderVolumePlot(series) {
       font: { family: "IBM Plex Sans, sans-serif", color: "#1f2a1f" },
       legend: { orientation: "h", y: 1.12, x: 0 },
       xaxis:  { title: "Tiempo (h)", gridcolor: "rgba(31,42,31,0.08)" },
-      yaxis:  { title: "Volumen (L)", gridcolor: "rgba(31,42,31,0.08)", rangemode: "tozero" },
+      yaxis,
     },
     { responsive: true, displayModeBar: false },
   );
