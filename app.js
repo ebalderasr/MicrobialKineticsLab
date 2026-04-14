@@ -284,7 +284,34 @@ function updateMetrics(summary) {
   }
 }
 
+function computeAxisRange(values, { includeZero = false, minPad = 0.1, padRatio = 0.12 } = {}) {
+  const finiteValues = values.filter((value) => Number.isFinite(value));
+  if (finiteValues.length === 0) {
+    return undefined;
+  }
+
+  let min = Math.min(...finiteValues);
+  let max = Math.max(...finiteValues);
+
+  if (includeZero) {
+    min = Math.min(min, 0);
+    max = Math.max(max, 0);
+  }
+
+  const span = max - min;
+  const pad = Math.max(span * padRatio, minPad);
+
+  if (span < 1e-9) {
+    return [min - pad, max + pad];
+  }
+
+  return [min - pad, max + pad];
+}
+
 function renderTimeSeries(series) {
+  const productRange = computeAxisRange(series.P, { minPad: 0.25 });
+  const muRange = computeAxisRange(series.mu, { includeZero: true, minPad: 0.05 });
+
   const traces = [
     {
       x: series.t,
@@ -325,7 +352,7 @@ function renderTimeSeries(series) {
   const layout = {
     paper_bgcolor: "rgba(0,0,0,0)",
     plot_bgcolor:  "rgba(0,0,0,0)",
-    margin: { l: 60, r: 180, t: 14, b: 52 },
+    margin: { l: 132, r: 132, t: 14, b: 52 },
     font: { family: "IBM Plex Sans, sans-serif", color: "#1f2a1f" },
     legend: { orientation: "h", y: 1.12, x: 0 },
     xaxis:  { title: "Tiempo (h)", gridcolor: "rgba(31,42,31,0.08)" },
@@ -339,28 +366,26 @@ function renderTimeSeries(series) {
     yaxis2: {
       title: "Producto P (g/L)",
       overlaying: "y",
-      anchor: "free",
       side: "right",
       showgrid: false,
-      autoshift: true,
-      shift: 0,
       automargin: true,
       title_standoff: 10,
       titlefont: { color: "#4285f4" },
       tickfont: { color: "#4285f4" },
+      range: productRange,
     },
     yaxis3: {
       title: "μ (h⁻¹)",
       overlaying: "y",
       anchor: "free",
-      side: "right",
+      side: "left",
       showgrid: false,
-      autoshift: true,
-      shift: 55,
+      position: 0,
       automargin: true,
       title_standoff: 10,
       titlefont: { color: "#9a3d57" },
       tickfont: { color: "#9a3d57" },
+      range: muRange,
     },
   };
 
@@ -368,6 +393,9 @@ function renderTimeSeries(series) {
 }
 
 function renderRatePlot(series) {
+  const qpRange = computeAxisRange(series.qp, { includeZero: true, minPad: 0.02 });
+  const dPdtRange = computeAxisRange(series.dPdt, { includeZero: true, minPad: 0.05 });
+
   Plotly.newPlot(
     "rate-plot",
     [
@@ -409,7 +437,7 @@ function renderRatePlot(series) {
     {
       paper_bgcolor: "rgba(0,0,0,0)",
       plot_bgcolor:  "rgba(0,0,0,0)",
-      margin: { l: 60, r: 190, t: 14, b: 52 },
+      margin: { l: 132, r: 132, t: 14, b: 52 },
       font: { family: "IBM Plex Sans, sans-serif", color: "#1f2a1f" },
       legend: { orientation: "h", y: 1.12, x: 0 },
       xaxis:  { title: "Tiempo (h)", gridcolor: "rgba(31,42,31,0.08)" },
@@ -427,27 +455,25 @@ function renderRatePlot(series) {
         title: "q_p (gP/gX/h)",
         overlaying: "y",
         anchor: "free",
-        side: "right",
+        side: "left",
         showgrid: false,
-        autoshift: true,
-        shift: 0,
+        position: 0,
         automargin: true,
         title_standoff: 10,
         titlefont: { color: "#9a3d57" },
         tickfont: { color: "#9a3d57" },
+        range: qpRange,
       },
       yaxis3: {
         title: "dP/dt (g/L/h)",
         overlaying: "y",
-        anchor: "free",
         side: "right",
         showgrid: false,
-        autoshift: true,
-        shift: 60,
         automargin: true,
         title_standoff: 10,
         titlefont: { color: "#4285f4" },
         tickfont: { color: "#4285f4" },
+        range: dPdtRange,
       },
     },
     { responsive: true, displayModeBar: false },
