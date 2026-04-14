@@ -264,15 +264,18 @@
 
         <section class="guide-intro">
           <span class="guide-kicker">Guía de interpretación</span>
-          <h2 class="guide-title">Entiende cómo se hacen los cálculos y por qué el modelo se comporta así</h2>
+          <h2 class="guide-title">De los principios biológicos a las ecuaciones que mueve la simulación</h2>
           <p class="guide-copy">
-            Esta sección resume la ecuación cinética seleccionada, los balances diferenciales del cultivo en lote
-            y el procedimiento numérico con el que la app construye las curvas de biomasa, sustrato y producto.
+            Esta sección explica de dónde vienen cada una de las ecuaciones del modelo: qué significa μ,
+            cómo se construye un balance de masa para un biorreactor y qué representa cada término en los
+            balances de biomasa, sustrato, producto y volumen según el modo de cultivo.
           </p>
         </section>
 
         <section class="teaching-panel">
-          <article class="teaching-card equation-card">
+
+          <!-- Ecuación de crecimiento activa (dinámica, ocupa las 2 columnas) -->
+          <article class="teaching-card equation-card span-2">
             <h3 id="equation-card-title">Ecuación de crecimiento: Monod</h3>
             <div class="textbook-equation" id="equation-label">
               &mu;(S) = <span class="frac"><span class="top">&mu;<sub>max</sub>S</span><span class="bottom">K<sub>s</sub> + S</span></span>
@@ -300,37 +303,189 @@
             </div>
           </article>
 
+          <!-- ¿Qué es μ? -->
           <article class="teaching-card">
-            <h3>¿Qué significa la simulación?</h3>
+            <h3>¿Qué es μ, la velocidad específica de crecimiento?</h3>
             <p>
-              La app no usa una solución analítica cerrada. En su lugar, parte de las condiciones iniciales
-              <strong>X<sub>0</sub></strong>, <strong>S<sub>0</sub></strong> y <strong>P<sub>0</sub></strong> y avanza el sistema
-              paso a paso en el tiempo. En cada paso calcula primero &mu;, después evalúa simultáneamente
-              <strong>dX/dt</strong>, <strong>dS/dt</strong> y <strong>dP/dt</strong>, y con esas pendientes actualiza el estado del cultivo.
+              μ tiene unidades de h<sup>−1</sup>. El calificativo <em>específica</em> significa que está
+              normalizada por la biomasa existente: el producto <strong>μ · X</strong> da la velocidad
+              volumétrica real de producción de células (g<sub>X</sub>/L·h). Si duplicas la biomasa con la
+              misma μ, el cultivo crece el doble de rápido en conjunto, pero cada célula trabaja igual.
             </p>
+            <div class="concept-box">
+              <strong>μ<sub>max</sub></strong> — velocidad máxima cuando el sustrato es abundante (S ≫ K<sub>s</sub>).<br>
+              <strong>K<sub>s</sub></strong> — concentración de sustrato a la que μ = μ<sub>max</sub>/2.
+              Cuanto menor K<sub>s</sub>, mayor afinidad del microorganismo por el sustrato; puede acercarse
+              a μ<sub>max</sub> incluso con muy poco sustrato disponible.
+            </div>
             <p>
-              El resultado final es una aproximación numérica de las trayectorias <strong>X(t)</strong>, <strong>S(t)</strong> y <strong>P(t)</strong>.
-              Si cambias un parámetro, cambias la pendiente local del sistema y por eso cambian todas las curvas.
+              La ecuación de Monod captura la <em>saturación</em>: a concentraciones bajas de S, μ ≈ (μ<sub>max</sub>/K<sub>s</sub>)·S
+              y el crecimiento es casi proporcional a S; a concentraciones altas, μ → μ<sub>max</sub> y agregar
+              más sustrato no acelera el crecimiento. Los modelos de Haldane e inhibición por producto extienden
+              esta idea cuando el sustrato en exceso o el producto acumulado dañan al microorganismo.
             </p>
           </article>
 
+          <!-- Balance de masa: principio general -->
           <article class="teaching-card">
+            <h3>El balance de masa: principio general</h3>
+            <p>
+              Todo modelo dinámico de un biorreactor parte de la conservación de masa aplicada a un volumen
+              de control bien mezclado. En su forma más general:
+            </p>
+            <div class="concept-box" style="text-align:center; font-size:0.93rem; padding:1rem;">
+              Acumulación = Entrada &minus; Salida + Generación por reacción
+            </div>
+            <p>
+              <strong>Acumulación</strong> es d(C·V)/dt. Cuando V es constante se simplifica a dC/dt.
+              En lote alimentado V crece y la expansión de d(C·V)/dt genera un término de dilución adicional.
+            </p>
+            <p>
+              <strong>Entrada / Salida</strong> dependen del modo de operación: en lote no hay flujos;
+              en continuo entran y salen caudales iguales; en lote alimentado solo hay entrada estéril.
+            </p>
+            <p>
+              <strong>Generación</strong> engloba la actividad biológica: crecimiento celular, consumo de
+              sustrato y síntesis de metabolitos. La forma de este término es lo que diferencia a cada
+              modelo cinético.
+            </p>
+          </article>
+
+          <!-- Balance de biomasa -->
+          <article class="teaching-card">
+            <h3>Balance de biomasa</h3>
+            <p>
+              Aplicando el principio general a la biomasa X con alimentación estéril (sin células en la
+              entrada), la generación es μX y la salida depende del modo de operación:
+            </p>
+            <div class="balance-table">
+              <div class="balance-row">
+                <span class="balance-mode">Lote</span>
+                <span class="balance-eq">dX/dt = μX</span>
+                <span class="balance-note">Sin flujos de entrada ni salida. Las células únicamente crecen.</span>
+              </div>
+              <div class="balance-row">
+                <span class="balance-mode">Lote alimentado / Continuo</span>
+                <span class="balance-eq">dX/dt = (μ &minus; D)X</span>
+                <span class="balance-note">
+                  El término &minus;DX proviene de expandir d(X·V)/dt: al crecer V con el caudal F, parte de
+                  X se diluye aunque siga habiendo crecimiento. Si D > μ ocurre el <em>lavado celular (washout)</em>.
+                </span>
+              </div>
+              <div class="balance-row">
+                <span class="balance-mode">Con muerte celular</span>
+                <span class="balance-eq">dX/dt = (μ &minus; k<sub>d</sub>)X</span>
+                <span class="balance-note">k<sub>d</sub> representa la tasa de decaimiento endógeno. Se combina con &minus;DX cuando hay dilución.</span>
+              </div>
+            </div>
+          </article>
+
+          <!-- Balance de sustrato -->
+          <article class="teaching-card">
+            <h3>Balance de sustrato y rendimiento</h3>
+            <p>
+              Las células consumen sustrato para crecer. El <strong>rendimiento biomasa–sustrato
+              Y<sub>x/s</sub></strong> (g<sub>X</sub>/g<sub>S</sub>) relaciona la biomasa producida con el
+              sustrato consumido. La velocidad específica de consumo de sustrato es:
+            </p>
+            <div class="textbook-equation" style="font-size:1.3rem; margin:0.5rem 0 0.8rem;">
+              q<sub>s</sub> = <span class="frac"><span class="top">&mu;</span><span class="bottom">Y<sub>x/s</sub></span></span>
+            </div>
+            <p>
+              Un Y<sub>x/s</sub> alto indica que se obtiene mucha biomasa por gramo de sustrato. El término
+              de consumo en el balance es &minus;q<sub>s</sub>X = &minus;μX/Y<sub>x/s</sub>.
+            </p>
+            <div class="balance-table">
+              <div class="balance-row">
+                <span class="balance-mode">Lote</span>
+                <span class="balance-eq">dS/dt = &minus;μX / Y<sub>x/s</sub></span>
+                <span class="balance-note">Solo consumo. El sustrato únicamente puede disminuir hasta agotarse.</span>
+              </div>
+              <div class="balance-row">
+                <span class="balance-mode">Lote alimentado / Continuo</span>
+                <span class="balance-eq">dS/dt = D(S<sub>in</sub> &minus; S) &minus; μX / Y<sub>x/s</sub></span>
+                <span class="balance-note">
+                  D·S<sub>in</sub> es el sustrato que entra con la alimentación; D·S el que sale con el efluente.
+                  Si S<sub>in</sub> ≫ S, la alimentación domina y el sustrato puede acumularse.
+                </span>
+              </div>
+            </div>
+          </article>
+
+          <!-- Balance de producto -->
+          <article class="teaching-card">
+            <h3>Balance de producto</h3>
+            <p>
+              La velocidad específica de formación de producto q<sub>p</sub> se modela con la expresión de
+              <strong>Luedeking–Piret</strong>:
+            </p>
+            <div class="textbook-equation" style="font-size:1.3rem; margin:0.5rem 0 0.8rem;">
+              q<sub>p</sub> = &alpha;&mu; + &beta;
+            </div>
+            <div class="concept-box">
+              <strong>&alpha;</strong> (g<sub>P</sub>/g<sub>X</sub>) — coeficiente asociado al crecimiento.
+              El producto se forma en proporción a μ; si las células dejan de crecer, este término desaparece.<br><br>
+              <strong>&beta;</strong> (g<sub>P</sub>/g<sub>X</sub>/h) — coeficiente no asociado al crecimiento.
+              Las células producen aunque estén en reposo (p. ej. metabolitos de mantenimiento).
+            </div>
+            <div class="balance-table">
+              <div class="balance-row">
+                <span class="balance-mode">Lote</span>
+                <span class="balance-eq">dP/dt = q<sub>p</sub>X</span>
+                <span class="balance-note">El producto se acumula dentro del reactor; no hay salida.</span>
+              </div>
+              <div class="balance-row">
+                <span class="balance-mode">Lote alimentado / Continuo</span>
+                <span class="balance-eq">dP/dt = q<sub>p</sub>X &minus; DP</span>
+                <span class="balance-note">El término &minus;DP representa el producto que sale arrastrado por el efluente.</span>
+              </div>
+            </div>
+          </article>
+
+          <!-- ¿Qué significa la simulación? -->
+          <article class="teaching-card">
+            <h3>¿Qué significa la simulación?</h3>
+            <p>
+              El sistema de ecuaciones acopladas no tiene solución analítica cerrada cuando μ depende de S de
+              forma no lineal. La app parte de las condiciones iniciales
+              <strong>X<sub>0</sub></strong>, <strong>S<sub>0</sub></strong> y <strong>P<sub>0</sub></strong>
+              y avanza el sistema paso a paso en el tiempo.
+            </p>
+            <p>
+              En cada paso calcula primero μ a partir del S actual, luego evalúa simultáneamente
+              <strong>dX/dt</strong>, <strong>dS/dt</strong> y <strong>dP/dt</strong>, y con esas pendientes
+              actualiza el estado del cultivo. El resultado es una trayectoria numérica de X(t), S(t) y P(t).
+            </p>
+            <p>
+              Si cambias un parámetro, cambias la pendiente local del sistema en cada punto: por eso todas
+              las curvas responden simultáneamente.
+            </p>
+          </article>
+
+          <!-- RK4 (ocupa las 2 columnas) -->
+          <article class="teaching-card span-2">
             <h3>Integración numérica: Runge-Kutta de cuarto orden</h3>
             <p>
-              Para cada intervalo de tiempo &Delta;t, la app evalúa cuatro pendientes intermedias y las combina
-              en una sola actualización. Esto reduce el error respecto a métodos más simples como Euler.
+              El método de Euler evalúa una sola pendiente al inicio del intervalo y la usa para proyectar
+              el estado al siguiente punto: conceptualmente simple, pero el error se acumula con rapidez.
+              Runge-Kutta de cuarto orden corrige esto evaluando <strong>cuatro pendientes intermedias</strong>
+              dentro del mismo intervalo y combinándolas con pesos optimizados:
             </p>
             <div class="rk-block">
-              <div>k<sub>1</sub> = &Delta;t f(t<sub>n</sub>, y<sub>n</sub>)</div>
-              <div>k<sub>2</sub> = &Delta;t f(t<sub>n</sub> + &Delta;t/2, y<sub>n</sub> + k<sub>1</sub>/2)</div>
-              <div>k<sub>3</sub> = &Delta;t f(t<sub>n</sub> + &Delta;t/2, y<sub>n</sub> + k<sub>2</sub>/2)</div>
-              <div>k<sub>4</sub> = &Delta;t f(t<sub>n</sub> + &Delta;t, y<sub>n</sub> + k<sub>3</sub>)</div>
+              <div>k<sub>1</sub> = &Delta;t f(t<sub>n</sub>, y<sub>n</sub>) &nbsp;&mdash;&nbsp; pendiente al inicio del intervalo</div>
+              <div>k<sub>2</sub> = &Delta;t f(t<sub>n</sub> + &Delta;t/2, y<sub>n</sub> + k<sub>1</sub>/2) &nbsp;&mdash;&nbsp; pendiente al punto medio, corregida con k<sub>1</sub></div>
+              <div>k<sub>3</sub> = &Delta;t f(t<sub>n</sub> + &Delta;t/2, y<sub>n</sub> + k<sub>2</sub>/2) &nbsp;&mdash;&nbsp; segunda corrección del punto medio</div>
+              <div>k<sub>4</sub> = &Delta;t f(t<sub>n</sub> + &Delta;t, y<sub>n</sub> + k<sub>3</sub>) &nbsp;&mdash;&nbsp; pendiente al final del intervalo</div>
               <div class="rk-result">y<sub>n+1</sub> = y<sub>n</sub> + (k<sub>1</sub> + 2k<sub>2</sub> + 2k<sub>3</sub> + k<sub>4</sub>) / 6</div>
             </div>
             <p>
-              Aquí <strong>y</strong> representa el vector de estado del cultivo, es decir, biomasa, sustrato y producto.
+              Aquí <strong>y</strong> es el vector de estado [X, S, P] (más V en lote alimentado). Las cuatro
+              evaluaciones dentro del mismo intervalo permiten corregir la dirección de integración antes de
+              comprometerse con el siguiente punto, logrando un error global de O(&Delta;t<sup>4</sup>). Por eso
+              se puede usar un &Delta;t razonablemente grande sin que las curvas diverjan.
             </p>
           </article>
+
         </section>
       </section>
     </main>
