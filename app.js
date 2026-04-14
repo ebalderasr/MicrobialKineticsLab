@@ -294,39 +294,16 @@ function renderTimeSeries(series) {
     },
   ];
 
-  if (series.V) {
-    traces.push({
-      x: series.t,
-      y: series.V,
-      type: "scatter",
-      mode: "lines",
-      name: "Volumen V",
-      yaxis: "y3",
-      line: { color: "#795548", width: 2, dash: "dash" },
-    });
-  }
-
   const layout = {
     paper_bgcolor: "rgba(0,0,0,0)",
     plot_bgcolor:  "rgba(0,0,0,0)",
-    margin: { l: 52, r: series.V ? 96 : 52, t: 14, b: 52 },
+    margin: { l: 52, r: 52, t: 14, b: 52 },
     font: { family: "IBM Plex Sans, sans-serif", color: "#1f2a1f" },
     legend: { orientation: "h", y: 1.12, x: 0 },
     xaxis:  { title: "Tiempo (h)", gridcolor: "rgba(31,42,31,0.08)" },
     yaxis:  { title: "Concentración (g/L)", gridcolor: "rgba(31,42,31,0.08)" },
     yaxis2: { title: "μ (h⁻¹)", overlaying: "y", side: "right", showgrid: false },
   };
-
-  if (series.V) {
-    layout.yaxis3 = {
-      title: "V (L)",
-      overlaying: "y",
-      side: "right",
-      anchor: "free",
-      position: 1.0,
-      showgrid: false,
-    };
-  }
 
   Plotly.newPlot("time-series-plot", traces, layout, { responsive: true, displayModeBar: false });
 }
@@ -375,6 +352,34 @@ function renderRatePlot(series) {
   );
 }
 
+function renderVolumePlot(series) {
+  Plotly.newPlot(
+    "volume-plot",
+    [
+      {
+        x: series.t,
+        y: series.V,
+        type: "scatter",
+        mode: "lines",
+        name: "Volumen V",
+        line: { color: "#795548", width: 3 },
+        fill: "tozeroy",
+        fillcolor: "rgba(121,85,72,0.12)",
+      },
+    ],
+    {
+      paper_bgcolor: "rgba(0,0,0,0)",
+      plot_bgcolor:  "rgba(0,0,0,0)",
+      margin: { l: 52, r: 24, t: 14, b: 52 },
+      font: { family: "IBM Plex Sans, sans-serif", color: "#1f2a1f" },
+      legend: { orientation: "h", y: 1.12, x: 0 },
+      xaxis:  { title: "Tiempo (h)", gridcolor: "rgba(31,42,31,0.08)" },
+      yaxis:  { title: "Volumen (L)", gridcolor: "rgba(31,42,31,0.08)", rangemode: "tozero" },
+    },
+    { responsive: true, displayModeBar: false },
+  );
+}
+
 async function runSimulation() {
   if (!isReady) {
     return;
@@ -387,6 +392,7 @@ async function runSimulation() {
   updateInsight(result.summary, params);
   renderTimeSeries(result.series);
   renderRatePlot(result.series);
+  renderVolumePlot(result.series);
   setRuntimeStatus("Pyodide listo", true);
 }
 

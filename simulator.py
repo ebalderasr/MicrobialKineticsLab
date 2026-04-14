@@ -154,7 +154,10 @@ def simulate(params: dict) -> dict:
     p = params["P0"]
     mode = params.get("culture_mode", "batch")
 
-    v: float | None = params.get("V0", 1.0) if mode == "fedbatch" else None
+    if mode == "fedbatch":
+        v: float | None = params.get("V0", 1.0)
+    else:
+        v = params.get("V_reactor", 1.0)
 
     if mode == "fedbatch" and v is not None:
         d0 = _d_fedbatch(params, v)
@@ -205,6 +208,7 @@ def simulate(params: dict) -> dict:
             "qp": qp_values,
             "dXdt": growth_rates,
             "dPdt": product_rates,
+            "V": volumes,
         },
         "summary": {
             "final_X": biomass[-1],
@@ -215,10 +219,6 @@ def simulate(params: dict) -> dict:
             "final_V": volumes[-1] if mode == "fedbatch" else None,
         },
     }
-
-    if mode == "fedbatch":
-        result["series"]["V"] = volumes
-
     return result
 
 
