@@ -21,7 +21,7 @@ const controls = [
 
 const modelMeta = {
   monod: {
-    label: "Monod en lote",
+    label: "Monod",
     cardTitle: "Ecuación de crecimiento: Monod",
     equationHtml: "μ(S) = <span class=\"frac\"><span class=\"top\">μ<sub>max</sub>S</span><span class=\"bottom\">K<sub>s</sub> + S</span></span>",
     description: "Modelo de saturación simple. La tasa específica aumenta con el sustrato y se aproxima a μmax cuando el medio deja de ser limitante.",
@@ -33,7 +33,7 @@ const modelMeta = {
     description: "Mantiene la cinética de Monod, pero el balance de biomasa incorpora un término de muerte o decaimiento celular k<sub>d</sub>.",
   },
   haldane: {
-    label: "Haldane / Andrews en lote",
+    label: "Haldane / Andrews",
     cardTitle: "Ecuación de crecimiento: Haldane / Andrews",
     equationHtml: "μ(S) = <span class=\"frac\"><span class=\"top\">μ<sub>max</sub>S</span><span class=\"bottom\">K<sub>s</sub> + S + S<sup>2</sup>/K<sub>i</sub></span></span>",
     description: "Representa inhibición por sustrato. A concentraciones altas de sustrato, el término S²/Ki frena el crecimiento.",
@@ -193,10 +193,15 @@ function updateCultureText(model, productMode, cultureMode) {
 
 function updateModelText(model, productMode, cultureMode) {
   const meta = modelMeta[model];
-  document.getElementById("model-status").textContent   = meta.label;
-  document.getElementById("culture-status").textContent = cultureMeta[cultureMode].label;
-  document.getElementById("hero-model-name").textContent   = meta.label;
-  document.getElementById("hero-culture-name").textContent = cultureMeta[cultureMode].label;
+  const modelStatus = document.getElementById("model-status");
+  const cultureStatus = document.getElementById("culture-status");
+  const heroModelName = document.getElementById("hero-model-name");
+  const heroCultureName = document.getElementById("hero-culture-name");
+
+  if (modelStatus) modelStatus.textContent = meta.label;
+  if (cultureStatus) cultureStatus.textContent = cultureMeta[cultureMode].label;
+  if (heroModelName) heroModelName.textContent = meta.label;
+  if (heroCultureName) heroCultureName.textContent = cultureMeta[cultureMode].label;
   document.getElementById("equation-card-title").textContent = meta.cardTitle;
   document.getElementById("equation-label").innerHTML       = meta.equationHtml;
   document.getElementById("equation-description").textContent = meta.description;
@@ -209,6 +214,9 @@ function updateModelText(model, productMode, cultureMode) {
 
 function setRuntimeStatus(message, ready = false) {
   const node = document.getElementById("runtime-status");
+  if (!node) {
+    return;
+  }
   node.textContent = message;
   node.classList.toggle("neutral", !ready);
 }

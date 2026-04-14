@@ -107,7 +107,6 @@ a { color: inherit; }
 }
 
 /* ── Shared surface baseline ────────────────────────────── */
-.hero,
 .control-panel,
 .plot-card,
 .explain-card,
@@ -125,6 +124,9 @@ a { color: inherit; }
   gap: 20px;
   align-items: stretch;
   margin-bottom: 24px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
 
 .hero-copy {
@@ -377,35 +379,6 @@ a { color: inherit; }
 
 /* ── Content column ─────────────────────────────────────── */
 .content { display: grid; gap: 20px; }
-
-/* ── MD3 Assist Chips ───────────────────────────────────── */
-.status-bar {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.status-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 32px;
-  padding: 0 12px;
-  border-radius: var(--md-shape-full);
-  font-size: 0.82rem;
-  font-weight: 600;
-  background: var(--md-tertiary-container);
-  color: var(--md-on-tertiary-container);
-  border: 1px solid rgba(0,110,28,.22);
-  box-shadow: var(--md-elev1);
-  transition: background 150ms ease, box-shadow 150ms ease;
-}
-
-.status-chip.neutral {
-  background: var(--md-primary-container);
-  color: var(--md-on-primary-container);
-  border-color: rgba(26,111,232,.22);
-}
 
 /* ── Metrics grid ───────────────────────────────────────── */
 .metrics-grid {
