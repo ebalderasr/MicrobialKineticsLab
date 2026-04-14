@@ -42,7 +42,7 @@
         <p class="lede">
           Explora la cinética de crecimiento microbiano en cultivo batch.
           Ajusta parámetros fisiológicos y observa cómo cambian biomasa,
-          sustrato, tasa específica y velocidad de crecimiento.
+          sustrato, producto/inhibidor, tasa específica y velocidades de formación.
         </p>
       </div>
       <div class="hero-card">
@@ -64,11 +64,12 @@
             <label class="control">
               <span>Ecuación de crecimiento</span>
               <select id="growth_model" class="select-control">
-                <option value="monod_simple">Monod sin muerte celular</option>
-                <option value="monod_decay">Monod con muerte celular</option>
+                <option value="monod">Monod</option>
                 <option value="haldane">Haldane / Andrews</option>
                 <option value="product_competitive">Inhibición competitiva por producto</option>
                 <option value="product_noncompetitive">Inhibición no competitiva por producto</option>
+                <option value="product_linear">Inhibición lineal por producto</option>
+                <option value="product_exponential">Inhibición exponencial por producto</option>
               </select>
             </label>
             <label class="control">
@@ -87,19 +88,36 @@
               <output for="Ki" id="Ki_value"></output>
             </label>
             <label class="control parameter-conditional" data-models="product_competitive,product_noncompetitive">
-              <span>K<sub>p</sub> (g/L)</span>
-              <input id="Kp" type="range" min="0.1" max="80" step="0.1" value="12">
-              <output for="Kp" id="Kp_value"></output>
+              <span>K<sub>ip</sub> (g/L)</span>
+              <input id="Kip" type="range" min="0.1" max="80" step="0.1" value="12">
+              <output for="Kip" id="Kip_value"></output>
+            </label>
+            <label class="control parameter-conditional" data-models="product_linear,product_exponential">
+              <span>k<sub>p</sub> (L/g)</span>
+              <input id="kp" type="range" min="0.001" max="1" step="0.001" value="0.08">
+              <output for="kp" id="kp_value"></output>
             </label>
             <label class="control">
               <span>Y<sub>x/s</sub> (g/g)</span>
               <input id="Yxs" type="range" min="0.05" max="0.95" step="0.01" value="0.45">
               <output for="Yxs" id="Yxs_value"></output>
             </label>
-            <label class="control parameter-conditional" data-models="monod_decay,haldane,product_competitive,product_noncompetitive">
-              <span>k<sub>d</sub> (h<sup>-1</sup>)</span>
-              <input id="kd" type="range" min="0" max="0.4" step="0.005" value="0.02">
-              <output for="kd" id="kd_value"></output>
+            <label class="control">
+              <span>Modo de q<sub>p</sub></span>
+              <select id="product_mode" class="select-control">
+                <option value="growth_associated">Asociado al crecimiento</option>
+                <option value="nongrowth_associated">No asociado al crecimiento</option>
+              </select>
+            </label>
+            <label class="control parameter-conditional" data-models="product_mode_growth_associated">
+              <span>&alpha; (g<sub>P</sub>/g<sub>X</sub>)</span>
+              <input id="alpha" type="range" min="0.01" max="2" step="0.01" value="0.35">
+              <output for="alpha" id="alpha_value"></output>
+            </label>
+            <label class="control parameter-conditional" data-models="product_mode_nongrowth_associated">
+              <span>&beta; (g<sub>P</sub>/g<sub>X</sub>/h)</span>
+              <input id="beta" type="range" min="0.001" max="1" step="0.001" value="0.04">
+              <output for="beta" id="beta_value"></output>
             </label>
             <label class="control">
               <span>X<sub>0</sub> (g/L)</span>
@@ -110,6 +128,11 @@
               <span>S<sub>0</sub> (g/L)</span>
               <input id="S0" type="range" min="0.1" max="80" step="0.1" value="18">
               <output for="S0" id="S0_value"></output>
+            </label>
+            <label class="control">
+              <span>P<sub>0</sub> (g/L)</span>
+              <input id="P0" type="range" min="0" max="40" step="0.1" value="0">
+              <output for="P0" id="P0_value"></output>
             </label>
             <label class="control">
               <span>&Delta;t (h)</span>
@@ -146,6 +169,10 @@
             <strong id="final-s">-</strong>
           </article>
           <article class="metric-card">
+            <span>Producto final</span>
+            <strong id="final-p">-</strong>
+          </article>
+          <article class="metric-card">
             <span>&mu; pico</span>
             <strong id="peak-mu">-</strong>
           </article>
@@ -158,15 +185,15 @@
         <section class="plot-card">
           <div class="card-header">
             <h2>Trayectorias temporales</h2>
-            <p>El alumno ve la evolución conjunta de biomasa, sustrato y &mu;.</p>
+            <p>El alumno ve la evolución conjunta de biomasa, sustrato, producto y &mu;.</p>
           </div>
           <div id="time-series-plot" class="plot"></div>
         </section>
 
         <section class="plot-card">
           <div class="card-header">
-            <h2>Velocidad de crecimiento</h2>
-            <p>Comparación entre tasa específica y velocidad neta de biomasa.</p>
+            <h2>Velocidades de formación</h2>
+            <p>Comparación entre dX/dt, dP/dt y q<sub>p</sub> durante el lote.</p>
           </div>
           <div id="rate-plot" class="plot"></div>
         </section>
@@ -176,7 +203,7 @@
           <h2 class="guide-title">Entiende cómo se hacen los cálculos y por qué el modelo se comporta así</h2>
           <p class="guide-copy">
             Esta sección resume la ecuación cinética seleccionada, los balances diferenciales del cultivo en lote
-            y el procedimiento numérico con el que la app construye las curvas de biomasa y sustrato.
+            y el procedimiento numérico con el que la app construye las curvas de biomasa, sustrato y producto.
           </p>
         </section>
 
@@ -192,13 +219,16 @@
             <div class="equation-system">
               <div class="system-title">Balances del cultivo en lote</div>
               <div class="textbook-equation" id="biomass-balance">
-                <span class="derivative">dX/dt</span> = (&mu; - k<sub>d</sub>)X
+                <span class="derivative">dX/dt</span> = &mu;X
               </div>
               <div class="textbook-equation">
                 <span class="derivative">dS/dt</span> = - <span class="frac"><span class="top">&mu;X</span><span class="bottom">Y<sub>x/s</sub></span></span>
               </div>
-              <div class="textbook-equation parameter-hidden" id="product-balance">
-                P &asymp; X - X<sub>0</sub>
+              <div class="textbook-equation" id="product-balance">
+                <span class="derivative">dP/dt</span> = q<sub>p</sub>X
+              </div>
+              <div class="textbook-equation" id="product-mode-equation">
+                q<sub>p</sub> = &alpha;&mu;
               </div>
             </div>
           </article>
@@ -207,12 +237,12 @@
             <h3>¿Qué significa la simulación?</h3>
             <p>
               La app no usa una solución analítica cerrada. En su lugar, parte de las condiciones iniciales
-              <strong>X<sub>0</sub></strong> y <strong>S<sub>0</sub></strong> y avanza el sistema paso a paso en el tiempo.
-              En cada paso calcula primero &mu;(S), luego estima las pendientes <strong>dX/dt</strong> y <strong>dS/dt</strong>,
-              y con ellas actualiza el estado del cultivo.
+              <strong>X<sub>0</sub></strong>, <strong>S<sub>0</sub></strong> y <strong>P<sub>0</sub></strong> y avanza el sistema
+              paso a paso en el tiempo. En cada paso calcula primero &mu;, después evalúa simultáneamente
+              <strong>dX/dt</strong>, <strong>dS/dt</strong> y <strong>dP/dt</strong>, y con esas pendientes actualiza el estado del cultivo.
             </p>
             <p>
-              El resultado final es una aproximación numérica de las trayectorias <strong>X(t)</strong> y <strong>S(t)</strong>.
+              El resultado final es una aproximación numérica de las trayectorias <strong>X(t)</strong>, <strong>S(t)</strong> y <strong>P(t)</strong>.
               Si cambias un parámetro, cambias la pendiente local del sistema y por eso cambian todas las curvas.
             </p>
           </article>
@@ -231,7 +261,7 @@
               <div class="rk-result">y<sub>n+1</sub> = y<sub>n</sub> + (k<sub>1</sub> + 2k<sub>2</sub> + 2k<sub>3</sub> + k<sub>4</sub>) / 6</div>
             </div>
             <p>
-              Aquí <strong>y</strong> representa el vector de estado del cultivo, es decir, biomasa y sustrato.
+              Aquí <strong>y</strong> representa el vector de estado del cultivo, es decir, biomasa, sustrato y producto.
             </p>
           </article>
         </section>
