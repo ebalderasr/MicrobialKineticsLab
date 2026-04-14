@@ -262,15 +262,39 @@
           <div id="rate-plot" class="plot"></div>
         </section>
 
-        <section class="guide-intro">
-          <span class="guide-kicker">Guía de interpretación</span>
-          <h2 class="guide-title">De los principios biológicos a las ecuaciones que mueve la simulación</h2>
-          <p class="guide-copy">
-            Esta sección explica de dónde vienen cada una de las ecuaciones del modelo: qué significa μ,
-            cómo se construye un balance de masa para un biorreactor y qué representa cada término en los
-            balances de biomasa, sustrato, producto y volumen según el modo de cultivo.
-          </p>
-        </section>
+        <section class="guide-section">
+
+          <!-- Banner: always visible — clicking toggles the guide panel -->
+          <div class="guide-banner" id="guide-banner" role="button" tabindex="0"
+               aria-expanded="false" aria-controls="guide-panel">
+            <div class="guide-banner-main">
+              <span class="guide-kicker">Guía de interpretación</span>
+              <h2 class="guide-title">De los principios biológicos a las ecuaciones que mueven la simulación</h2>
+              <p class="guide-copy">
+                Explora de dónde vienen las ecuaciones del modelo: qué significa μ,
+                cómo se construye un balance de masa para un biorreactor y qué representa
+                cada término en los balances de biomasa, sustrato, producto y volumen.
+              </p>
+              <div class="guide-topics">
+                <span class="guide-topic">Velocidad específica μ</span>
+                <span class="guide-topic">Balance de masa</span>
+                <span class="guide-topic">Biomasa · Sustrato · Producto</span>
+                <span class="guide-topic">Integración numérica RK4</span>
+              </div>
+            </div>
+            <div class="guide-banner-action">
+              <span class="guide-action-label">Abrir guía</span>
+              <svg class="guide-chevron" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                   stroke-linejoin="round" aria-hidden="true">
+                <polyline points="6 9 12 15 18 9"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Collapsible guide panel -->
+          <div class="guide-panel" id="guide-panel" aria-hidden="true">
+            <div class="guide-panel-inner">
 
         <section class="teaching-panel">
 
@@ -442,6 +466,11 @@
             </div>
           </article>
 
+          <!-- Divider: biology/math ↔ numerical simulation -->
+          <div class="teaching-divider span-2">
+            <span>Cómo funciona la simulación numérica</span>
+          </div>
+
           <!-- ¿Qué significa la simulación? -->
           <article class="teaching-card">
             <h3>¿Qué significa la simulación?</h3>
@@ -486,7 +515,12 @@
             </p>
           </article>
 
-        </section>
+        </section><!-- /teaching-panel -->
+
+            </div><!-- /guide-panel-inner -->
+          </div><!-- /guide-panel -->
+
+        </section><!-- /guide-section -->
       </section>
     </main>
   </div>

@@ -446,6 +446,25 @@ document.getElementById("culture_mode").addEventListener("input", () => {
   debouncedRun();
 });
 
+// ── Guide section toggle ──────────────────────────────────────────────────────
+(function () {
+  const banner = document.getElementById("guide-banner");
+  const panel  = document.getElementById("guide-panel");
+  const label  = banner.querySelector(".guide-action-label");
+
+  function toggle() {
+    const open = panel.classList.toggle("open");
+    banner.setAttribute("aria-expanded", open);
+    panel.setAttribute("aria-hidden", !open);
+    label.textContent = open ? "Cerrar guía" : "Abrir guía";
+  }
+
+  banner.addEventListener("click", toggle);
+  banner.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); }
+  });
+})();
+
 initPyodideApp().catch((error) => {
   console.error(error);
   setRuntimeStatus("Error al inicializar Pyodide", false);

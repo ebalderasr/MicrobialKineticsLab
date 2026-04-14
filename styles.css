@@ -478,14 +478,42 @@ a { color: inherit; }
   margin-bottom: 12px;
 }
 
-/* ── Guide intro (MD3 Primary Tonal Container) ───────────── */
-.guide-intro {
+/* ── Guide section: banner + collapsible panel ───────────── */
+.guide-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* Banner — always visible, acts as toggle */
+.guide-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 26px 28px;
   border-radius: var(--md-shape-extra-large);
-  padding: 24px 26px;
   background: var(--md-primary-container);
-  border: none;
+  border: 1px solid rgba(26,111,232,.15);
+  box-shadow: var(--md-elev1);
+  cursor: pointer;
+  user-select: none;
+  transition: box-shadow 200ms ease, border-radius 300ms ease;
+}
+.guide-banner:hover {
+  box-shadow: var(--md-elev2);
+}
+.guide-banner[aria-expanded="true"] {
+  border-radius: var(--md-shape-extra-large) var(--md-shape-extra-large) 0 0;
+  border-bottom-color: transparent;
   box-shadow: none;
 }
+.guide-banner:focus-visible {
+  outline: 3px solid var(--md-primary);
+  outline-offset: 2px;
+}
+
+.guide-banner-main { flex: 1 1 auto; }
 
 .guide-kicker {
   display: inline-block;
@@ -512,6 +540,95 @@ a { color: inherit; }
   line-height: 1.55;
   opacity: .82;
 }
+
+/* Topic preview chips inside banner */
+.guide-topics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.guide-topic {
+  padding: 3px 11px;
+  border-radius: var(--md-shape-full);
+  background: rgba(26,111,232,.12);
+  color: var(--md-on-primary-container);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+/* Right-side CTA column */
+.guide-banner-action {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 4px 0;
+  color: var(--md-on-primary-container);
+}
+
+.guide-action-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  opacity: .85;
+}
+
+.guide-chevron {
+  transition: transform 380ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.guide-banner[aria-expanded="true"] .guide-chevron {
+  transform: rotate(180deg);
+}
+
+/* Collapsible panel */
+.guide-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 450ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.guide-panel.open {
+  grid-template-rows: 1fr;
+}
+
+.guide-panel-inner {
+  overflow: hidden;
+  min-height: 0;
+  /* top border connects panel to open banner */
+  border-radius: 0 0 var(--md-shape-extra-large) var(--md-shape-extra-large);
+  border: 1px solid rgba(26,111,232,.15);
+  border-top: none;
+  background: var(--md-surface-container-lowest);
+}
+
+.guide-panel-inner > .teaching-panel {
+  padding: 20px;
+}
+
+/* ── Teaching divider (group separator inside panel) ─────── */
+.teaching-divider {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 6px 0;
+  color: var(--md-on-surface-variant);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+.teaching-divider::before,
+.teaching-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--md-outline-variant);
+}
+.teaching-divider span { white-space: nowrap; }
 
 /* ── Teaching panel grid ────────────────────────────────── */
 .teaching-panel {
@@ -894,8 +1011,14 @@ a { color: inherit; }
   .plot-card,
   .metric-card,
   .teaching-card,
-  .guide-intro {
+  .guide-banner {
     border-radius: var(--md-shape-large);
+  }
+  .guide-banner[aria-expanded="true"] {
+    border-radius: var(--md-shape-large) var(--md-shape-large) 0 0;
+  }
+  .guide-panel-inner {
+    border-radius: 0 0 var(--md-shape-large) var(--md-shape-large);
   }
 
   .card-header {
