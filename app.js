@@ -344,7 +344,7 @@ function renderRatePlot(series) {
         y: series.dXdt,
         type: "scatter",
         mode: "lines",
-        name: "dX/dt",
+        name: "Cambio neto de X",
         line: { color: "#0d7c66", width: 3 },
       },
       {
@@ -352,7 +352,7 @@ function renderRatePlot(series) {
         y: series.dPdt,
         type: "scatter",
         mode: "lines",
-        name: "dP/dt",
+        name: "Cambio neto de P",
         line: { color: "#4285f4", width: 3 },
       },
       {
@@ -372,8 +372,8 @@ function renderRatePlot(series) {
       font: { family: "IBM Plex Sans, sans-serif", color: "#1f2a1f" },
       legend: { orientation: "h", y: 1.12, x: 0 },
       xaxis:  { title: "Tiempo (h)", gridcolor: "rgba(31,42,31,0.08)" },
-      yaxis:  { title: "Velocidades (g/L/h)", gridcolor: "rgba(31,42,31,0.08)" },
-      yaxis2: { title: "q_p", overlaying: "y", side: "right", showgrid: false },
+      yaxis:  { title: "Cambios netos (g/L/h)", gridcolor: "rgba(31,42,31,0.08)" },
+      yaxis2: { title: "q_p (gP/gX/h)", overlaying: "y", side: "right", showgrid: false },
     },
     { responsive: true, displayModeBar: false },
   );
