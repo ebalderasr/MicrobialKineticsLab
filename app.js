@@ -13,7 +13,7 @@ const controls = [
   "P0",
   "V_working",
   "F",
-  "S_in",
+  "S_r",
   "D",
   "dt",
   "t_final",
@@ -173,14 +173,21 @@ function updateCultureText(model, productMode, cultureMode) {
   // Substrate balance
   let substrateHtml = `<span class="derivative">dS/dt</span> = &minus;<span class="frac"><span class="top">μX</span><span class="bottom">Y<sub>x/s</sub></span></span>`;
   if (hasDilution) {
-    substrateHtml += " + D(S<sub>in</sub> &minus; S)";
+    substrateHtml += " + D(S<sub>r</sub> &minus; S)";
   }
   document.getElementById("substrate-balance").innerHTML = substrateHtml;
 
   // Product balance
-  let productHtml = `<span class="derivative">dP/dt</span> = q<sub>p</sub>X`;
-  if (hasDilution) {
-    productHtml += " &minus; DP";
+  let productHtml = `<span class="derivative">dP/dt</span> = `;
+  if (productMode === "none" && hasDilution) {
+    productHtml += "&minus; DP";
+  } else if (productMode === "none") {
+    productHtml += "0";
+  } else {
+    productHtml += "q<sub>p</sub>X";
+    if (hasDilution) {
+      productHtml += " &minus; DP";
+    }
   }
   document.getElementById("product-balance").innerHTML = productHtml;
 
@@ -207,9 +214,11 @@ function updateModelText(model, productMode, cultureMode) {
   document.getElementById("equation-description").textContent = meta.description;
   updateCultureText(model, productMode, cultureMode);
   document.getElementById("product-mode-equation").innerHTML =
-    productMode === "growth_associated"
-      ? "q<sub>p</sub> = αμ"
-      : "q<sub>p</sub> = β";
+    productMode === "none"
+      ? "q<sub>p</sub> = 0"
+      : productMode === "growth_associated"
+        ? "q<sub>p</sub> = αμ"
+        : "q<sub>p</sub> = β";
 }
 
 function setRuntimeStatus(message, ready = false) {

@@ -77,6 +77,8 @@ def effective_mu_for_biomass(mu: float, params: dict) -> float:
 
 
 def qp_value(mu: float, params: dict) -> float:
+    if params["product_mode"] == "none":
+        return 0.0
     if params["product_mode"] == "growth_associated":
         return params["alpha"] * mu
     return params["beta"]
@@ -85,11 +87,11 @@ def qp_value(mu: float, params: dict) -> float:
 def rhs(
     x: float, s: float, p: float, params: dict, d_dilution: float = 0.0
 ) -> tuple[float, float, float, float, float]:
-    s_in = params.get("S_in", 0.0)
+    s_r = params.get("S_r", 0.0)
     mu = growth_mu(s, p, params)
     qp = qp_value(mu, params)
     dx_dt = effective_mu_for_biomass(mu, params) * x - d_dilution * x
-    ds_dt = -(mu * x) / params["Yxs"] + d_dilution * (s_in - s)
+    ds_dt = -(mu * x) / params["Yxs"] + d_dilution * (s_r - s)
     dp_dt = qp * x - d_dilution * p
     return dx_dt, ds_dt, dp_dt, mu, qp
 

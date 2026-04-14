@@ -113,20 +113,21 @@
               <output for="kd" id="kd_value"></output>
             </label>
             <label class="control">
-              <span>Modo de q<sub>p</sub></span>
+              <span>Modelo de q<sub>p</sub></span>
               <select id="product_mode" class="select-control">
-                <option value="growth_associated">Asociado al crecimiento</option>
+                <option value="none">Sin formación de producto</option>
+                <option value="growth_associated" selected>Asociado al crecimiento</option>
                 <option value="nongrowth_associated">No asociado al crecimiento</option>
               </select>
             </label>
             <label class="control parameter-conditional" data-models="product_mode_growth_associated">
               <span>&alpha; (g<sub>P</sub>/g<sub>X</sub>)</span>
-              <input id="alpha" type="range" min="0.01" max="2" step="0.01" value="0.35">
+              <input id="alpha" type="range" min="0" max="2" step="0.01" value="0.35">
               <output for="alpha" id="alpha_value"></output>
             </label>
             <label class="control parameter-conditional" data-models="product_mode_nongrowth_associated">
               <span>&beta; (g<sub>P</sub>/g<sub>X</sub>/h)</span>
-              <input id="beta" type="range" min="0.001" max="1" step="0.001" value="0.04">
+              <input id="beta" type="range" min="0" max="1" step="0.001" value="0.04">
               <output for="beta" id="beta_value"></output>
             </label>
           </div>
@@ -157,9 +158,9 @@
               <output for="F" id="F_value"></output>
             </label>
             <label class="control parameter-conditional" data-culture="fedbatch,continuous">
-              <span>S<sub>in</sub> (g/L)</span>
-              <input id="S_in" type="range" min="1" max="200" step="1" value="50">
-              <output for="S_in" id="S_in_value"></output>
+              <span>S<sub>r</sub> (sustrato en la alimentación, g/L)</span>
+              <input id="S_r" type="range" min="1" max="200" step="1" value="100">
+              <output for="S_r" id="S_r_value"></output>
             </label>
             <label class="control parameter-conditional" data-culture="continuous">
               <span>D (h<sup>-1</sup>)</span>
@@ -177,12 +178,12 @@
           <div class="control-list">
             <label class="control">
               <span>X<sub>0</sub> (g/L)</span>
-              <input id="X0" type="range" min="0.01" max="4" step="0.01" value="0.15">
+              <input id="X0" type="range" min="0.01" max="4" step="0.01" value="0.2">
               <output for="X0" id="X0_value"></output>
             </label>
             <label class="control">
               <span>S<sub>0</sub> (g/L)</span>
-              <input id="S0" type="range" min="0.1" max="500" step="0.1" value="100">
+              <input id="S0" type="range" min="0.1" max="500" step="0.1" value="10">
               <output for="S0" id="S0_value"></output>
             </label>
             <label class="control">
@@ -430,10 +431,10 @@
               </div>
               <div class="balance-row">
                 <span class="balance-mode">Lote alimentado / Continuo</span>
-                <span class="balance-eq"><span class="frac frac-inline"><span class="top">dS</span><span class="bottom">dt</span></span> = D(S<sub>in</sub> &minus; S) &minus; <span class="frac frac-inline"><span class="top">&mu;X</span><span class="bottom">Y<sub>x/s</sub></span></span></span>
+                <span class="balance-eq"><span class="frac frac-inline"><span class="top">dS</span><span class="bottom">dt</span></span> = D(S<sub>r</sub> &minus; S) &minus; <span class="frac frac-inline"><span class="top">&mu;X</span><span class="bottom">Y<sub>x/s</sub></span></span></span>
                 <span class="balance-note">
-                  <span class="inline-math">D &middot; S<sub>in</sub></span> es el sustrato que entra con la alimentación; <span class="inline-math">D &middot; S</span> el que sale con el efluente.
-                  Si <span class="inline-math">S<sub>in</sub> &Gt;&Gt; S</span>, la alimentación domina y el sustrato puede acumularse.
+                  <span class="inline-math">D &middot; S<sub>r</sub></span> es el sustrato que entra con la alimentación; <span class="inline-math">D &middot; S</span> el que sale con el efluente.
+                  Si <span class="inline-math">S<sub>r</sub> &Gt;&Gt; S</span>, la alimentación domina y el sustrato puede acumularse.
                 </span>
               </div>
             </div>
@@ -453,7 +454,8 @@
               <strong class="inline-math">&alpha;</strong> (g<sub>P</sub>/g<sub>X</sub>) &mdash; coeficiente asociado al crecimiento.
               El producto se forma en proporción a <span class="inline-math">&mu;</span>; si las células dejan de crecer, este término desaparece.<br><br>
               <strong class="inline-math">&beta;</strong> (g<sub>P</sub>/g<sub>X</sub>/h) &mdash; coeficiente no asociado al crecimiento.
-              Las células producen aunque estén en reposo (p. ej. metabolitos de mantenimiento).
+              Las células producen aunque estén en reposo (p. ej. metabolitos de mantenimiento).<br><br>
+              Si se elige <strong>sin formación de producto</strong>, entonces <span class="inline-math">q<sub>p</sub> = 0</span> y el término de generación desaparece.
             </div>
             <div class="balance-table">
               <div class="balance-row">
