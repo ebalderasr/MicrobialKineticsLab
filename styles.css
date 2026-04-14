@@ -470,7 +470,7 @@ a { color: inherit; }
   display: flex;
   justify-content: space-between;
   gap: 18px;
-  align-items: end;
+  align-items: flex-end;
   margin-bottom: 12px;
 }
 
@@ -514,6 +514,12 @@ a { color: inherit; }
   display: grid;
   grid-template-columns: 1.25fr 1fr 1fr;
   gap: 16px;
+}
+
+@media (max-width: 1024px) {
+  .teaching-panel {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* MD3 Outlined Card */
@@ -663,7 +669,7 @@ a { color: inherit; }
   min-width: 0;
 }
 
-.hc-header h1 {
+.hc-header-title {
   margin: 0;
   font-family: "Google Sans", "Roboto", sans-serif;
   font-size: 1.08rem;
@@ -813,7 +819,7 @@ a { color: inherit; }
     gap: 4px;
   }
 
-  .hc-header h1   { font-size: 0.98rem; }
+  .hc-header-title { font-size: 0.98rem; }
   .hc-tagline     { font-size: 0.76rem; }
   .hc-suite-label { font-size: 0.72rem; }
 }
@@ -858,7 +864,7 @@ a { color: inherit; }
     flex-wrap: nowrap;
   }
 
-  .hc-header h1 { font-size: 0.9rem; }
+  .hc-header-title { font-size: 0.9rem; }
   .hc-tagline   { font-size: 0.72rem; }
 
   .hc-footer-inner {
