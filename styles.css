@@ -1,158 +1,235 @@
+/* ============================================================
+   Design Tokens – Material Design 3 (Light scheme)
+   --g-* and legacy --shadow-*, --radius-*, --border,
+   --text-* variables are kept for header/footer compatibility.
+   Content styles use --md-* tokens directly.
+   ============================================================ */
 :root {
-  --g-blue: #4285f4;
-  --g-red: #ea4335;
+  /* ── HostCell brand palette (header/footer – do not remove) */
+  --g-blue:   #4285f4;
+  --g-red:    #ea4335;
   --g-yellow: #fbbc05;
-  --g-green: #34a853;
-  --bg: #f8f9fa;
-  --surface: #ffffff;
-  --surface-alt: #f5f9ff;
-  --border: #e0e0e0;
+  --g-green:  #34a853;
+
+  /* ── MD3 Primary (harmonised with HostCell blue) */
+  --md-primary:              #1a6fe8;
+  --md-on-primary:           #ffffff;
+  --md-primary-container:    #d6e4ff;
+  --md-on-primary-container: #001946;
+
+  /* ── MD3 Secondary */
+  --md-secondary:              #555f71;
+  --md-on-secondary:           #ffffff;
+  --md-secondary-container:    #d9e3f8;
+  --md-on-secondary-container: #111c2b;
+
+  /* ── MD3 Tertiary (green) */
+  --md-tertiary:              #006e1c;
+  --md-on-tertiary:           #ffffff;
+  --md-tertiary-container:    #b7f0bb;
+  --md-on-tertiary-container: #002105;
+
+  /* ── MD3 Error */
+  --md-error:           #ba1a1a;
+  --md-error-container: #ffdad6;
+
+  /* ── MD3 Surface hierarchy */
+  --md-surface:                   #f8f9fa;
+  --md-on-surface:                #191c20;
+  --md-on-surface-variant:        #43474e;
+  --md-surface-container-lowest:  #ffffff;
+  --md-surface-container-low:     #f1f4f9;
+  --md-surface-container:         #eaecf0;
+  --md-surface-container-high:    #e4e7eb;
+  --md-surface-container-highest: #dee1e5;
+
+  /* ── MD3 Outline */
+  --md-outline:         #73777f;
+  --md-outline-variant: #c3c6cf;
+
+  /* ── MD3 Shape scale */
+  --md-shape-extra-small: 4px;
+  --md-shape-small:       8px;
+  --md-shape-medium:      12px;
+  --md-shape-large:       16px;
+  --md-shape-extra-large: 28px;
+  --md-shape-full:        9999px;
+
+  /* ── MD3 Elevation */
+  --md-elev1: 0 1px 2px rgba(0,0,0,.09), 0 1px 3px 1px rgba(0,0,0,.06);
+  --md-elev2: 0 1px 2px rgba(0,0,0,.09), 0 2px 6px 2px rgba(0,0,0,.06);
+  --md-elev3: 0 1px 3px rgba(0,0,0,.09), 0 4px 8px 3px rgba(0,0,0,.06);
+
+  /* ── Legacy aliases (referenced by header / footer – keep unchanged) */
+  --bg:           #f8f9fa;
+  --surface:      #ffffff;
+  --surface-alt:  #f5f9ff;
+  --border:       #e0e0e0;
   --border-focus: #4285f4;
-  --text-primary: #202124;
+  --text-primary:   #202124;
   --text-secondary: #5f6368;
-  --shadow-sm: 0 1px 3px rgba(60, 64, 67, 0.12), 0 1px 2px rgba(60, 64, 67, 0.08);
-  --shadow-md: 0 4px 12px rgba(60, 64, 67, 0.15), 0 2px 4px rgba(60, 64, 67, 0.08);
+  --shadow-sm: 0 1px 3px rgba(60,64,67,.12), 0 1px 2px rgba(60,64,67,.08);
+  --shadow-md: 0 4px 12px rgba(60,64,67,.15), 0 2px 4px rgba(60,64,67,.08);
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
+
   --hc-header-height: 84px;
   --hc-footer-height: 56px;
 }
 
-* {
-  box-sizing: border-box;
-}
+/* ── Reset ──────────────────────────────────────────────── */
+* { box-sizing: border-box; }
 
-html,
-body {
+html, body {
   margin: 0;
   min-height: 100vh;
-  font-family: "Roboto", "Google Sans", sans-serif;
-  background: var(--bg);
-  color: var(--text-primary);
+  font-family: "IBM Plex Sans", "Roboto", sans-serif;
+  background: var(--md-surface);
+  color: var(--md-on-surface);
 }
 
 body {
   background:
-    radial-gradient(circle at top left, rgba(66, 133, 244, 0.08), transparent 20%),
-    radial-gradient(circle at top right, rgba(52, 168, 83, 0.08), transparent 24%),
-    linear-gradient(180deg, #f8f9fa 0%, #eef3fb 100%);
+    radial-gradient(circle at 0% 0%,   rgba(26,111,232,.06) 0%, transparent 38%),
+    radial-gradient(circle at 100% 0%, rgba(0,110,28,.05)   0%, transparent 32%),
+    var(--md-surface);
 }
 
-a {
-  color: inherit;
-}
+a { color: inherit; }
 
+/* ── Layout shell ───────────────────────────────────────── */
 .page-shell {
   width: min(1440px, calc(100vw - 32px));
   margin: 0 auto;
-  padding-top: calc(var(--hc-header-height) + 22px);
+  padding-top:    calc(var(--hc-header-height) + 22px);
   padding-bottom: calc(var(--hc-footer-height) + 28px);
 }
 
+/* ── Shared surface baseline ────────────────────────────── */
 .hero,
 .control-panel,
 .plot-card,
 .explain-card,
-.metric-card,
 .hero-card,
 .hero-copy {
-  background: rgba(255, 255, 255, 0.92);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-sm);
+  background: var(--md-surface-container-lowest);
+  border: 1px solid var(--md-outline-variant);
+  box-shadow: var(--md-elev1);
 }
 
+/* ── Hero ───────────────────────────────────────────────── */
 .hero {
   display: grid;
   grid-template-columns: 1.65fr 1fr;
-  gap: 24px;
+  gap: 20px;
   align-items: stretch;
   margin-bottom: 24px;
 }
 
 .hero-copy {
-  border-radius: 24px;
+  border-radius: var(--md-shape-extra-large);
   padding: 30px 32px;
 }
 
 .eyebrow {
-  display: inline-block;
-  margin: 0 0 12px;
-  color: var(--g-blue);
-  font-size: 0.74rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 14px;
+  padding: 4px 12px;
+  border-radius: var(--md-shape-full);
+  background: var(--md-secondary-container);
+  color: var(--md-on-secondary-container);
+  font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .hero h1 {
-  margin: 0 0 12px;
-  font-family: "Google Sans", "Roboto", sans-serif;
-  font-size: clamp(2.2rem, 4vw, 3.5rem);
-  line-height: 1;
+  margin: 0 0 14px;
+  font-family: "Space Grotesk", "IBM Plex Sans", sans-serif;
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  line-height: 1.05;
   letter-spacing: -0.03em;
+  color: var(--md-on-surface);
 }
 
 .lede {
   margin: 0;
-  max-width: 62ch;
-  color: var(--text-secondary);
-  font-size: 1.02rem;
+  max-width: 60ch;
+  color: var(--md-on-surface-variant);
+  font-size: 1rem;
   line-height: 1.6;
 }
 
 .hero-card {
-  border-radius: 24px;
-  padding: 22px;
+  border-radius: var(--md-shape-extra-large);
+  padding: 20px;
   display: grid;
   gap: 12px;
+  background: var(--md-surface-container-low);
+  border-color: var(--md-outline-variant);
 }
 
 .hero-metric {
   padding: 16px 18px;
-  border-radius: var(--radius-md);
-  background: linear-gradient(135deg, #f5f9ff 0%, #e8f0fe 100%);
-  border: 1px solid #c5d9fb;
+  border-radius: var(--md-shape-large);
+  background: var(--md-primary-container);
+  border: none;
 }
 
 .hero-metric span {
   display: block;
-  margin-bottom: 8px;
-  color: var(--text-secondary);
-  font-size: 0.8rem;
+  margin-bottom: 6px;
+  color: var(--md-on-primary-container);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: .72;
 }
 
 .hero-metric strong {
-  font-family: "Google Sans", "Roboto", sans-serif;
-  font-size: 1rem;
-  color: var(--text-primary);
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--md-on-primary-container);
 }
 
+/* ── Main layout ────────────────────────────────────────── */
 .layout {
   display: grid;
   grid-template-columns: 360px 1fr;
   gap: 24px;
 }
 
+/* ── Control panel ──────────────────────────────────────── */
 .control-panel {
-  border-radius: 20px;
+  border-radius: var(--md-shape-extra-large);
   padding: 22px;
   position: sticky;
   top: calc(var(--hc-header-height) + 20px);
   align-self: start;
+  background: var(--md-surface-container-low);
+  border: 1px solid var(--md-outline-variant);
+  box-shadow: none;
 }
 
-.panel-section + .panel-section {
-  margin-top: 24px;
-}
+.panel-section + .panel-section { margin-top: 24px; }
 
+/* ── Section / card headings ────────────────────────────── */
 .section-title h2,
 .card-header h2,
 .teaching-card h3,
 .note-panel h2 {
   margin: 0 0 6px;
-  font-family: "Google Sans", "Roboto", sans-serif;
-  font-size: 1.02rem;
+  font-family: "Space Grotesk", "IBM Plex Sans", sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--md-on-surface);
 }
 
 .section-title p,
@@ -160,147 +237,234 @@ a {
 .note-panel p,
 .teaching-card p {
   margin: 0;
-  color: var(--text-secondary);
+  color: var(--md-on-surface-variant);
   line-height: 1.55;
 }
 
+/* ── Control list ───────────────────────────────────────── */
 .control-list {
   display: grid;
-  gap: 14px;
+  gap: 12px;
   margin-top: 14px;
 }
 
 .control {
   display: grid;
-  gap: 8px;
+  gap: 6px;
 }
 
 .control span {
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   font-weight: 600;
+  color: var(--md-on-surface);
 }
 
+/* ── MD3 Slider ─────────────────────────────────────────── */
 .control input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
   width: 100%;
-  accent-color: var(--g-blue);
+  height: 20px;       /* click-target height */
+  background: transparent;
+  cursor: pointer;
+  outline: none;
 }
 
+/* WebKit – track */
+.control input[type="range"]::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: var(--md-shape-full);
+  background: var(--md-surface-container-highest);
+}
+
+/* WebKit – thumb */
+.control input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--md-primary);
+  border: none;
+  margin-top: -8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.2), 0 0 0 4px rgba(26,111,232,.10);
+  transition: box-shadow 150ms ease, transform 100ms ease;
+}
+.control input[type="range"]:hover::-webkit-slider-thumb {
+  box-shadow: 0 1px 3px rgba(0,0,0,.2), 0 0 0 8px rgba(26,111,232,.12);
+}
+.control input[type="range"]:focus::-webkit-slider-thumb {
+  box-shadow: 0 1px 3px rgba(0,0,0,.2), 0 0 0 10px rgba(26,111,232,.18);
+  transform: scale(1.05);
+}
+
+/* Firefox – track */
+.control input[type="range"]::-moz-range-track {
+  height: 4px;
+  border-radius: var(--md-shape-full);
+  background: var(--md-surface-container-highest);
+}
+
+/* Firefox – thumb */
+.control input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--md-primary);
+  border: none;
+  box-shadow: 0 1px 3px rgba(0,0,0,.2);
+  cursor: pointer;
+}
+.control input[type="range"]:hover::-moz-range-thumb {
+  box-shadow: 0 1px 3px rgba(0,0,0,.2), 0 0 0 5px rgba(26,111,232,.12);
+}
+
+/* ── MD3 Outlined Select ────────────────────────────────── */
 .select-control {
   width: 100%;
-  min-height: 42px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--text-primary);
+  min-height: 44px;
+  padding: 0 36px 0 14px;
+  border-radius: var(--md-shape-extra-small);
+  border: 1px solid var(--md-outline);
+  background: transparent;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='%2373777f'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  -webkit-appearance: none;
+  appearance: none;
+  color: var(--md-on-surface);
   font: inherit;
-  padding: 0 12px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: border-color 150ms ease;
 }
-
+.select-control:hover {
+  border-color: var(--md-on-surface);
+}
 .select-control:focus {
   outline: none;
-  border-color: var(--border-focus);
-  box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.15);
+  border: 2px solid var(--md-primary);
+  padding-left: 13px;
 }
 
+/* ── Output badge ───────────────────────────────────────── */
 .control output {
   justify-self: end;
-  color: var(--g-blue);
+  padding: 2px 9px;
+  border-radius: var(--md-shape-full);
+  background: var(--md-primary-container);
+  color: var(--md-on-primary-container);
+  font-size: 0.82rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 
-.parameter-hidden {
-  display: none;
-}
+.parameter-hidden { display: none; }
 
+/* ── Note / Lectura rápida panel ────────────────────────── */
 .note-panel {
-  padding: 18px;
-  border-radius: var(--radius-lg);
-  background: linear-gradient(135deg, #e8f0fe 0%, #f5f9ff 100%);
-  border: 1px solid #c5d9fb;
+  padding: 16px 18px;
+  border-radius: var(--md-shape-large);
+  background: var(--md-secondary-container);
+  border: 1px solid rgba(85,95,113,.20);
 }
+.note-panel h2 { color: var(--md-on-secondary-container); }
+.note-panel p  { color: var(--md-on-secondary-container); opacity: .82; }
 
-.content {
-  display: grid;
-  gap: 20px;
-}
+/* ── Content column ─────────────────────────────────────── */
+.content { display: grid; gap: 20px; }
 
+/* ── MD3 Assist Chips ───────────────────────────────────── */
 .status-bar {
   display: flex;
-  gap: 12px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
 .status-chip {
   display: inline-flex;
   align-items: center;
-  min-height: 40px;
-  padding: 0 14px;
-  border-radius: 999px;
-  font-size: 0.84rem;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: var(--md-shape-full);
+  font-size: 0.82rem;
   font-weight: 600;
-  background: #e6f4ea;
-  color: #137333;
-  border: 1px solid #a8d5b5;
+  background: var(--md-tertiary-container);
+  color: var(--md-on-tertiary-container);
+  border: 1px solid rgba(0,110,28,.22);
+  box-shadow: var(--md-elev1);
+  transition: background 150ms ease, box-shadow 150ms ease;
 }
 
 .status-chip.neutral {
-  background: #e8f0fe;
-  color: var(--g-blue);
-  border-color: #c5d9fb;
+  background: var(--md-primary-container);
+  color: var(--md-on-primary-container);
+  border-color: rgba(26,111,232,.22);
 }
 
+/* ── Metrics grid ───────────────────────────────────────── */
 .metrics-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 16px;
+  gap: 12px;
 }
 
+/* MD3 Filled Card with left tonal accent */
 .metric-card {
-  border-radius: var(--radius-lg);
-  padding: 18px 20px;
-  border-top: 3px solid var(--g-blue);
+  border-radius: var(--md-shape-large);
+  padding: 16px 18px 16px 22px;
+  background: var(--md-surface-container-low);
+  border: 1px solid var(--md-outline-variant);
+  box-shadow: none;
+  position: relative;
+  overflow: hidden;
+  transition: box-shadow 150ms ease;
 }
+.metric-card:hover { box-shadow: var(--md-elev1); }
 
-.metric-card:nth-child(2) {
-  border-top-color: var(--g-red);
+/* Left accent bar replaces the top border */
+.metric-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: var(--md-primary);
 }
-
-.metric-card:nth-child(3) {
-  border-top-color: var(--g-yellow);
-}
-
-.metric-card:nth-child(4) {
-  border-top-color: var(--g-green);
-}
-
-.metric-card:nth-child(5) {
-  border-top-color: #7e57c2;
-}
+.metric-card:nth-child(2)::before { background: var(--g-red);    }
+.metric-card:nth-child(3)::before { background: var(--g-yellow); }
+.metric-card:nth-child(4)::before { background: var(--g-green);  }
+.metric-card:nth-child(5)::before { background: #7e57c2;         }
 
 .metric-card span {
   display: block;
   margin-bottom: 8px;
-  color: var(--text-secondary);
-  font-size: 0.8rem;
+  color: var(--md-on-surface-variant);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: .01em;
 }
 
 .metric-card strong {
-  font-family: "Google Sans", "Roboto", sans-serif;
-  font-size: 1.75rem;
-  color: var(--text-primary);
+  font-family: "Space Grotesk", "IBM Plex Sans", sans-serif;
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: var(--md-on-surface);
+  display: block;
 }
 
-.plot-card,
-.teaching-card,
-.guide-intro {
-  border-radius: var(--radius-lg);
-  padding: 20px;
+/* ── Plot cards (MD3 Elevated Card) ─────────────────────── */
+.plot-card {
+  border-radius: var(--md-shape-extra-large);
+  padding: 22px 22px 8px;
+  background: var(--md-surface-container-lowest);
+  border: 1px solid var(--md-outline-variant);
+  box-shadow: var(--md-elev1);
+  transition: box-shadow 150ms ease;
 }
+.plot-card:hover { box-shadow: var(--md-elev2); }
 
-.plot {
-  min-height: 400px;
-}
+.plot { min-height: 400px; }
 
 .card-header {
   display: flex;
@@ -310,62 +474,71 @@ a {
   margin-bottom: 12px;
 }
 
+/* ── Guide intro (MD3 Primary Tonal Container) ───────────── */
 .guide-intro {
-  background: linear-gradient(135deg, #e8f0fe 0%, #f5f9ff 100%);
-  border: 1px solid #c5d9fb;
-  box-shadow: var(--shadow-sm);
+  border-radius: var(--md-shape-extra-large);
+  padding: 24px 26px;
+  background: var(--md-primary-container);
+  border: none;
+  box-shadow: none;
 }
 
 .guide-kicker {
   display: inline-block;
   margin-bottom: 0.4rem;
-  color: var(--g-blue);
+  color: var(--md-on-primary-container);
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  opacity: .70;
 }
 
 .guide-title {
-  margin: 0 0 0.32rem;
-  font-family: "Google Sans", "Roboto", sans-serif;
+  margin: 0 0 0.36rem;
+  font-family: "Space Grotesk", sans-serif;
   font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--md-on-primary-container);
 }
 
 .guide-copy {
   margin: 0;
-  color: var(--text-secondary);
-  line-height: 1.5;
+  color: var(--md-on-primary-container);
+  line-height: 1.55;
+  opacity: .82;
 }
 
+/* ── Teaching panel grid ────────────────────────────────── */
 .teaching-panel {
   display: grid;
   grid-template-columns: 1.25fr 1fr 1fr;
   gap: 16px;
 }
 
+/* MD3 Outlined Card */
 .teaching-card {
-  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  border-radius: var(--md-shape-extra-large);
+  padding: 22px;
+  background: var(--md-surface-container-lowest);
+  border: 1px solid var(--md-outline-variant);
+  box-shadow: var(--md-elev1);
+  transition: box-shadow 150ms ease;
 }
+.teaching-card:hover { box-shadow: var(--md-elev2); }
 
-.teaching-card h3 {
-  margin: 0 0 0.85rem;
-}
+.teaching-card h3 { margin: 0 0 0.85rem; }
+.teaching-card p  { margin: 0 0 0.85rem; }
 
-.teaching-card p {
-  margin: 0 0 0.85rem;
-}
+.equation-card { background: var(--md-surface-container-lowest); }
 
-.equation-card {
-  background: linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
-}
-
+/* ── Math typography ────────────────────────────────────── */
 .textbook-equation {
   margin: 0.8rem 0;
-  font-family: "Google Sans", "Roboto", sans-serif;
-  font-size: 1.7rem;
+  font-family: "Space Grotesk", "IBM Plex Sans", sans-serif;
+  font-size: 1.65rem;
   line-height: 1.35;
-  color: var(--text-primary);
+  color: var(--md-on-surface);
   letter-spacing: -0.02em;
 }
 
@@ -375,52 +548,55 @@ a {
   vertical-align: middle;
   margin: 0 0.12em;
 }
-
 .frac .top {
-  border-bottom: 2px solid var(--text-primary);
+  border-bottom: 2px solid var(--md-on-surface);
   padding: 0 0.22em 0.06em;
   text-align: center;
 }
-
 .frac .bottom {
   padding: 0.06em 0.22em 0;
   text-align: center;
 }
 
-.derivative {
-  font-weight: 700;
-}
+.derivative { font-weight: 700; }
 
 .equation-system {
   margin-top: 1.1rem;
   padding-top: 0.9rem;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--md-outline-variant);
 }
 
 .system-title {
   margin-bottom: 0.55rem;
-  color: var(--g-blue);
+  color: var(--md-primary);
   font-size: 0.76rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
+/* MD3 Secondary Tonal Container for RK block */
 .rk-block {
   margin: 0.9rem 0;
   padding: 0.95rem 1rem;
-  border-radius: var(--radius-md);
-  border: 1px solid #c5d9fb;
-  background: linear-gradient(135deg, #f5f9ff 0%, #eef5ff 100%);
-  color: var(--text-primary);
-  font-family: "Google Sans", "Roboto", sans-serif;
-  line-height: 1.7;
+  border-radius: var(--md-shape-medium);
+  border: 1px solid rgba(26,111,232,.18);
+  background: var(--md-surface-container-low);
+  color: var(--md-on-surface);
+  font-family: "IBM Plex Mono", "Roboto Mono", ui-monospace, monospace;
+  font-size: 0.87rem;
+  line-height: 1.72;
 }
 
 .rk-result {
   margin-top: 0.35rem;
   font-weight: 700;
+  color: var(--md-primary);
 }
+
+/* ================================================================
+   HEADER & FOOTER  –  HostCell brand identity, do not modify
+   ================================================================ */
 
 .hc-header {
   position: fixed;
@@ -611,6 +787,7 @@ a {
   box-shadow: 0 3px 9px rgba(0, 0, 0, 0.25);
 }
 
+/* ── Responsive ─────────────────────────────────────────── */
 @media (max-width: 1100px) {
   .hero,
   .layout,
@@ -625,13 +802,9 @@ a {
 }
 
 @media (max-width: 900px) {
-  :root {
-    --hc-header-height: 80px;
-  }
+  :root { --hc-header-height: 80px; }
 
-  .hc-header {
-    padding: 0 1rem;
-  }
+  .hc-header { padding: 0 1rem; }
 
   .g-logo {
     width: 40px;
@@ -640,23 +813,13 @@ a {
     gap: 4px;
   }
 
-  .hc-header h1 {
-    font-size: 0.98rem;
-  }
-
-  .hc-tagline {
-    font-size: 0.76rem;
-  }
-
-  .hc-suite-label {
-    font-size: 0.72rem;
-  }
+  .hc-header h1   { font-size: 0.98rem; }
+  .hc-tagline     { font-size: 0.76rem; }
+  .hc-suite-label { font-size: 0.72rem; }
 }
 
 @media (max-width: 720px) {
-  .page-shell {
-    width: min(100vw - 18px, 1440px);
-  }
+  .page-shell { width: min(100vw - 18px, 1440px); }
 
   .hero-copy,
   .hero-card,
@@ -665,7 +828,7 @@ a {
   .metric-card,
   .teaching-card,
   .guide-intro {
-    border-radius: var(--radius-lg);
+    border-radius: var(--md-shape-large);
   }
 
   .card-header {
@@ -680,9 +843,7 @@ a {
     --hc-footer-height: 76px;
   }
 
-  .hc-header {
-    padding: 0 0.8rem;
-  }
+  .hc-header { padding: 0 0.8rem; }
 
   .g-logo {
     width: 36px;
@@ -697,13 +858,8 @@ a {
     flex-wrap: nowrap;
   }
 
-  .hc-header h1 {
-    font-size: 0.9rem;
-  }
-
-  .hc-tagline {
-    font-size: 0.72rem;
-  }
+  .hc-header h1 { font-size: 0.9rem; }
+  .hc-tagline   { font-size: 0.72rem; }
 
   .hc-footer-inner {
     padding: 0.45rem 0.9rem;
@@ -712,11 +868,6 @@ a {
     gap: 0.35rem 1rem;
   }
 
-  .hc-footer-author {
-    margin-left: 0;
-  }
-
-  .hc-footer-github {
-    margin-left: auto;
-  }
+  .hc-footer-author { margin-left: 0; }
+  .hc-footer-github { margin-left: auto; }
 }
