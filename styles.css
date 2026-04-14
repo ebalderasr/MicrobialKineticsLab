@@ -676,8 +676,22 @@ a { color: inherit; }
   white-space: nowrap;
 }
 
+.inline-equation {
+  display: inline-flex;
+  align-items: center;
+  margin: 0 0.08em;
+  font-family: "Space Grotesk", "IBM Plex Sans", sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--md-on-surface);
+  white-space: nowrap;
+  vertical-align: -0.18em;
+}
+
 .inline-math sub,
 .inline-math sup,
+.inline-equation sub,
+.inline-equation sup,
 .balance-eq sub,
 .balance-eq sup,
 .textbook-equation sub,
@@ -717,6 +731,20 @@ a { color: inherit; }
 .frac .bottom {
   padding: 0.06em 0.22em 0;
   text-align: center;
+}
+
+.frac-inline {
+  margin: 0;
+  line-height: 1;
+}
+
+.frac-inline .top {
+  border-bottom-width: 1.5px;
+  padding: 0 0.18em 0.04em;
+}
+
+.frac-inline .bottom {
+  padding: 0.04em 0.18em 0;
 }
 
 .derivative { font-weight: 700; }

@@ -361,8 +361,13 @@
               Acumulación = Entrada &minus; Salida + Generación por reacción
             </div>
             <p>
-              <strong>Acumulación</strong> es <span class="inline-math">d(C &middot; V)/dt</span>. Cuando <span class="inline-math">V</span> es constante se simplifica a <span class="inline-math">dC/dt</span>.
-              En lote alimentado <span class="inline-math">V</span> crece y la expansión de <span class="inline-math">d(C &middot; V)/dt</span> genera un término de dilución adicional.
+              <strong>Acumulación</strong> es
+              <span class="inline-equation"><span class="frac frac-inline"><span class="top">d(C &middot; V)</span><span class="bottom">dt</span></span></span>.
+              Cuando <span class="inline-math">V</span> es constante se simplifica a
+              <span class="inline-equation"><span class="frac frac-inline"><span class="top">dC</span><span class="bottom">dt</span></span></span>.
+              En lote alimentado <span class="inline-math">V</span> crece y la expansión de
+              <span class="inline-equation"><span class="frac frac-inline"><span class="top">d(C &middot; V)</span><span class="bottom">dt</span></span></span>
+              genera un término de dilución adicional.
             </p>
             <p>
               <strong>Entrada / Salida</strong> dependen del modo de operación: en lote no hay flujos;
@@ -392,7 +397,9 @@
                 <span class="balance-mode">Lote alimentado / Continuo</span>
                 <span class="balance-eq">dX/dt = (&mu; &minus; D)X</span>
                 <span class="balance-note">
-                  El término <span class="inline-math">&minus;DX</span> proviene de expandir <span class="inline-math">d(X &middot; V)/dt</span>: al crecer <span class="inline-math">V</span> con el caudal <span class="inline-math">F</span>, parte de
+                  El término <span class="inline-math">&minus;DX</span> proviene de expandir
+                  <span class="inline-equation"><span class="frac frac-inline"><span class="top">d(X &middot; V)</span><span class="bottom">dt</span></span></span>:
+                  al crecer <span class="inline-math">V</span> con el caudal <span class="inline-math">F</span>, parte de
                   <span class="inline-math">X</span> se diluye aunque siga habiendo crecimiento. Si <span class="inline-math">D &gt; &mu;</span> ocurre el <em>lavado celular (washout)</em>.
                 </span>
               </div>
@@ -417,7 +424,8 @@
             </div>
             <p>
               Un <span class="inline-math">Y<sub>x/s</sub></span> alto indica que se obtiene mucha biomasa por gramo de sustrato. El término
-              de consumo en el balance es <span class="inline-math">&minus;q<sub>s</sub>X = &minus;&mu;X/Y<sub>x/s</sub></span>.
+              de consumo en el balance es
+              <span class="inline-equation">&minus;q<sub>s</sub>X = &minus;<span class="frac frac-inline"><span class="top">&mu;X</span><span class="bottom">Y<sub>x/s</sub></span></span></span>.
             </p>
             <div class="balance-table">
               <div class="balance-row">
@@ -482,7 +490,9 @@
             </p>
             <p>
               En cada paso calcula primero <span class="inline-math">&mu;</span> a partir del <span class="inline-math">S</span> actual, luego evalúa simultáneamente
-              <strong class="inline-math">dX/dt</strong>, <strong class="inline-math">dS/dt</strong> y <strong class="inline-math">dP/dt</strong>, y con esas pendientes
+              <strong class="inline-equation"><span class="frac frac-inline"><span class="top">dX</span><span class="bottom">dt</span></span></strong>,
+              <strong class="inline-equation"><span class="frac frac-inline"><span class="top">dS</span><span class="bottom">dt</span></span></strong> y
+              <strong class="inline-equation"><span class="frac frac-inline"><span class="top">dP</span><span class="bottom">dt</span></span></strong>, y con esas pendientes
               actualiza el estado del cultivo. El resultado es una trayectoria numérica de <span class="inline-math">X(t)</span>, <span class="inline-math">S(t)</span> y <span class="inline-math">P(t)</span>.
             </p>
             <p>
