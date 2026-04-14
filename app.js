@@ -152,6 +152,10 @@ function updateConditionalControls() {
 function updateCultureText(model, productMode, cultureMode) {
   const hasDeathTerm = model === "monod_cell_death";
   const hasDilution  = cultureMode === "fedbatch" || cultureMode === "continuous";
+  const dilutionTerm =
+    cultureMode === "fedbatch"
+      ? `<span class="frac"><span class="top">F</span><span class="bottom">V</span></span>`
+      : "D";
 
   // System title
   const titleEl = document.getElementById("system-title");
@@ -160,9 +164,9 @@ function updateCultureText(model, productMode, cultureMode) {
   // Biomass balance
   let biomassHtml = `<span class="derivative">dX/dt</span> = `;
   if (hasDilution && hasDeathTerm) {
-    biomassHtml += "(μ &minus; k<sub>d</sub> &minus; D)X";
+    biomassHtml += `(μ &minus; k<sub>d</sub> &minus; ${dilutionTerm})X`;
   } else if (hasDilution) {
-    biomassHtml += "(μ &minus; D)X";
+    biomassHtml += `(μ &minus; ${dilutionTerm})X`;
   } else if (hasDeathTerm) {
     biomassHtml += "(μ &minus; k<sub>d</sub>)X";
   } else {
@@ -173,20 +177,20 @@ function updateCultureText(model, productMode, cultureMode) {
   // Substrate balance
   let substrateHtml = `<span class="derivative">dS/dt</span> = &minus;<span class="frac"><span class="top">μX</span><span class="bottom">Y<sub>x/s</sub></span></span>`;
   if (hasDilution) {
-    substrateHtml += " + D(S<sub>r</sub> &minus; S)";
+    substrateHtml += ` + ${dilutionTerm}(S<sub>r</sub> &minus; S)`;
   }
   document.getElementById("substrate-balance").innerHTML = substrateHtml;
 
   // Product balance
   let productHtml = `<span class="derivative">dP/dt</span> = `;
   if (productMode === "none" && hasDilution) {
-    productHtml += "&minus; DP";
+    productHtml += `&minus; ${dilutionTerm}P`;
   } else if (productMode === "none") {
     productHtml += "0";
   } else {
     productHtml += "q<sub>p</sub>X";
     if (hasDilution) {
-      productHtml += " &minus; DP";
+      productHtml += ` &minus; ${dilutionTerm}P`;
     }
   }
   document.getElementById("product-balance").innerHTML = productHtml;

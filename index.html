@@ -388,19 +388,27 @@
                 <span class="balance-note">Sin flujos de entrada ni salida. Las células únicamente crecen.</span>
               </div>
               <div class="balance-row">
-                <span class="balance-mode">Lote alimentado / Continuo</span>
-                <span class="balance-eq"><span class="frac frac-inline"><span class="top">dX</span><span class="bottom">dt</span></span> = (&mu; &minus; D)X</span>
+                <span class="balance-mode">Lote alimentado</span>
+                <span class="balance-eq"><span class="frac frac-inline"><span class="top">dX</span><span class="bottom">dt</span></span> = (&mu; &minus; <span class="frac frac-inline"><span class="top">F</span><span class="bottom">V</span></span>)X</span>
                 <span class="balance-note">
-                  El término <span class="inline-math">&minus;DX</span> proviene de expandir
+                  El término de dilución proviene de expandir
                   <span class="inline-equation"><span class="frac frac-inline"><span class="top">d(X &middot; V)</span><span class="bottom">dt</span></span></span>:
                   al crecer <span class="inline-math">V</span> con el caudal <span class="inline-math">F</span>, parte de
-                  <span class="inline-math">X</span> se diluye aunque siga habiendo crecimiento. Si <span class="inline-math">D &gt; &mu;</span> ocurre el <em>lavado celular (washout)</em>.
+                  <span class="inline-math">X</span> se diluye aunque no exista corriente de salida. Aquí <span class="inline-math">F/V</span> no es constante: disminuye conforme el reactor se llena.
+                </span>
+              </div>
+              <div class="balance-row">
+                <span class="balance-mode">Continuo</span>
+                <span class="balance-eq"><span class="frac frac-inline"><span class="top">dX</span><span class="bottom">dt</span></span> = (&mu; &minus; D)X</span>
+                <span class="balance-note">
+                  En quimiostato el volumen es constante y <span class="inline-math">D = F/V</span> se fija por el caudal de entrada y salida iguales.
+                  Si <span class="inline-math">D &gt; &mu;</span> ocurre el <em>washout</em> porque la biomasa sale más rápido de lo que crece.
                 </span>
               </div>
               <div class="balance-row">
                 <span class="balance-mode">Con muerte celular</span>
                 <span class="balance-eq"><span class="frac frac-inline"><span class="top">dX</span><span class="bottom">dt</span></span> = (&mu; &minus; k<sub>d</sub>)X</span>
-                <span class="balance-note"><span class="inline-math">k<sub>d</sub></span> representa la tasa de decaimiento endógeno. Se combina con <span class="inline-math">&minus;DX</span> cuando hay dilución.</span>
+                <span class="balance-note"><span class="inline-math">k<sub>d</sub></span> representa la tasa de decaimiento endógeno. En fed-batch o continuo se suma además el término de dilución correspondiente.</span>
               </div>
             </div>
           </article>
@@ -430,11 +438,18 @@
                 <span class="balance-note">Solo consumo. El sustrato únicamente puede disminuir hasta agotarse.</span>
               </div>
               <div class="balance-row">
-                <span class="balance-mode">Lote alimentado / Continuo</span>
+                <span class="balance-mode">Lote alimentado</span>
+                <span class="balance-eq"><span class="frac frac-inline"><span class="top">dS</span><span class="bottom">dt</span></span> = <span class="frac frac-inline"><span class="top">F</span><span class="bottom">V</span></span>(S<sub>r</sub> &minus; S) &minus; <span class="frac frac-inline"><span class="top">&mu;X</span><span class="bottom">Y<sub>x/s</sub></span></span></span>
+                <span class="balance-note">
+                  No hay salida de líquido, pero la concentración se diluye porque el volumen crece. El término
+                  <span class="inline-math">(F/V)(S<sub>r</sub> &minus; S)</span> cambia con el tiempo porque <span class="inline-math">V</span> aumenta.
+                </span>
+              </div>
+              <div class="balance-row">
+                <span class="balance-mode">Continuo</span>
                 <span class="balance-eq"><span class="frac frac-inline"><span class="top">dS</span><span class="bottom">dt</span></span> = D(S<sub>r</sub> &minus; S) &minus; <span class="frac frac-inline"><span class="top">&mu;X</span><span class="bottom">Y<sub>x/s</sub></span></span></span>
                 <span class="balance-note">
-                  <span class="inline-math">D &middot; S<sub>r</sub></span> es el sustrato que entra con la alimentación; <span class="inline-math">D &middot; S</span> el que sale con el efluente.
-                  Si <span class="inline-math">S<sub>r</sub> &Gt;&Gt; S</span>, la alimentación domina y el sustrato puede acumularse.
+                  Aquí sí existe una corriente de salida. <span class="inline-math">D &middot; S<sub>r</sub></span> entra con la alimentación y <span class="inline-math">D &middot; S</span> sale con el efluente, manteniendo <span class="inline-math">V</span> constante.
                 </span>
               </div>
             </div>
@@ -464,9 +479,14 @@
                 <span class="balance-note">El producto se acumula dentro del reactor; no hay salida.</span>
               </div>
               <div class="balance-row">
-                <span class="balance-mode">Lote alimentado / Continuo</span>
+                <span class="balance-mode">Lote alimentado</span>
+                <span class="balance-eq"><span class="frac frac-inline"><span class="top">dP</span><span class="bottom">dt</span></span> = q<sub>p</sub>X &minus; <span class="frac frac-inline"><span class="top">F</span><span class="bottom">V</span></span>P</span>
+                <span class="balance-note">No existe efluente, pero la concentración de producto se diluye al aumentar el volumen del medio.</span>
+              </div>
+              <div class="balance-row">
+                <span class="balance-mode">Continuo</span>
                 <span class="balance-eq"><span class="frac frac-inline"><span class="top">dP</span><span class="bottom">dt</span></span> = q<sub>p</sub>X &minus; DP</span>
-                <span class="balance-note">El término &minus;DP representa el producto que sale arrastrado por el efluente.</span>
+                <span class="balance-note">El término &minus;DP representa el producto que sale arrastrado por el efluente en un volumen constante.</span>
               </div>
             </div>
           </article>
