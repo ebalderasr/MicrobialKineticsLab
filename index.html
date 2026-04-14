@@ -390,12 +390,12 @@
             <div class="balance-table">
               <div class="balance-row">
                 <span class="balance-mode">Lote</span>
-                <span class="balance-eq">dX/dt = &mu;X</span>
+                <span class="balance-eq"><span class="frac frac-inline"><span class="top">dX</span><span class="bottom">dt</span></span> = &mu;X</span>
                 <span class="balance-note">Sin flujos de entrada ni salida. Las células únicamente crecen.</span>
               </div>
               <div class="balance-row">
                 <span class="balance-mode">Lote alimentado / Continuo</span>
-                <span class="balance-eq">dX/dt = (&mu; &minus; D)X</span>
+                <span class="balance-eq"><span class="frac frac-inline"><span class="top">dX</span><span class="bottom">dt</span></span> = (&mu; &minus; D)X</span>
                 <span class="balance-note">
                   El término <span class="inline-math">&minus;DX</span> proviene de expandir
                   <span class="inline-equation"><span class="frac frac-inline"><span class="top">d(X &middot; V)</span><span class="bottom">dt</span></span></span>:
@@ -405,7 +405,7 @@
               </div>
               <div class="balance-row">
                 <span class="balance-mode">Con muerte celular</span>
-                <span class="balance-eq">dX/dt = (&mu; &minus; k<sub>d</sub>)X</span>
+                <span class="balance-eq"><span class="frac frac-inline"><span class="top">dX</span><span class="bottom">dt</span></span> = (&mu; &minus; k<sub>d</sub>)X</span>
                 <span class="balance-note"><span class="inline-math">k<sub>d</sub></span> representa la tasa de decaimiento endógeno. Se combina con <span class="inline-math">&minus;DX</span> cuando hay dilución.</span>
               </div>
             </div>
@@ -416,7 +416,9 @@
             <h3>Balance de sustrato y rendimiento</h3>
             <p>
               Las células consumen sustrato para crecer. El <strong>rendimiento biomasa–sustrato
-              <span class="inline-math">Y<sub>x/s</sub></span></strong> (g<sub>X</sub>/g<sub>S</sub>) relaciona la biomasa producida con el
+              <span class="inline-math">Y<sub>x/s</sub></span></strong>
+              <span class="inline-equation">(<span class="frac frac-inline"><span class="top">g<sub>X</sub></span><span class="bottom">g<sub>S</sub></span></span>)</span>
+              relaciona la biomasa producida con el
               sustrato consumido. La velocidad específica de consumo de sustrato es:
             </p>
             <div class="textbook-equation textbook-equation-compact">
@@ -430,12 +432,12 @@
             <div class="balance-table">
               <div class="balance-row">
                 <span class="balance-mode">Lote</span>
-                <span class="balance-eq">dS/dt = &minus;&mu;X / Y<sub>x/s</sub></span>
+                <span class="balance-eq"><span class="frac frac-inline"><span class="top">dS</span><span class="bottom">dt</span></span> = &minus;<span class="frac frac-inline"><span class="top">&mu;X</span><span class="bottom">Y<sub>x/s</sub></span></span></span>
                 <span class="balance-note">Solo consumo. El sustrato únicamente puede disminuir hasta agotarse.</span>
               </div>
               <div class="balance-row">
                 <span class="balance-mode">Lote alimentado / Continuo</span>
-                <span class="balance-eq">dS/dt = D(S<sub>in</sub> &minus; S) &minus; &mu;X / Y<sub>x/s</sub></span>
+                <span class="balance-eq"><span class="frac frac-inline"><span class="top">dS</span><span class="bottom">dt</span></span> = D(S<sub>in</sub> &minus; S) &minus; <span class="frac frac-inline"><span class="top">&mu;X</span><span class="bottom">Y<sub>x/s</sub></span></span></span>
                 <span class="balance-note">
                   <span class="inline-math">D &middot; S<sub>in</sub></span> es el sustrato que entra con la alimentación; <span class="inline-math">D &middot; S</span> el que sale con el efluente.
                   Si <span class="inline-math">S<sub>in</sub> &Gt;&Gt; S</span>, la alimentación domina y el sustrato puede acumularse.
@@ -463,12 +465,12 @@
             <div class="balance-table">
               <div class="balance-row">
                 <span class="balance-mode">Lote</span>
-                <span class="balance-eq">dP/dt = q<sub>p</sub>X</span>
+                <span class="balance-eq"><span class="frac frac-inline"><span class="top">dP</span><span class="bottom">dt</span></span> = q<sub>p</sub>X</span>
                 <span class="balance-note">El producto se acumula dentro del reactor; no hay salida.</span>
               </div>
               <div class="balance-row">
                 <span class="balance-mode">Lote alimentado / Continuo</span>
-                <span class="balance-eq">dP/dt = q<sub>p</sub>X &minus; DP</span>
+                <span class="balance-eq"><span class="frac frac-inline"><span class="top">dP</span><span class="bottom">dt</span></span> = q<sub>p</sub>X &minus; DP</span>
                 <span class="balance-note">El término &minus;DP representa el producto que sale arrastrado por el efluente.</span>
               </div>
             </div>
