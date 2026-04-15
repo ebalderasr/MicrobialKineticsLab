@@ -201,12 +201,7 @@ def simulate(params: dict) -> dict:
     else:
         v = working_volume
 
-    if mode == "fedbatch" and v is not None:
-        d0 = _d_fedbatch(params, v)
-    elif mode == "continuous":
-        d0 = params.get("D", 0.0)
-    else:
-        d0 = 0.0
+    d0 = _dilution_rate(params, mode, v)
 
     initial_mu = growth_mu(s, p, params)
     initial_qp = qp_value(initial_mu, params)
