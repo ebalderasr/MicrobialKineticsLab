@@ -45,143 +45,149 @@
           sustrato, producto/inhibidor, tasa específica y velocidades de formación.
         </p>
       </div>
-      <div class="hero-card">
-
-        <!-- ── Animated bioreactor diagram ── -->
-        <figure class="reactor-figure" aria-label="Diagrama conceptual del modo de cultivo activo">
-          <svg id="reactor-svg" class="reactor-svg mode-batch"
-               viewBox="0 0 260 185" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <clipPath id="rvc">
-                <rect x="71" y="36" width="118" height="124" rx="2"/>
-              </clipPath>
-            </defs>
-
-            <!-- shadow -->
-            <rect x="71" y="25" width="124" height="141" rx="9" fill="rgba(0,0,0,0.05)"/>
-            <!-- vessel body -->
-            <rect x="68" y="22" width="124" height="140" rx="8"
-                  fill="#f5f8fa" stroke="#8fa0b0" stroke-width="2"/>
-            <!-- top cap -->
-            <rect x="68" y="22" width="124" height="16" rx="8" fill="#dde6ef"/>
-            <!-- sensor ports -->
-            <rect x="95"  y="16" width="5" height="8" rx="1.5" fill="#8fa0b0"/>
-            <rect x="163" y="16" width="5" height="8" rx="1.5" fill="#8fa0b0"/>
-
-            <!-- liquid (translateY animated per mode) -->
-            <g id="r-liquid" clip-path="url(#rvc)">
-              <g id="r-liq-inner">
-                <rect x="71" y="36" width="118" height="124" fill="#bde2cc"/>
-                <line x1="71" y1="38" x2="189" y2="38"
-                      stroke="rgba(255,255,255,0.55)" stroke-width="2.5"/>
+      <div class="hero-visuals">
+        <div class="hero-card hero-card--reactor">
+          <figure class="reactor-figure" aria-label="Diagrama conceptual del modo de cultivo activo">
+            <svg id="reactor-svg" class="reactor-svg mode-batch"
+                 viewBox="0 0 260 185" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <clipPath id="rvc">
+                  <rect x="71" y="36" width="118" height="124" rx="2"/>
+                </clipPath>
+              </defs>
+              <rect x="71" y="25" width="124" height="141" rx="9" fill="rgba(0,0,0,0.05)"/>
+              <rect x="68" y="22" width="124" height="140" rx="8"
+                    fill="#f5f8fa" stroke="#8fa0b0" stroke-width="2"/>
+              <rect x="68" y="22" width="124" height="16" rx="8" fill="#dde6ef"/>
+              <rect x="95" y="16" width="5" height="8" rx="1.5" fill="#8fa0b0"/>
+              <rect x="163" y="16" width="5" height="8" rx="1.5" fill="#8fa0b0"/>
+              <g id="r-liquid" clip-path="url(#rvc)">
+                <g id="r-liq-inner">
+                  <rect x="71" y="36" width="118" height="124" fill="#bde2cc"/>
+                  <line x1="71" y1="38" x2="189" y2="38"
+                        stroke="rgba(255,255,255,0.55)" stroke-width="2.5"/>
+                </g>
               </g>
-            </g>
-
-            <!-- cells -->
-            <g clip-path="url(#rvc)">
-              <circle class="r-cell" cx="88"  cy="122" r="3.0" fill="#0d7c66"/>
-              <circle class="r-cell" cx="110" cy="138" r="2.5" fill="#0d7c66"/>
-              <circle class="r-cell" cx="130" cy="120" r="3.0" fill="#0d7c66"/>
-              <circle class="r-cell" cx="152" cy="135" r="2.5" fill="#0d7c66"/>
-              <circle class="r-cell" cx="170" cy="123" r="3.0" fill="#0d7c66"/>
-              <circle class="r-cell" cx="100" cy="150" r="2.0" fill="#0d7c66"/>
-              <circle class="r-cell" cx="155" cy="149" r="2.5" fill="#0d7c66"/>
-              <circle class="r-cell" cx="130" cy="152" r="2.0" fill="#0d7c66"/>
-              <circle class="r-cell" cx="85"  cy="143" r="2.0" fill="#0d7c66"/>
-              <circle class="r-cell" cx="172" cy="144" r="2.0" fill="#0d7c66"/>
-            </g>
-
-            <!-- agitator -->
-            <g clip-path="url(#rvc)">
-              <line x1="130" y1="36" x2="130" y2="148"
-                    stroke="#a0b4c2" stroke-width="2.5"/>
-              <g id="r-impeller">
-                <circle cx="130" cy="118" r="5.2" fill="#f5f8fa" stroke="#8fa0b0" stroke-width="2"/>
-                <line x1="130" y1="118" x2="151" y2="112"
-                      stroke="#8fa0b0" stroke-width="3.2" stroke-linecap="round"/>
-                <line x1="130" y1="118" x2="145" y2="131"
-                      stroke="#8fa0b0" stroke-width="3.2" stroke-linecap="round"/>
-                <line x1="130" y1="118" x2="109" y2="124"
-                      stroke="#8fa0b0" stroke-width="3.2" stroke-linecap="round"/>
-                <line x1="130" y1="118" x2="115" y2="105"
-                      stroke="#8fa0b0" stroke-width="3.2" stroke-linecap="round"/>
-                <circle cx="130" cy="118" r="18" fill="none" stroke="#8fa0b0" stroke-width="1.2" opacity="0.22"/>
+              <g clip-path="url(#rvc)">
+                <circle class="r-cell" cx="88" cy="122" r="3.0" fill="#0d7c66"/>
+                <circle class="r-cell" cx="110" cy="138" r="2.5" fill="#0d7c66"/>
+                <circle class="r-cell" cx="130" cy="120" r="3.0" fill="#0d7c66"/>
+                <circle class="r-cell" cx="152" cy="135" r="2.5" fill="#0d7c66"/>
+                <circle class="r-cell" cx="170" cy="123" r="3.0" fill="#0d7c66"/>
+                <circle class="r-cell" cx="100" cy="150" r="2.0" fill="#0d7c66"/>
+                <circle class="r-cell" cx="155" cy="149" r="2.5" fill="#0d7c66"/>
+                <circle class="r-cell" cx="130" cy="152" r="2.0" fill="#0d7c66"/>
+                <circle class="r-cell" cx="85" cy="143" r="2.0" fill="#0d7c66"/>
+                <circle class="r-cell" cx="172" cy="144" r="2.0" fill="#0d7c66"/>
               </g>
-            </g>
-
-            <!-- vessel border (re-drawn on top) -->
-            <rect x="68" y="22" width="124" height="140" rx="8"
-                  fill="none" stroke="#8fa0b0" stroke-width="2"/>
-
-            <!-- ── inlet (fed-batch + continuous) ── -->
-            <g id="r-inlet" class="r-inlet">
-              <line x1="26" y1="54" x2="68" y2="54"
-                    stroke="#4285f4" stroke-width="4.2" stroke-linecap="round"/>
-              <line x1="68" y1="54" x2="88" y2="54"
-                    stroke="#78aefb" stroke-width="3.2" stroke-linecap="round" opacity="0.95"/>
-              <circle cx="38" cy="54" r="8" fill="#e8f0fe" stroke="#4285f4" stroke-width="1.8"/>
-              <path d="M35,51 L43,54 L35,57 Z" fill="#4285f4"/>
-              <circle class="r-flow-in" cx="44" cy="54" r="2.3" fill="#4285f4"/>
-              <circle class="r-flow-in" cx="58" cy="54" r="1.9" fill="#4285f4"
-                      style="animation-delay:-0.75s"/>
-              <circle class="r-flow-in" cx="75" cy="54" r="1.7" fill="#4285f4"
-                      style="animation-delay:-0.38s"/>
-              <circle class="r-feed-drop" cx="88" cy="58" r="2.4" fill="#bde2cc"/>
-              <circle class="r-feed-drop" cx="88" cy="58" r="2.0" fill="#bde2cc" style="animation-delay:-0.65s"/>
-              <circle class="r-feed-drop" cx="88" cy="58" r="1.8" fill="#bde2cc" style="animation-delay:-1.1s"/>
-              <text class="r-port-label" x="26" y="43">F</text>
-            </g>
-
-            <!-- ── outlet (continuous only) ── -->
-            <g id="r-outlet" class="r-outlet">
-              <line x1="192" y1="138" x2="230" y2="138"
-                    stroke="#ee8b42" stroke-width="3.5" stroke-linecap="round"/>
-              <line x1="174" y1="138" x2="192" y2="138"
-                    stroke="#f1ad78" stroke-width="3" stroke-linecap="round" opacity="0.95"/>
-              <circle class="r-flow-out" cx="200" cy="138" r="2.2" fill="#ee8b42"/>
-              <circle class="r-flow-out" cx="215" cy="138" r="1.8" fill="#ee8b42"
-                      style="animation-delay:-0.75s"/>
-              <circle class="r-flow-out" cx="183" cy="138" r="1.7" fill="#ee8b42"
-                      style="animation-delay:-0.38s"/>
-              <circle cx="240" cy="138" r="8" fill="#fff3e8" stroke="#ee8b42" stroke-width="1.8"/>
-              <path d="M237,135 L245,138 L237,141 Z" fill="#ee8b42"/>
-              <text class="r-port-label r-port-label-out" x="226" y="126">F</text>
-            </g>
-
-            <!-- ── Vmax line (fed-batch) ── -->
-            <g id="r-vmax" class="r-vmax">
-              <line x1="68" y1="55" x2="192" y2="55"
-                    stroke="#9a3d57" stroke-width="1.5" stroke-dasharray="5,3" opacity="0.85"/>
-              <text x="196" y="59" font-size="8.5" fill="#9a3d57" font-weight="600"
-                    font-family="IBM Plex Sans, sans-serif">V<tspan dy="3" font-size="6.5">max</tspan></text>
-            </g>
-
-            <!-- ── V₀ marker (fed-batch) ── -->
-            <g id="r-v0m" class="r-v0m">
-              <line x1="60" y1="117" x2="71" y2="117" stroke="#607080" stroke-width="1.5"/>
-              <text x="56" y="121" font-size="8.5" fill="#607080" text-anchor="end"
-                    font-family="IBM Plex Sans, sans-serif">V<tspan dy="3" font-size="6.5">0</tspan></text>
-            </g>
-
-            <!-- ── mode equation label ── -->
-            <text id="r-eq-text" x="130" y="178" text-anchor="middle"
-                  font-size="9.5" font-weight="600" fill="#3a4a5a"
-                  font-family="IBM Plex Sans, sans-serif">Sin flujos · V constante</text>
-          </svg>
-        </figure>
-
-        <!-- model + mode meta row -->
-        <div class="reactor-meta">
-          <div class="reactor-meta-item">
-            <span class="reactor-meta-label">Modelo</span>
-            <strong id="hero-model-name" class="reactor-meta-value">Monod</strong>
-          </div>
-          <div class="reactor-meta-item">
-            <span class="reactor-meta-label">Modo</span>
-            <strong id="hero-culture-name" class="reactor-meta-value">Lote (Batch)</strong>
+              <g clip-path="url(#rvc)">
+                <line x1="130" y1="36" x2="130" y2="148"
+                      stroke="#a0b4c2" stroke-width="2.5"/>
+                <g id="r-impeller">
+                  <circle cx="130" cy="118" r="5.2" fill="#f5f8fa" stroke="#8fa0b0" stroke-width="2"/>
+                  <line x1="130" y1="118" x2="151" y2="112" stroke="#8fa0b0" stroke-width="3.2" stroke-linecap="round"/>
+                  <line x1="130" y1="118" x2="145" y2="131" stroke="#8fa0b0" stroke-width="3.2" stroke-linecap="round"/>
+                  <line x1="130" y1="118" x2="109" y2="124" stroke="#8fa0b0" stroke-width="3.2" stroke-linecap="round"/>
+                  <line x1="130" y1="118" x2="115" y2="105" stroke="#8fa0b0" stroke-width="3.2" stroke-linecap="round"/>
+                  <circle cx="130" cy="118" r="18" fill="none" stroke="#8fa0b0" stroke-width="1.2" opacity="0.22"/>
+                </g>
+              </g>
+              <rect x="68" y="22" width="124" height="140" rx="8" fill="none" stroke="#8fa0b0" stroke-width="2"/>
+              <g id="r-inlet" class="r-inlet">
+                <line x1="26" y1="54" x2="68" y2="54" stroke="#4285f4" stroke-width="4.2" stroke-linecap="round"/>
+                <line x1="68" y1="54" x2="88" y2="54" stroke="#78aefb" stroke-width="3.2" stroke-linecap="round" opacity="0.95"/>
+                <circle cx="38" cy="54" r="8" fill="#e8f0fe" stroke="#4285f4" stroke-width="1.8"/>
+                <path d="M35,51 L43,54 L35,57 Z" fill="#4285f4"/>
+                <circle class="r-flow-in" cx="44" cy="54" r="2.3" fill="#4285f4"/>
+                <circle class="r-flow-in" cx="58" cy="54" r="1.9" fill="#4285f4" style="animation-delay:-0.75s"/>
+                <circle class="r-flow-in" cx="75" cy="54" r="1.7" fill="#4285f4" style="animation-delay:-0.38s"/>
+                <circle class="r-feed-drop" cx="88" cy="58" r="2.4" fill="#bde2cc"/>
+                <circle class="r-feed-drop" cx="88" cy="58" r="2.0" fill="#bde2cc" style="animation-delay:-0.65s"/>
+                <circle class="r-feed-drop" cx="88" cy="58" r="1.8" fill="#bde2cc" style="animation-delay:-1.1s"/>
+                <text class="r-port-label" x="26" y="43">F</text>
+              </g>
+              <g id="r-outlet" class="r-outlet">
+                <line x1="192" y1="138" x2="230" y2="138" stroke="#ee8b42" stroke-width="3.5" stroke-linecap="round"/>
+                <line x1="174" y1="138" x2="192" y2="138" stroke="#f1ad78" stroke-width="3" stroke-linecap="round" opacity="0.95"/>
+                <circle class="r-flow-out" cx="200" cy="138" r="2.2" fill="#ee8b42"/>
+                <circle class="r-flow-out" cx="215" cy="138" r="1.8" fill="#ee8b42" style="animation-delay:-0.75s"/>
+                <circle class="r-flow-out" cx="183" cy="138" r="1.7" fill="#ee8b42" style="animation-delay:-0.38s"/>
+                <circle cx="240" cy="138" r="8" fill="#fff3e8" stroke="#ee8b42" stroke-width="1.8"/>
+                <path d="M237,135 L245,138 L237,141 Z" fill="#ee8b42"/>
+                <text class="r-port-label r-port-label-out" x="226" y="126">F</text>
+              </g>
+              <g id="r-vmax" class="r-vmax">
+                <line x1="68" y1="55" x2="192" y2="55" stroke="#9a3d57" stroke-width="1.5" stroke-dasharray="5,3" opacity="0.85"/>
+                <text x="196" y="59" font-size="8.5" fill="#9a3d57" font-weight="600"
+                      font-family="IBM Plex Sans, sans-serif">V<tspan dy="3" font-size="6.5">max</tspan></text>
+              </g>
+              <g id="r-v0m" class="r-v0m">
+                <line x1="60" y1="117" x2="71" y2="117" stroke="#607080" stroke-width="1.5"/>
+                <text x="56" y="121" font-size="8.5" fill="#607080" text-anchor="end"
+                      font-family="IBM Plex Sans, sans-serif">V<tspan dy="3" font-size="6.5">0</tspan></text>
+              </g>
+              <text id="r-eq-text" x="130" y="178" text-anchor="middle"
+                    font-size="9.5" font-weight="600" fill="#3a4a5a"
+                    font-family="IBM Plex Sans, sans-serif">Sin flujos · V constante</text>
+            </svg>
+          </figure>
+          <div class="reactor-meta">
+            <div class="reactor-meta-item">
+              <span class="reactor-meta-label">Modo de cultivo</span>
+              <strong id="hero-culture-name" class="reactor-meta-value">Lote (Batch)</strong>
+            </div>
           </div>
         </div>
-
+        <div class="hero-card hero-card--growth">
+          <figure class="growth-figure" aria-label="Interpretación visual del modelo de crecimiento activo">
+            <svg id="growth-svg" class="growth-svg model-monod" viewBox="0 0 260 185" xmlns="http://www.w3.org/2000/svg">
+              <rect x="20" y="18" width="116" height="96" rx="16" fill="#edf4ff" stroke="#bfd4f7"/>
+              <line x1="36" y1="96" x2="122" y2="96" stroke="#97a7bc" stroke-width="1.8"/>
+              <line x1="36" y1="96" x2="36" y2="34" stroke="#97a7bc" stroke-width="1.8"/>
+              <line x1="36" y1="40" x2="124" y2="40" stroke="#9acba4" stroke-width="1.1" stroke-dasharray="5,4"/>
+              <text x="126" y="43" font-size="8" fill="#357a46" font-weight="600" font-family="IBM Plex Sans, sans-serif">μmax</text>
+              <line id="g-ks-marker" x1="61" y1="96" x2="61" y2="51" stroke="#ca8a04" stroke-width="1.2" stroke-dasharray="4,4"/>
+              <text id="g-ks-label" x="57" y="108" font-size="8" fill="#98620b" font-weight="600" font-family="IBM Plex Sans, sans-serif">Ks</text>
+              <path class="g-curve g-curve-monod" d="M36,96 C56,72 74,54 122,43" fill="none" stroke="#1a6fe8" stroke-width="4" stroke-linecap="round"/>
+              <path class="g-curve g-curve-haldane" d="M36,96 C59,66 79,39 96,44 C112,49 119,65 122,86" fill="none" stroke="#1a6fe8" stroke-width="4" stroke-linecap="round"/>
+              <path class="g-curve g-curve-product" d="M36,96 C58,76 78,64 122,60" fill="none" stroke="#1a6fe8" stroke-width="4" stroke-linecap="round"/>
+              <circle id="g-active-dot" cx="92" cy="49" r="5.2" fill="#1a6fe8" stroke="#ffffff" stroke-width="2"/>
+              <g class="g-substrate">
+                <circle class="g-sub" cx="161" cy="55" r="4.2"/>
+                <circle class="g-sub" cx="176" cy="48" r="3.2" style="animation-delay:-0.6s"/>
+                <circle class="g-sub" cx="187" cy="62" r="3.5" style="animation-delay:-1.1s"/>
+                <circle class="g-sub" cx="171" cy="72" r="2.8" style="animation-delay:-0.2s"/>
+                <circle class="g-sub" cx="196" cy="52" r="2.9" style="animation-delay:-0.9s"/>
+              </g>
+              <g class="g-arrows">
+                <path class="g-arrow" d="M174 68 C182 78, 188 88, 193 95"/>
+                <path class="g-arrow" d="M162 61 C172 72, 179 82, 185 91" style="animation-delay:-0.7s"/>
+                <path class="g-arrow" d="M187 69 C195 79, 200 88, 204 95" style="animation-delay:-1.2s"/>
+              </g>
+              <g class="g-cells">
+                <ellipse class="g-cell g-cell-a" cx="191" cy="112" rx="15" ry="10"/>
+                <ellipse class="g-cell g-cell-b" cx="214" cy="127" rx="12" ry="8"/>
+                <ellipse class="g-cell g-cell-c" cx="168" cy="129" rx="10" ry="7"/>
+                <circle class="g-cell-core" cx="191" cy="112" r="4"/>
+                <circle class="g-cell-core" cx="214" cy="127" r="3.2"/>
+                <circle class="g-cell-core" cx="168" cy="129" r="2.8"/>
+              </g>
+              <g class="g-inhibition">
+                <circle class="g-halo" cx="191" cy="112" r="28"/>
+                <circle class="g-halo" cx="214" cy="127" r="20"/>
+              </g>
+              <text x="36" y="29" font-size="8" fill="#617181" font-weight="600" font-family="IBM Plex Sans, sans-serif">μ</text>
+              <text x="123" y="109" font-size="8" fill="#617181" font-weight="600" font-family="IBM Plex Sans, sans-serif">S</text>
+            </svg>
+          </figure>
+          <div class="reactor-meta">
+            <div class="reactor-meta-item reactor-meta-item--growth">
+              <span class="reactor-meta-label">Modelo de crecimiento</span>
+              <strong id="hero-model-name" class="reactor-meta-value">Monod</strong>
+              <span id="growth-hero-note" class="growth-hero-note">μ aumenta con S y se aproxima a μmax cuando el sustrato deja de ser limitante.</span>
+            </div>
+          </div>
+        </div>
       </div>
     </header>
 
