@@ -219,6 +219,17 @@ a { color: inherit; }
   display: block;
 }
 
+.r-port-label {
+  fill: #4285f4;
+  font-size: 9px;
+  font-weight: 600;
+  font-family: "IBM Plex Sans", sans-serif;
+}
+
+.r-port-label-out {
+  fill: #ee8b42;
+}
+
 /* Mode-conditional elements */
 .r-inlet,
 .r-outlet,
@@ -243,8 +254,8 @@ a { color: inherit; }
 
 /* Agitator */
 #r-impeller {
-  transform-origin: 130px 152px;
-  animation: r-spin 4s linear infinite;
+  transform-origin: 130px 118px;
+  animation: r-spin 2.7s linear infinite;
 }
 @keyframes r-spin { to { transform: rotate(360deg); } }
 
@@ -265,20 +276,13 @@ a { color: inherit; }
 }
 
 /* Flow particles */
-.r-flow-in  { animation: r-flow-down  1.5s ease-in-out infinite; }
+.r-flow-in  { animation: r-flow-right 1.35s ease-in-out infinite; }
 .r-flow-out { animation: r-flow-right 1.5s ease-in-out infinite; }
-
-@keyframes r-flow-down {
-  0%   { transform: translateY(-10px); opacity: 0; }
-  25%  { opacity: 1; }
-  75%  { opacity: 1; }
-  100% { transform: translateY(10px);  opacity: 0; }
-}
 @keyframes r-flow-right {
-  0%   { transform: translateX(-4px);  opacity: 0; }
+  0%   { transform: translateX(-8px); opacity: 0; }
   25%  { opacity: 1; }
   75%  { opacity: 1; }
-  100% { transform: translateX(20px);  opacity: 0; }
+  100% { transform: translateX(14px); opacity: 0; }
 }
 
 /* Model / mode meta row */

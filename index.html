@@ -93,13 +93,19 @@
 
             <!-- agitator -->
             <g clip-path="url(#rvc)">
-              <line x1="130" y1="36" x2="130" y2="158"
+              <line x1="130" y1="36" x2="130" y2="148"
                     stroke="#a0b4c2" stroke-width="2.5"/>
               <g id="r-impeller">
-                <line x1="106" y1="152" x2="154" y2="152"
-                      stroke="#8fa0b0" stroke-width="4.5" stroke-linecap="round"/>
-                <line x1="109" y1="145" x2="151" y2="159"
-                      stroke="#8fa0b0" stroke-width="2.5" stroke-linecap="round" opacity="0.55"/>
+                <circle cx="130" cy="118" r="5.2" fill="#f5f8fa" stroke="#8fa0b0" stroke-width="2"/>
+                <line x1="130" y1="118" x2="151" y2="112"
+                      stroke="#8fa0b0" stroke-width="3.2" stroke-linecap="round"/>
+                <line x1="130" y1="118" x2="145" y2="131"
+                      stroke="#8fa0b0" stroke-width="3.2" stroke-linecap="round"/>
+                <line x1="130" y1="118" x2="109" y2="124"
+                      stroke="#8fa0b0" stroke-width="3.2" stroke-linecap="round"/>
+                <line x1="130" y1="118" x2="115" y2="105"
+                      stroke="#8fa0b0" stroke-width="3.2" stroke-linecap="round"/>
+                <circle cx="130" cy="118" r="18" fill="none" stroke="#8fa0b0" stroke-width="1.2" opacity="0.22"/>
               </g>
             </g>
 
@@ -109,26 +115,32 @@
 
             <!-- ── inlet (fed-batch + continuous) ── -->
             <g id="r-inlet" class="r-inlet">
-              <line x1="108" y1="22" x2="108" y2="3"
-                    stroke="#4285f4" stroke-width="3.5" stroke-linecap="round"/>
-              <circle cx="108" cy="11" r="7.5" fill="#e8f0fe" stroke="#4285f4" stroke-width="1.8"/>
-              <path d="M105,9 L112,11 L105,13 Z" fill="#4285f4"/>
-              <circle class="r-flow-in" cx="108" cy="21" r="2.2" fill="#4285f4"/>
-              <circle class="r-flow-in" cx="108" cy="14" r="1.8" fill="#4285f4"
+              <line x1="26" y1="54" x2="68" y2="54"
+                    stroke="#4285f4" stroke-width="4.2" stroke-linecap="round"/>
+              <line x1="68" y1="54" x2="88" y2="54"
+                    stroke="#78aefb" stroke-width="3.2" stroke-linecap="round" opacity="0.95"/>
+              <circle cx="38" cy="54" r="8" fill="#e8f0fe" stroke="#4285f4" stroke-width="1.8"/>
+              <path d="M35,51 L43,54 L35,57 Z" fill="#4285f4"/>
+              <circle class="r-flow-in" cx="44" cy="54" r="2.3" fill="#4285f4"/>
+              <circle class="r-flow-in" cx="58" cy="54" r="1.9" fill="#4285f4"
                       style="animation-delay:-0.75s"/>
-              <text x="95" y="2" font-size="9" fill="#4285f4" font-weight="600"
-                    font-family="IBM Plex Sans, sans-serif">S<tspan dy="3" font-size="7">r</tspan></text>
+              <circle class="r-flow-in" cx="75" cy="54" r="1.7" fill="#4285f4"
+                      style="animation-delay:-0.38s"/>
+              <text class="r-port-label" x="15" y="43">F, S<tspan dy="3" font-size="7">r</tspan></text>
             </g>
 
             <!-- ── outlet (continuous only) ── -->
             <g id="r-outlet" class="r-outlet">
               <line x1="192" y1="138" x2="232" y2="138"
                     stroke="#ee8b42" stroke-width="3.5" stroke-linecap="round"/>
+              <line x1="174" y1="138" x2="192" y2="138"
+                    stroke="#f1ad78" stroke-width="3" stroke-linecap="round" opacity="0.95"/>
               <circle class="r-flow-out" cx="200" cy="138" r="2.2" fill="#ee8b42"/>
               <circle class="r-flow-out" cx="215" cy="138" r="1.8" fill="#ee8b42"
                       style="animation-delay:-0.75s"/>
-              <text x="235" y="142" font-size="9" fill="#ee8b42" font-weight="600"
-                    font-family="IBM Plex Sans, sans-serif">Efluente</text>
+              <circle class="r-flow-out" cx="183" cy="138" r="1.7" fill="#ee8b42"
+                      style="animation-delay:-0.38s"/>
+              <text class="r-port-label r-port-label-out" x="236" y="142">F</text>
             </g>
 
             <!-- ── Vmax line (fed-batch) ── -->
