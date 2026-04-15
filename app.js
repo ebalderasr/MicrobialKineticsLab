@@ -539,6 +539,7 @@ async function runSimulation() {
 async function initPyodideApp() {
   syncOutputs();
   enforceVolumeConstraint();
+  updateReactorMode(document.getElementById("culture_mode").value);
   setRuntimeStatus("Cargando runtime de Python...", false);
   pyodide = await loadPyodide();
   const response = await fetch("./simulator.py");
@@ -553,6 +554,23 @@ async function initPyodideApp() {
     document.getElementById("culture_mode").value,
   );
   runSimulation();
+}
+
+// ── Reactor diagram ───────────────────────────────────────────────────────────
+function updateReactorMode(mode) {
+  const svg = document.getElementById("reactor-svg");
+  const eq  = document.getElementById("r-eq-text");
+  if (!svg) return;
+  svg.classList.remove("mode-batch", "mode-fedbatch", "mode-continuous");
+  svg.classList.add(`mode-${mode}`);
+  if (eq) {
+    const labels = {
+      batch:      "Sin flujos \xB7 V constante",
+      fedbatch:   "dV/dt = F \xB7 D(t) = F/V(t) decrece",
+      continuous: "Fin = Fout \xB7 D = F/V = cte.",
+    };
+    eq.textContent = labels[mode] ?? "";
+  }
 }
 
 // Enforce V_max >= V_working so the reactor can never start above its own capacity
@@ -604,11 +622,13 @@ document.getElementById("vmax_mode").addEventListener("input", () => {
 });
 
 document.getElementById("culture_mode").addEventListener("input", () => {
+  const mode = document.getElementById("culture_mode").value;
   updateConditionalControls();
+  updateReactorMode(mode);
   updateModelText(
     document.getElementById("growth_model").value,
     document.getElementById("product_mode").value,
-    document.getElementById("culture_mode").value,
+    mode,
   );
   debouncedRun();
 });

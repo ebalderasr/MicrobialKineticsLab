@@ -46,14 +46,125 @@
         </p>
       </div>
       <div class="hero-card">
-        <div class="hero-metric">
-          <span>Modelo</span>
-          <strong id="hero-model-name">Monod</strong>
+
+        <!-- ── Animated bioreactor diagram ── -->
+        <figure class="reactor-figure" aria-label="Diagrama conceptual del modo de cultivo activo">
+          <svg id="reactor-svg" class="reactor-svg mode-batch"
+               viewBox="0 0 260 185" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <clipPath id="rvc">
+                <rect x="71" y="36" width="118" height="124" rx="2"/>
+              </clipPath>
+            </defs>
+
+            <!-- shadow -->
+            <rect x="71" y="25" width="124" height="141" rx="9" fill="rgba(0,0,0,0.05)"/>
+            <!-- vessel body -->
+            <rect x="68" y="22" width="124" height="140" rx="8"
+                  fill="#f5f8fa" stroke="#8fa0b0" stroke-width="2"/>
+            <!-- top cap -->
+            <rect x="68" y="22" width="124" height="16" rx="8" fill="#dde6ef"/>
+            <!-- sensor ports -->
+            <rect x="95"  y="16" width="5" height="8" rx="1.5" fill="#8fa0b0"/>
+            <rect x="163" y="16" width="5" height="8" rx="1.5" fill="#8fa0b0"/>
+
+            <!-- liquid (translateY animated per mode) -->
+            <g id="r-liquid" clip-path="url(#rvc)">
+              <g id="r-liq-inner">
+                <rect x="71" y="36" width="118" height="124" fill="#bde2cc"/>
+                <line x1="71" y1="38" x2="189" y2="38"
+                      stroke="rgba(255,255,255,0.55)" stroke-width="2.5"/>
+              </g>
+            </g>
+
+            <!-- cells -->
+            <g clip-path="url(#rvc)">
+              <circle class="r-cell" cx="88"  cy="122" r="3.0" fill="#0d7c66"/>
+              <circle class="r-cell" cx="110" cy="138" r="2.5" fill="#0d7c66"/>
+              <circle class="r-cell" cx="130" cy="120" r="3.0" fill="#0d7c66"/>
+              <circle class="r-cell" cx="152" cy="135" r="2.5" fill="#0d7c66"/>
+              <circle class="r-cell" cx="170" cy="123" r="3.0" fill="#0d7c66"/>
+              <circle class="r-cell" cx="100" cy="150" r="2.0" fill="#0d7c66"/>
+              <circle class="r-cell" cx="155" cy="149" r="2.5" fill="#0d7c66"/>
+              <circle class="r-cell" cx="130" cy="152" r="2.0" fill="#0d7c66"/>
+              <circle class="r-cell" cx="85"  cy="143" r="2.0" fill="#0d7c66"/>
+              <circle class="r-cell" cx="172" cy="144" r="2.0" fill="#0d7c66"/>
+            </g>
+
+            <!-- agitator -->
+            <g clip-path="url(#rvc)">
+              <line x1="130" y1="36" x2="130" y2="158"
+                    stroke="#a0b4c2" stroke-width="2.5"/>
+              <g id="r-impeller">
+                <line x1="106" y1="152" x2="154" y2="152"
+                      stroke="#8fa0b0" stroke-width="4.5" stroke-linecap="round"/>
+                <line x1="109" y1="145" x2="151" y2="159"
+                      stroke="#8fa0b0" stroke-width="2.5" stroke-linecap="round" opacity="0.55"/>
+              </g>
+            </g>
+
+            <!-- vessel border (re-drawn on top) -->
+            <rect x="68" y="22" width="124" height="140" rx="8"
+                  fill="none" stroke="#8fa0b0" stroke-width="2"/>
+
+            <!-- ── inlet (fed-batch + continuous) ── -->
+            <g id="r-inlet" class="r-inlet">
+              <line x1="108" y1="22" x2="108" y2="3"
+                    stroke="#4285f4" stroke-width="3.5" stroke-linecap="round"/>
+              <circle cx="108" cy="11" r="7.5" fill="#e8f0fe" stroke="#4285f4" stroke-width="1.8"/>
+              <path d="M105,9 L112,11 L105,13 Z" fill="#4285f4"/>
+              <circle class="r-flow-in" cx="108" cy="21" r="2.2" fill="#4285f4"/>
+              <circle class="r-flow-in" cx="108" cy="14" r="1.8" fill="#4285f4"
+                      style="animation-delay:-0.75s"/>
+              <text x="95" y="2" font-size="9" fill="#4285f4" font-weight="600"
+                    font-family="IBM Plex Sans, sans-serif">S<tspan dy="3" font-size="7">r</tspan></text>
+            </g>
+
+            <!-- ── outlet (continuous only) ── -->
+            <g id="r-outlet" class="r-outlet">
+              <line x1="192" y1="138" x2="232" y2="138"
+                    stroke="#ee8b42" stroke-width="3.5" stroke-linecap="round"/>
+              <circle class="r-flow-out" cx="200" cy="138" r="2.2" fill="#ee8b42"/>
+              <circle class="r-flow-out" cx="215" cy="138" r="1.8" fill="#ee8b42"
+                      style="animation-delay:-0.75s"/>
+              <text x="235" y="142" font-size="9" fill="#ee8b42" font-weight="600"
+                    font-family="IBM Plex Sans, sans-serif">Efluente</text>
+            </g>
+
+            <!-- ── Vmax line (fed-batch) ── -->
+            <g id="r-vmax" class="r-vmax">
+              <line x1="68" y1="55" x2="192" y2="55"
+                    stroke="#9a3d57" stroke-width="1.5" stroke-dasharray="5,3" opacity="0.85"/>
+              <text x="196" y="59" font-size="8.5" fill="#9a3d57" font-weight="600"
+                    font-family="IBM Plex Sans, sans-serif">V<tspan dy="3" font-size="6.5">max</tspan></text>
+            </g>
+
+            <!-- ── V₀ marker (fed-batch) ── -->
+            <g id="r-v0m" class="r-v0m">
+              <line x1="60" y1="117" x2="71" y2="117" stroke="#607080" stroke-width="1.5"/>
+              <text x="56" y="121" font-size="8.5" fill="#607080" text-anchor="end"
+                    font-family="IBM Plex Sans, sans-serif">V<tspan dy="3" font-size="6.5">0</tspan></text>
+            </g>
+
+            <!-- ── mode equation label ── -->
+            <text id="r-eq-text" x="130" y="178" text-anchor="middle"
+                  font-size="9.5" font-weight="600" fill="#3a4a5a"
+                  font-family="IBM Plex Sans, sans-serif">Sin flujos · V constante</text>
+          </svg>
+        </figure>
+
+        <!-- model + mode meta row -->
+        <div class="reactor-meta">
+          <div class="reactor-meta-item">
+            <span class="reactor-meta-label">Modelo</span>
+            <strong id="hero-model-name" class="reactor-meta-value">Monod</strong>
+          </div>
+          <div class="reactor-meta-item">
+            <span class="reactor-meta-label">Modo</span>
+            <strong id="hero-culture-name" class="reactor-meta-value">Lote (Batch)</strong>
+          </div>
         </div>
-        <div class="hero-metric">
-          <span>Modo de cultivo</span>
-          <strong id="hero-culture-name">Lote (Batch)</strong>
-        </div>
+
       </div>
     </header>
 

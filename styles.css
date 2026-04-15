@@ -200,6 +200,123 @@ a { color: inherit; }
   color: var(--md-on-primary-container);
 }
 
+/* ── Reactor diagram (hero-card) ────────────────────────── */
+.hero-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.reactor-figure {
+  margin: 0;
+  padding: 0;
+  flex: 1;
+}
+
+.reactor-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Mode-conditional elements */
+.r-inlet,
+.r-outlet,
+.r-vmax,
+.r-v0m  { display: none; }
+
+.mode-fedbatch .r-inlet,
+.mode-continuous .r-inlet  { display: block; }
+.mode-continuous .r-outlet { display: block; }
+.mode-fedbatch .r-vmax,
+.mode-fedbatch .r-v0m      { display: block; }
+
+/* Liquid level per mode (translateY = 124 × (1 − fill_fraction)) */
+.mode-batch      #r-liq-inner { transform: translateY(43px); }   /* 65% */
+.mode-continuous #r-liq-inner { transform: translateY(31px); }   /* 75% */
+.mode-fedbatch   #r-liq-inner { animation: r-fb-rise 7s ease-in-out infinite alternate; }
+
+@keyframes r-fb-rise {
+  from { transform: translateY(81px); }  /* 35% */
+  to   { transform: translateY(19px); }  /* 85% */
+}
+
+/* Agitator */
+#r-impeller {
+  transform-origin: 130px 152px;
+  animation: r-spin 4s linear infinite;
+}
+@keyframes r-spin { to { transform: rotate(360deg); } }
+
+/* Cells */
+.r-cell { animation: r-cell-pulse 3s ease-in-out infinite; }
+.r-cell:nth-child(2)  { animation-delay: -0.30s; }
+.r-cell:nth-child(3)  { animation-delay: -0.60s; }
+.r-cell:nth-child(4)  { animation-delay: -0.90s; }
+.r-cell:nth-child(5)  { animation-delay: -1.20s; }
+.r-cell:nth-child(6)  { animation-delay: -1.50s; }
+.r-cell:nth-child(7)  { animation-delay: -1.80s; }
+.r-cell:nth-child(8)  { animation-delay: -2.10s; }
+.r-cell:nth-child(9)  { animation-delay: -2.40s; }
+.r-cell:nth-child(10) { animation-delay: -2.70s; }
+@keyframes r-cell-pulse {
+  0%, 100% { opacity: 0.55; }
+  50%       { opacity: 0.95; }
+}
+
+/* Flow particles */
+.r-flow-in  { animation: r-flow-down  1.5s ease-in-out infinite; }
+.r-flow-out { animation: r-flow-right 1.5s ease-in-out infinite; }
+
+@keyframes r-flow-down {
+  0%   { transform: translateY(-10px); opacity: 0; }
+  25%  { opacity: 1; }
+  75%  { opacity: 1; }
+  100% { transform: translateY(10px);  opacity: 0; }
+}
+@keyframes r-flow-right {
+  0%   { transform: translateX(-4px);  opacity: 0; }
+  25%  { opacity: 1; }
+  75%  { opacity: 1; }
+  100% { transform: translateX(20px);  opacity: 0; }
+}
+
+/* Model / mode meta row */
+.reactor-meta {
+  display: flex;
+  gap: 8px;
+}
+
+.reactor-meta-item {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 10px;
+  border-radius: var(--md-shape-medium);
+  background: var(--md-primary-container);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.reactor-meta-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--md-on-primary-container);
+  opacity: 0.72;
+}
+
+.reactor-meta-value {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--md-on-primary-container);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* ── Main layout ────────────────────────────────────────── */
 .layout {
   display: grid;
