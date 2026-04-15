@@ -717,15 +717,16 @@ a { color: inherit; }
 .teaching-divider {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 14px;
   width: 100%;
-  margin: 6px 0 2px;
-  padding: 14px 0;
-  color: var(--md-on-surface-variant);
-  font-size: 0.74rem;
+  margin: 10px 0 6px;
+  padding: 18px 0;
+  color: var(--md-on-surface);
+  font-size: clamp(1.15rem, 2vw, 1.55rem);
   font-weight: 700;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  text-align: center;
 }
 .teaching-divider::before,
 .teaching-divider::after {
@@ -734,7 +735,10 @@ a { color: inherit; }
   height: 1px;
   background: var(--md-outline-variant);
 }
-.teaching-divider span { white-space: nowrap; }
+.teaching-divider span {
+  max-width: 28ch;
+  white-space: normal;
+}
 
 /* ── Teaching panel grid ────────────────────────────────── */
 .teaching-panel {
@@ -767,6 +771,41 @@ a { color: inherit; }
 
 .teaching-card h3 { margin: 0 0 0.85rem; }
 .teaching-card p  { margin: 0 0 0.85rem; }
+
+.teaching-card__actions {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 1rem;
+}
+
+.app-jump-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: var(--md-shape-full);
+  background: var(--md-primary);
+  color: var(--md-on-primary);
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  box-shadow: var(--md-elev1);
+  transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+.app-jump-btn:hover,
+.app-jump-btn:focus-visible {
+  background: #155fd0;
+  box-shadow: var(--md-elev2);
+  transform: translateY(-1px);
+}
+
+.app-jump-btn:focus-visible {
+  outline: 3px solid rgba(26,111,232,.24);
+  outline-offset: 2px;
+}
 
 .equation-card { background: var(--md-surface-container-lowest); }
 
