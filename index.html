@@ -157,6 +157,18 @@
               <input id="F" type="range" min="0.01" max="2" step="0.01" value="0.1">
               <output for="F" id="F_value"></output>
             </label>
+            <label class="control parameter-conditional" data-culture="fedbatch">
+              <span>Límite de volumen</span>
+              <select id="vmax_mode" class="select-control">
+                <option value="idealized" selected>Idealizado</option>
+                <option value="limited">Usar Vmax del reactor</option>
+              </select>
+            </label>
+            <label class="control parameter-conditional" data-culture="fedbatch,vmax_limited">
+              <span>V<sub>max</sub> del reactor (L)</span>
+              <input id="V_max" type="range" min="0.5" max="40" step="0.1" value="10">
+              <output for="V_max" id="V_max_value"></output>
+            </label>
             <label class="control parameter-conditional" data-culture="fedbatch,continuous">
               <span>S<sub>r</sub> (sustrato en la alimentación, g/L)</span>
               <input id="S_r" type="range" min="1" max="200" step="1" value="100">
@@ -492,6 +504,34 @@
                 <span class="balance-note">El término &minus;DP representa el producto que sale arrastrado por el efluente en un volumen constante.</span>
               </div>
             </div>
+          </article>
+
+          <article class="teaching-card">
+            <h3>Cómo funciona el volumen en cada modo</h3>
+            <p>
+              El volumen <span class="inline-math">V</span> no juega el mismo papel en los tres modos de cultivo. Esa diferencia es la que determina
+              si aparece o no un término de dilución en los balances de concentración.
+            </p>
+            <div class="balance-table">
+              <div class="balance-row">
+                <span class="balance-mode">Lote</span>
+                <span class="balance-eq"><span class="frac frac-inline"><span class="top">dV</span><span class="bottom">dt</span></span> = 0</span>
+                <span class="balance-note">No entra ni sale líquido. El volumen permanece constante y no existe dilución por expansión.</span>
+              </div>
+              <div class="balance-row">
+                <span class="balance-mode">Lote alimentado</span>
+                <span class="balance-eq"><span class="frac frac-inline"><span class="top">dV</span><span class="bottom">dt</span></span> = F</span>
+                <span class="balance-note">El volumen aumenta por la alimentación. La dilución instantánea es <span class="inline-math">F/V</span>, así que si <span class="inline-math">F</span> es constante su efecto se debilita a medida que <span class="inline-math">V</span> crece.</span>
+              </div>
+              <div class="balance-row">
+                <span class="balance-mode">Continuo</span>
+                <span class="balance-eq"><span class="frac frac-inline"><span class="top">dV</span><span class="bottom">dt</span></span> = F<sub>in</sub> &minus; F<sub>out</sub> = 0</span>
+                <span class="balance-note">En quimiostato entran y salen caudales iguales, por eso el volumen se mantiene constante y la dilución se resume en <span class="inline-math">D = F/V</span>.</span>
+              </div>
+            </div>
+            <p>
+              En esta app, <span class="inline-math">V<sub>max</sub></span> en fed-batch es opcional. Si se activa, la alimentación se corta al llegar al volumen máximo del reactor; si no, el modo se trata como un tanque idealizado sin límite geométrico.
+            </p>
           </article>
 
           <!-- Divider: biology/math ↔ numerical simulation -->

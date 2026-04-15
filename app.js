@@ -13,6 +13,7 @@ const controls = [
   "P0",
   "V_working",
   "F",
+  "V_max",
   "S_r",
   "D",
   "dt",
@@ -97,6 +98,7 @@ function collectParams() {
   params.growth_model  = document.getElementById("growth_model").value;
   params.product_mode  = document.getElementById("product_mode").value;
   params.culture_mode  = document.getElementById("culture_mode").value;
+  params.vmax_mode = document.getElementById("vmax_mode").value;
   return params;
 }
 
@@ -113,6 +115,7 @@ function updateConditionalControls() {
   const model       = document.getElementById("growth_model").value;
   const productMode = document.getElementById("product_mode").value;
   const cultureMode = document.getElementById("culture_mode").value;
+  const vmaxMode = document.getElementById("vmax_mode").value;
   const volumeLabel = document.getElementById("working-volume-label");
 
   if (volumeLabel) {
@@ -127,7 +130,9 @@ function updateConditionalControls() {
 
     if (node.dataset.models) {
       const modelFlags = node.dataset.models.split(",");
-      isActive = modelFlags.includes(model) || modelFlags.includes(`product_mode_${productMode}`);
+      isActive = modelFlags.includes(model)
+        || modelFlags.includes(`product_mode_${productMode}`)
+        || modelFlags.includes(`vmax_${vmaxMode}`);
     }
 
     if (node.dataset.culture) {
@@ -652,6 +657,11 @@ document.getElementById("product_mode").addEventListener("input", () => {
     document.getElementById("product_mode").value,
     document.getElementById("culture_mode").value,
   );
+  debouncedRun();
+});
+
+document.getElementById("vmax_mode").addEventListener("input", () => {
+  updateConditionalControls();
   debouncedRun();
 });
 

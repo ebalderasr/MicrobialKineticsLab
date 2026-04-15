@@ -101,9 +101,29 @@ def _d_fedbatch(params: dict, v: float) -> float:
     return params.get("F", 0.0) / max(v, 1e-9)
 
 
+def _use_vmax(params: dict) -> bool:
+    return params.get("vmax_mode") == "limited"
+
+
+def _effective_fedbatch_flow(params: dict, v: float, dt: float) -> float:
+    flow = max(params.get("F", 0.0), 0.0)
+    if not _use_vmax(params):
+        return flow
+
+    vmax = max(params.get("V_max", 0.0), 0.0)
+    if vmax <= 0.0:
+        return flow
+    if v >= vmax:
+        return 0.0
+    if dt <= 0.0:
+        return flow
+
+    return min(flow, max(vmax - v, 0.0) / dt)
+
+
 def _flow_rate(params: dict, mode: str, v: float | None) -> float:
     if mode == "fedbatch":
-        return params.get("F", 0.0)
+        return _effective_fedbatch_flow(params, max(v or 0.0, 0.0), params.get("dt", 0.0))
     if mode == "continuous":
         return params.get("D", 0.0) * max(v or 0.0, 0.0)
     return 0.0
@@ -111,7 +131,8 @@ def _flow_rate(params: dict, mode: str, v: float | None) -> float:
 
 def _dilution_rate(params: dict, mode: str, v: float | None) -> float:
     if mode == "fedbatch":
-        return _d_fedbatch(params, v or 1.0)
+        flow = _effective_fedbatch_flow(params, max(v or 0.0, 0.0), params.get("dt", 0.0))
+        return flow / max(v or 1.0, 1e-9)
     if mode == "continuous":
         return params.get("D", 0.0)
     return 0.0
@@ -129,13 +150,14 @@ def rk4_step(
     F = params.get("F", 0.0)
 
     if mode == "fedbatch" and v is not None:
+        effective_flow = _effective_fedbatch_flow(params, v, dt)
         # V varies linearly within step (dV/dt = F = const), so we can compute
         # the exact volume at each RK4 sub-step without integrating V itself.
-        d1 = _d_fedbatch(params, v)
-        d2 = _d_fedbatch(params, v + 0.5 * dt * F)
+        d1 = effective_flow / max(v, 1e-9)
+        d2 = effective_flow / max(v + 0.5 * dt * effective_flow, 1e-9)
         d3 = d2
-        d4 = _d_fedbatch(params, v + dt * F)
-        v_next = v + dt * F
+        d4 = effective_flow / max(v + dt * effective_flow, 1e-9)
+        v_next = v + dt * effective_flow
     elif mode == "continuous":
         d1 = d2 = d3 = d4 = params.get("D", 0.0)
         v_next = v
