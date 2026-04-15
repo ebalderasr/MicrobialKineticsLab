@@ -249,13 +249,13 @@ function updateModelText(model, productMode, cultureMode) {
   const meta = modelMeta[model];
   const modelStatus = document.getElementById("model-status");
   const cultureStatus = document.getElementById("culture-status");
-  const heroModelSelect = document.getElementById("hero-model-select");
-  const heroCultureSelect = document.getElementById("hero-culture-select");
+  const heroModelName = document.getElementById("hero-model-name");
+  const heroCultureName = document.getElementById("hero-culture-name");
 
   if (modelStatus) modelStatus.textContent = meta.label;
   if (cultureStatus) cultureStatus.textContent = cultureMeta[cultureMode].label;
-  if (heroModelSelect) heroModelSelect.value = model;
-  if (heroCultureSelect) heroCultureSelect.value = cultureMode;
+  if (heroModelName) heroModelName.textContent = meta.label;
+  if (heroCultureName) heroCultureName.textContent = cultureMeta[cultureMode].label;
   document.getElementById("equation-card-title").textContent = meta.cardTitle;
   document.getElementById("equation-label").innerHTML       = meta.equationHtml;
   document.getElementById("equation-description").textContent = meta.description;
@@ -295,35 +295,6 @@ function updateGrowthHero(model) {
   if (note) {
     note.textContent = meta.note;
   }
-}
-
-function handleGrowthModelChange(model) {
-  const growthModel = document.getElementById("growth_model");
-  if (growthModel && growthModel.value !== model) {
-    growthModel.value = model;
-  }
-  updateConditionalControls();
-  updateModelText(
-    model,
-    document.getElementById("product_mode").value,
-    document.getElementById("culture_mode").value,
-  );
-  debouncedRun();
-}
-
-function handleCultureModeChange(mode) {
-  const cultureMode = document.getElementById("culture_mode");
-  if (cultureMode && cultureMode.value !== mode) {
-    cultureMode.value = mode;
-  }
-  updateConditionalControls();
-  updateReactorMode(mode);
-  updateModelText(
-    document.getElementById("growth_model").value,
-    document.getElementById("product_mode").value,
-    mode,
-  );
-  debouncedRun();
 }
 
 function setRuntimeStatus(message, ready = false) {
@@ -693,11 +664,13 @@ for (const id of controls) {
 }
 
 document.getElementById("growth_model").addEventListener("input", () => {
-  handleGrowthModelChange(document.getElementById("growth_model").value);
-});
-
-document.getElementById("hero-model-select").addEventListener("input", () => {
-  handleGrowthModelChange(document.getElementById("hero-model-select").value);
+  updateConditionalControls();
+  updateModelText(
+    document.getElementById("growth_model").value,
+    document.getElementById("product_mode").value,
+    document.getElementById("culture_mode").value,
+  );
+  debouncedRun();
 });
 
 document.getElementById("product_mode").addEventListener("input", () => {
@@ -716,11 +689,15 @@ document.getElementById("vmax_mode").addEventListener("input", () => {
 });
 
 document.getElementById("culture_mode").addEventListener("input", () => {
-  handleCultureModeChange(document.getElementById("culture_mode").value);
-});
-
-document.getElementById("hero-culture-select").addEventListener("input", () => {
-  handleCultureModeChange(document.getElementById("hero-culture-select").value);
+  const mode = document.getElementById("culture_mode").value;
+  updateConditionalControls();
+  updateReactorMode(mode);
+  updateModelText(
+    document.getElementById("growth_model").value,
+    document.getElementById("product_mode").value,
+    mode,
+  );
+  debouncedRun();
 });
 
 // ── Guide section toggle ──────────────────────────────────────────────────────
