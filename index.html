@@ -126,12 +126,15 @@
                       style="animation-delay:-0.75s"/>
               <circle class="r-flow-in" cx="75" cy="54" r="1.7" fill="#4285f4"
                       style="animation-delay:-0.38s"/>
-              <text class="r-port-label" x="15" y="43">F, S<tspan dy="3" font-size="7">r</tspan></text>
+              <circle class="r-feed-drop" cx="88" cy="58" r="2.4" fill="#bde2cc"/>
+              <circle class="r-feed-drop" cx="88" cy="58" r="2.0" fill="#bde2cc" style="animation-delay:-0.65s"/>
+              <circle class="r-feed-drop" cx="88" cy="58" r="1.8" fill="#bde2cc" style="animation-delay:-1.1s"/>
+              <text class="r-port-label" x="26" y="43">F</text>
             </g>
 
             <!-- ── outlet (continuous only) ── -->
             <g id="r-outlet" class="r-outlet">
-              <line x1="192" y1="138" x2="232" y2="138"
+              <line x1="192" y1="138" x2="230" y2="138"
                     stroke="#ee8b42" stroke-width="3.5" stroke-linecap="round"/>
               <line x1="174" y1="138" x2="192" y2="138"
                     stroke="#f1ad78" stroke-width="3" stroke-linecap="round" opacity="0.95"/>
@@ -140,7 +143,9 @@
                       style="animation-delay:-0.75s"/>
               <circle class="r-flow-out" cx="183" cy="138" r="1.7" fill="#ee8b42"
                       style="animation-delay:-0.38s"/>
-              <text class="r-port-label r-port-label-out" x="236" y="142">F</text>
+              <circle cx="240" cy="138" r="8" fill="#fff3e8" stroke="#ee8b42" stroke-width="1.8"/>
+              <path d="M237,135 L245,138 L237,141 Z" fill="#ee8b42"/>
+              <text class="r-port-label r-port-label-out" x="226" y="126">F</text>
             </g>
 
             <!-- ── Vmax line (fed-batch) ── -->
