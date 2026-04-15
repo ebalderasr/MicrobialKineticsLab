@@ -443,6 +443,10 @@ a { color: inherit; }
 
 .plot { min-height: 400px; }
 
+@media (max-width: 680px) {
+  .plot { min-height: 260px; }
+}
+
 .card-header {
   display: flex;
   justify-content: space-between;

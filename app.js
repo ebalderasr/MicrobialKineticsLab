@@ -322,285 +322,202 @@ function computeAxisRange(values, { includeZero = false, minPad = 0.1, padRatio 
   return [min - pad, max + pad];
 }
 
-function renderTimeSeries(series) {
-  const productRange = computeAxisRange(series.P, { minPad: 0.25 });
-  const muRange = computeAxisRange(series.mu, { includeZero: true, minPad: 0.05 });
+// ── Shared plot palette (consistent across all charts) ───────────────────────
+const C = {
+  biomass:   "#0d7c66",  // teal  — X, dX/dt
+  substrate: "#ee8b42",  // amber — S, dS/dt
+  product:   "#4285f4",  // blue  — P, dP/dt, F
+  kinetics:  "#9a3d57",  // rose  — μ, qp, D
+  volume:    "#795548",  // brown — V
+};
 
-  const traces = [
-    {
-      x: series.t,
-      y: series.X,
-      type: "scatter",
-      mode: "lines",
-      name: "Biomasa X",
-      line: { color: "#0d7c66", width: 3 },
-    },
-    {
-      x: series.t,
-      y: series.S,
-      type: "scatter",
-      mode: "lines",
-      name: "Sustrato S",
-      line: { color: "#ee8b42", width: 3 },
-    },
-    {
-      x: series.t,
-      y: series.P,
-      type: "scatter",
-      mode: "lines",
-      name: "Producto P",
-      yaxis: "y2",
-      line: { color: "#4285f4", width: 3 },
-    },
-    {
-      x: series.t,
-      y: series.mu,
-      type: "scatter",
-      mode: "lines",
-      name: "μ",
-      yaxis: "y3",
-      line: { color: "#9a3d57", width: 2, dash: "dot" },
-    },
-  ];
+function isNarrow() { return window.innerWidth < 680; }
 
-  const layout = {
+/** Base layout shared by every plot. */
+function basePlotLayout() {
+  const n = isNarrow();
+  return {
     paper_bgcolor: "rgba(0,0,0,0)",
     plot_bgcolor:  "rgba(0,0,0,0)",
-    margin: { l: 40, r: 240, t: 14, b: 52 },
-    font: { family: "IBM Plex Sans, sans-serif", color: "#1f2a1f" },
-    legend: { orientation: "h", y: 1.12, x: 0 },
-    xaxis:  { title: "Tiempo (h)", gridcolor: "rgba(31,42,31,0.08)" },
-    yaxis:  {
-      title: "Biomasa y sustrato (g/L)",
-      gridcolor: "rgba(31,42,31,0.08)",
-      side: "left",
-      automargin: true,
-      titlefont: { color: "#0d7c66" },
-      tickfont: { color: "#0d7c66" },
-    },
-    yaxis2: {
-      title: "Producto P (g/L)",
-      overlaying: "y",
-      anchor: "free",
-      side: "right",
-      showgrid: false,
-      autoshift: true,
-      shift: 60,
-      automargin: true,
-      title_standoff: 10,
-      titlefont: { color: "#4285f4" },
-      tickfont: { color: "#4285f4" },
-      range: productRange,
-    },
-    yaxis3: {
-      title: "μ (h⁻¹)",
-      overlaying: "y",
-      anchor: "free",
-      side: "right",
-      showgrid: false,
-      autoshift: true,
-      shift: 120,
-      automargin: true,
-      title_standoff: 10,
-      titlefont: { color: "#9a3d57" },
-      tickfont: { color: "#9a3d57" },
-      range: muRange,
+    margin: { l: n ? 46 : 58, r: n ? 90 : 222, t: 18, b: n ? 44 : 50 },
+    font:   { family: "IBM Plex Sans, sans-serif", size: n ? 10 : 11, color: "#1f2a1f" },
+    legend: {
+      orientation: "h",
+      y: n ? -0.30 : 1.12,
+      x: 0,
+      font: { size: n ? 9 : 11 },
+      bgcolor: "rgba(0,0,0,0)",
+      itemsizing: "constant",
     },
   };
-
-  Plotly.newPlot("time-series-plot", traces, layout, { responsive: true, displayModeBar: false });
 }
 
-function renderRatePlot(series) {
-  const qpRange = computeAxisRange(series.qp, { includeZero: true, minPad: 0.02 });
-  const dPdtRange = computeAxisRange(series.dPdt, { includeZero: true, minPad: 0.05 });
+/** Shared x-axis (time). */
+function xAxisCfg(extra = {}) {
+  return {
+    title: "t (h)",
+    gridcolor: "rgba(31,42,31,0.08)",
+    linecolor: "rgba(31,42,31,0.15)",
+    automargin: true,
+    ...extra,
+  };
+}
 
-  Plotly.newPlot(
-    "rate-plot",
-    [
-      {
-        x: series.t,
-        y: series.dXdt,
-        type: "scatter",
-        mode: "lines",
-        name: "dX/dt",
-        line: { color: "#0d7c66", width: 3 },
-      },
-      {
-        x: series.t,
-        y: series.dSdt,
-        type: "scatter",
-        mode: "lines",
-        name: "dS/dt",
-        line: { color: "#ee8b42", width: 3 },
-      },
-      {
-        x: series.t,
-        y: series.qp,
-        type: "scatter",
-        mode: "lines",
-        name: "qP",
-        yaxis: "y2",
-        line: { color: "#9a3d57", width: 2, dash: "dot" },
-      },
-      {
-        x: series.t,
-        y: series.dPdt,
-        type: "scatter",
-        mode: "lines",
-        name: "dP/dt",
-        yaxis: "y3",
-        line: { color: "#4285f4", width: 2.5, dash: "dash" },
-      },
-    ],
+/** Primary (left) y-axis. */
+function leftAxisCfg(title, color, extra = {}) {
+  return {
+    title,
+    gridcolor: "rgba(31,42,31,0.08)",
+    linecolor: "rgba(31,42,31,0.15)",
+    automargin: true,
+    titlefont: { color },
+    tickfont:  { color },
+    ...extra,
+  };
+}
+
+/**
+ * Secondary (right) y-axis.
+ * desktopShift: extra px offset on wide screens (0 = inner, 68 = outer).
+ */
+function rightAxisCfg(title, color, desktopShift, extra = {}) {
+  const n = isNarrow();
+  const axis = {
+    title,
+    overlaying:    "y",
+    anchor:        "free",
+    side:          "right",
+    showgrid:      false,
+    autoshift:     true,
+    automargin:    true,
+    title_standoff: n ? 5 : 10,
+    titlefont:     { color },
+    tickfont:      { color },
+    ...extra,
+  };
+  if (!n) axis.shift = desktopShift;
+  return axis;
+}
+
+const PLOT_CONFIG = { responsive: true, displayModeBar: false };
+
+// ── Chart 1 — Concentration time series ──────────────────────────────────────
+function renderTimeSeries(series) {
+  const productRange = computeAxisRange(series.P,  { minPad: 0.25 });
+  const muRange      = computeAxisRange(series.mu, { includeZero: true, minPad: 0.05 });
+
+  Plotly.newPlot("time-series-plot", [
     {
-      paper_bgcolor: "rgba(0,0,0,0)",
-      plot_bgcolor:  "rgba(0,0,0,0)",
-      margin: { l: 40, r: 250, t: 14, b: 52 },
-      font: { family: "IBM Plex Sans, sans-serif", color: "#1f2a1f" },
-      legend: { orientation: "h", y: 1.12, x: 0 },
-      xaxis:  { title: "Tiempo (h)", gridcolor: "rgba(31,42,31,0.08)" },
-      yaxis:  {
-        title: "dX/dt y dS/dt (g/L/h)",
-        gridcolor: "rgba(31,42,31,0.08)",
-        zeroline: true,
-        zerolinecolor: "rgba(31,42,31,0.28)",
-        zerolinewidth: 1.5,
-        side: "left",
-        automargin: true,
-        titlefont: { color: "#0d7c66" },
-        tickfont: { color: "#0d7c66" },
-      },
-      yaxis2: {
-        title: "qP (gP/gX/h)",
-        overlaying: "y",
-        anchor: "free",
-        side: "right",
-        showgrid: false,
-        autoshift: true,
-        shift: 120,
-        automargin: true,
-        title_standoff: 10,
-        titlefont: { color: "#9a3d57" },
-        tickfont: { color: "#9a3d57" },
-        range: qpRange,
-      },
-      yaxis3: {
-        title: "dP/dt (g/L/h)",
-        overlaying: "y",
-        anchor: "free",
-        side: "right",
-        showgrid: false,
-        autoshift: true,
-        shift: 60,
-        automargin: true,
-        title_standoff: 10,
-        titlefont: { color: "#4285f4" },
-        tickfont: { color: "#4285f4" },
-        range: dPdtRange,
-      },
+      x: series.t, y: series.X,
+      name: "X", type: "scatter", mode: "lines",
+      line: { color: C.biomass,   width: 2.5 },
     },
-    { responsive: true, displayModeBar: false },
-  );
+    {
+      x: series.t, y: series.S,
+      name: "S", type: "scatter", mode: "lines",
+      line: { color: C.substrate, width: 2.5 },
+    },
+    {
+      x: series.t, y: series.P,
+      name: "P", type: "scatter", mode: "lines", yaxis: "y2",
+      line: { color: C.product,   width: 2.5 },
+    },
+    {
+      x: series.t, y: series.mu,
+      name: "μ", type: "scatter", mode: "lines", yaxis: "y3",
+      line: { color: C.kinetics,  width: 2, dash: "dot" },
+    },
+  ], {
+    ...basePlotLayout(),
+    xaxis:  xAxisCfg(),
+    yaxis:  leftAxisCfg("X, S (g L<sup>−1</sup>)", C.biomass),
+    yaxis2: rightAxisCfg("P (g L<sup>−1</sup>)",    C.product,  60,  { range: productRange }),
+    yaxis3: rightAxisCfg("μ (h<sup>−1</sup>)",      C.kinetics, 128, { range: muRange }),
+  }, PLOT_CONFIG);
 }
 
+// ── Chart 2 — Formation rates ─────────────────────────────────────────────────
+function renderRatePlot(series) {
+  const dPdtRange = computeAxisRange(series.dPdt, { includeZero: true, minPad: 0.05 });
+  const qpRange   = computeAxisRange(series.qp,   { includeZero: true, minPad: 0.02 });
+
+  Plotly.newPlot("rate-plot", [
+    {
+      x: series.t, y: series.dXdt,
+      name: "dX/dt", type: "scatter", mode: "lines",
+      line: { color: C.biomass,   width: 2.5 },
+    },
+    {
+      x: series.t, y: series.dSdt,
+      name: "dS/dt", type: "scatter", mode: "lines",
+      line: { color: C.substrate, width: 2.5 },
+    },
+    {
+      x: series.t, y: series.dPdt,
+      name: "dP/dt", type: "scatter", mode: "lines", yaxis: "y2",
+      line: { color: C.product,   width: 2.5, dash: "dash" },
+    },
+    {
+      x: series.t, y: series.qp,
+      name: "q<sub>p</sub>", type: "scatter", mode: "lines", yaxis: "y3",
+      line: { color: C.kinetics,  width: 2, dash: "dot" },
+    },
+  ], {
+    ...basePlotLayout(),
+    xaxis:  xAxisCfg(),
+    yaxis:  leftAxisCfg(
+      "dX/dt, dS/dt (g L<sup>−1</sup> h<sup>−1</sup>)", C.biomass,
+      { zeroline: true, zerolinecolor: "rgba(31,42,31,0.25)", zerolinewidth: 1.5 },
+    ),
+    yaxis2: rightAxisCfg(
+      "dP/dt (g L<sup>−1</sup> h<sup>−1</sup>)", C.product, 60,
+      { range: dPdtRange },
+    ),
+    yaxis3: rightAxisCfg(
+      "q<sub>p</sub> (g<sub>P</sub> g<sub>X</sub><sup>−1</sup> h<sup>−1</sup>)", C.kinetics, 128,
+      { range: qpRange },
+    ),
+  }, PLOT_CONFIG);
+}
+
+// ── Chart 3 — Volume, flow and dilution ───────────────────────────────────────
 function renderVolumePlot(series) {
-  const volumeValues = Array.isArray(series.V) ? series.V : [];
-  const flowRange = computeAxisRange(series.F, { includeZero: true, minPad: 0.05 });
+  const volumeValues  = Array.isArray(series.V) ? series.V : [];
+  const flowRange     = computeAxisRange(series.F,        { includeZero: true, minPad: 0.05 });
   const dilutionRange = computeAxisRange(series.dilution, { includeZero: true, minPad: 0.02 });
   const vMin = Math.min(...volumeValues);
   const vMax = Math.max(...volumeValues);
-  const isConstantVolume = volumeValues.length > 0 && Math.abs(vMax - vMin) < 1e-9;
-  const constantPadding = Math.max(vMax * 0.12, 0.5);
+  const isConstantV = volumeValues.length > 0 && Math.abs(vMax - vMin) < 1e-9;
+  const vPad = Math.max(vMax * 0.12, 0.5);
 
-  const yaxis = {
-    title: "Volumen (L)",
-    gridcolor: "rgba(31,42,31,0.08)",
-  };
-
-  if (isConstantVolume) {
-    yaxis.range = [Math.max(0, vMin - constantPadding), vMax + constantPadding];
-  } else {
-    yaxis.rangemode = "tozero";
-  }
-
-  Plotly.newPlot(
-    "volume-plot",
-    [
-      {
-        x: series.t,
-        y: series.V,
-        type: "scatter",
-        mode: "lines",
-        name: "Volumen V",
-        line: { color: "#795548", width: 3 },
-        fill: isConstantVolume ? "none" : "tozeroy",
-        fillcolor: "rgba(121,85,72,0.12)",
-      },
-      {
-        x: series.t,
-        y: series.F,
-        type: "scatter",
-        mode: "lines",
-        name: "F",
-        yaxis: "y2",
-        line: { color: "#1a6fe8", width: 2.5 },
-      },
-      {
-        x: series.t,
-        y: series.dilution,
-        type: "scatter",
-        mode: "lines",
-        name: "F/V o D",
-        yaxis: "y3",
-        line: { color: "#9a3d57", width: 2.5, dash: "dot" },
-      },
-    ],
+  Plotly.newPlot("volume-plot", [
     {
-      paper_bgcolor: "rgba(0,0,0,0)",
-      plot_bgcolor:  "rgba(0,0,0,0)",
-      margin: { l: 60, r: 190, t: 14, b: 52 },
-      font: { family: "IBM Plex Sans, sans-serif", color: "#1f2a1f" },
-      legend: { orientation: "h", y: 1.12, x: 0 },
-      xaxis:  { title: "Tiempo (h)", gridcolor: "rgba(31,42,31,0.08)" },
-      yaxis: {
-        ...yaxis,
-        side: "left",
-        automargin: true,
-        titlefont: { color: "#795548" },
-        tickfont: { color: "#795548" },
-      },
-      yaxis2: {
-        title: "F (L/h)",
-        overlaying: "y",
-        anchor: "free",
-        side: "right",
-        showgrid: false,
-        autoshift: true,
-        shift: 60,
-        automargin: true,
-        title_standoff: 10,
-        titlefont: { color: "#1a6fe8" },
-        tickfont: { color: "#1a6fe8" },
-        range: flowRange,
-      },
-      yaxis3: {
-        title: "F/V o D (h⁻¹)",
-        overlaying: "y",
-        anchor: "free",
-        side: "right",
-        showgrid: false,
-        autoshift: true,
-        shift: 120,
-        automargin: true,
-        title_standoff: 10,
-        titlefont: { color: "#9a3d57" },
-        tickfont: { color: "#9a3d57" },
-        range: dilutionRange,
-      },
+      x: series.t, y: series.V,
+      name: "V", type: "scatter", mode: "lines",
+      line: { color: C.volume, width: 2.5 },
+      fill: isConstantV ? "none" : "tozeroy",
+      fillcolor: "rgba(121,85,72,0.10)",
     },
-    { responsive: true, displayModeBar: false },
-  );
+    {
+      x: series.t, y: series.F,
+      name: "F", type: "scatter", mode: "lines", yaxis: "y2",
+      line: { color: C.product, width: 2.5 },
+    },
+    {
+      x: series.t, y: series.dilution,
+      name: "D", type: "scatter", mode: "lines", yaxis: "y3",
+      line: { color: C.kinetics, width: 2.5, dash: "dot" },
+    },
+  ], {
+    ...basePlotLayout(),
+    xaxis:  xAxisCfg(),
+    yaxis:  leftAxisCfg("V (L)", C.volume, isConstantV
+      ? { range: [Math.max(0, vMin - vPad), vMax + vPad] }
+      : { rangemode: "tozero" },
+    ),
+    yaxis2: rightAxisCfg("F (L h<sup>−1</sup>)", C.product,  60,  { range: flowRange }),
+    yaxis3: rightAxisCfg("D (h<sup>−1</sup>)",   C.kinetics, 128, { range: dilutionRange }),
+  }, PLOT_CONFIG);
 }
 
 async function runSimulation() {
