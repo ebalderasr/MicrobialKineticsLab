@@ -225,6 +225,7 @@ def simulate(params: dict) -> dict:
     for step in range(1, n_steps + 1):
         current_time = min(step * dt, t_final)
         step_dt = current_time - times[-1]
+        v_before = v  # save volume before step for trace accuracy
         x, s, p, mu, qp, dx_dt, ds_dt, dp_dt, v = rk4_step(x, s, p, params, step_dt, v)
         times.append(current_time)
         biomass.append(x)
@@ -236,8 +237,14 @@ def simulate(params: dict) -> dict:
         substrate_rates.append(ds_dt)
         product_rates.append(dp_dt)
         volumes.append(v if v is not None else 0.0)
-        flow_rates.append(_flow_rate(params, mode, v))
-        dilution_rates.append(_dilution_rate(params, mode, v))
+        # Use v_before + step_dt so traces match exactly what the integrator used
+        if mode == "fedbatch" and v_before is not None:
+            step_flow = _effective_fedbatch_flow(params, v_before, step_dt)
+            flow_rates.append(step_flow)
+            dilution_rates.append(step_flow / max(v_before, 1e-9))
+        else:
+            flow_rates.append(_flow_rate(params, mode, v))
+            dilution_rates.append(_dilution_rate(params, mode, v))
         if depletion_time is None and s <= max(0.02 * params["S0"], 0.05):
             depletion_time = current_time
 

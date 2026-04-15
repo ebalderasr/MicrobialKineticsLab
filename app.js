@@ -121,8 +121,8 @@ function updateConditionalControls() {
   if (volumeLabel) {
     volumeLabel.innerHTML =
       cultureMode === "fedbatch"
-        ? "Volumen de trabajo inicial (L)"
-        : "Volumen de trabajo (L)";
+        ? "Volumen inicial de operación V<sub>0</sub> (L)"
+        : "Volumen de trabajo V<sub>0</sub> (L)";
   }
 
   document.querySelectorAll(".parameter-conditional").forEach((node) => {
@@ -251,10 +251,15 @@ function updateInsight(summary, params) {
     }
   } else if (culture_mode === "fedbatch") {
     const d0 = params.F / params.V_working;
-    if (d0 > mu_max * 0.5) {
+    const vFinal = summary.final_V != null ? fmt(summary.final_V, 1) : "?";
+    const limited = params.vmax_mode === "limited";
+    if (limited && params.V_working >= params.V_max) {
+      message = `El volumen inicial (${fmt(params.V_working, 1)} L) ya alcanza el Vmax del reactor (${fmt(params.V_max, 1)} L). No hay espacio para alimentar.`;
+    } else if (d0 > mu_max * 0.5) {
       message = `La dilución inicial (F/V₀ = ${fmt(d0, 3)} h⁻¹) es alta. La alimentación puede superar la capacidad de crecimiento al inicio.`;
+    } else if (limited) {
+      message = `El fed-batch alimenta sustrato hasta el límite del reactor (${fmt(params.V_max, 1)} L). El volumen llegó a ${vFinal} L al final de la simulación.`;
     } else {
-      const vFinal = summary.final_V != null ? fmt(summary.final_V, 1) : "?";
       message = `El fed-batch extiende la fase productiva reponiendo sustrato. El volumen crece de ${fmt(params.V_working, 1)} a ${vFinal} L.`;
     }
   } else if (growth_model === "haldane" && S0 > Ki) {
@@ -616,6 +621,7 @@ async function runSimulation() {
 
 async function initPyodideApp() {
   syncOutputs();
+  enforceVolumeConstraint();
   setRuntimeStatus("Cargando runtime de Python...", false);
   pyodide = await loadPyodide();
   const response = await fetch("./simulator.py");
@@ -632,9 +638,24 @@ async function initPyodideApp() {
   runSimulation();
 }
 
+// Enforce V_max >= V_working so the reactor can never start above its own capacity
+function enforceVolumeConstraint() {
+  const vwInput = document.getElementById("V_working");
+  const vmInput = document.getElementById("V_max");
+  if (!vwInput || !vmInput) return;
+  const vw = Number(vwInput.value);
+  vmInput.min = vw;
+  if (Number(vmInput.value) < vw) {
+    vmInput.value = vw;
+    const out = document.getElementById("V_max_value");
+    if (out) out.textContent = fmt(vw);
+  }
+}
+
 for (const id of controls) {
   const input = document.getElementById(id);
   input.addEventListener("input", () => {
+    if (id === "V_working" || id === "V_max") enforceVolumeConstraint();
     syncOutputs();
     debouncedRun();
   });
