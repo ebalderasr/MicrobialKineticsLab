@@ -134,7 +134,11 @@
           <div class="reactor-meta">
             <div class="reactor-meta-item">
               <span class="reactor-meta-label">Modo de cultivo</span>
-              <strong id="hero-culture-name" class="reactor-meta-value">Lote (Batch)</strong>
+              <select id="hero-culture-select" class="select-control hero-inline-select" aria-label="Seleccionar modo de cultivo">
+                <option value="batch">Lote (Batch)</option>
+                <option value="fedbatch">Lote alimentado (Fed-batch)</option>
+                <option value="continuous">Continuo (Chemostat)</option>
+              </select>
             </div>
           </div>
         </div>
@@ -183,7 +187,15 @@
           <div class="reactor-meta">
             <div class="reactor-meta-item reactor-meta-item--growth">
               <span class="reactor-meta-label">Modelo de crecimiento</span>
-              <strong id="hero-model-name" class="reactor-meta-value">Monod</strong>
+              <select id="hero-model-select" class="select-control hero-inline-select" aria-label="Seleccionar modelo de crecimiento">
+                <option value="monod">Monod</option>
+                <option value="monod_cell_death">Monod con muerte celular</option>
+                <option value="haldane">Haldane / Andrews</option>
+                <option value="product_competitive">Inhibición competitiva por producto</option>
+                <option value="product_noncompetitive">Inhibición no competitiva por producto</option>
+                <option value="product_linear">Inhibición lineal por producto</option>
+                <option value="product_exponential">Inhibición exponencial por producto</option>
+              </select>
               <span id="growth-hero-note" class="growth-hero-note">μ aumenta con S y se aproxima a μmax cuando el sustrato deja de ser limitante.</span>
             </div>
           </div>
