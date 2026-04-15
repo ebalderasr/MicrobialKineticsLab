@@ -71,44 +71,6 @@ const cultureMeta = {
   continuous: { label: "Continuo (Chemostat)",        systemTitle: "Balances del cultivo continuo" },
 };
 
-const growthHeroMeta = {
-  monod: {
-    note: "μ aumenta con S y se aproxima a μmax cuando el sustrato deja de ser limitante.",
-    dot: { x: 92, y: 49 },
-    ks: 61,
-  },
-  monod_cell_death: {
-    note: "La captación sigue el patrón de Monod, pero la biomasa neta se frena por el término de muerte celular.",
-    dot: { x: 86, y: 52 },
-    ks: 61,
-  },
-  haldane: {
-    note: "Existe una zona intermedia óptima: a S muy alta aparece inhibición por sustrato y μ vuelve a caer.",
-    dot: { x: 96, y: 44 },
-    ks: 72,
-  },
-  product_competitive: {
-    note: "El producto compite con el sustrato y desplaza la respuesta: hace falta más S para sostener la misma μ.",
-    dot: { x: 96, y: 60 },
-    ks: 74,
-  },
-  product_noncompetitive: {
-    note: "El producto reduce la capacidad de crecimiento aun si sigue habiendo sustrato disponible.",
-    dot: { x: 88, y: 58 },
-    ks: 61,
-  },
-  product_linear: {
-    note: "La inhibición aumenta con P y va recortando la tasa específica de forma progresiva.",
-    dot: { x: 85, y: 60 },
-    ks: 61,
-  },
-  product_exponential: {
-    note: "La acumulación de producto amortigua μ de manera exponencial y vuelve más tenue la respuesta celular.",
-    dot: { x: 83, y: 62 },
-    ks: 61,
-  },
-};
-
 let pyodide;
 let isReady = false;
 
@@ -266,35 +228,6 @@ function updateModelText(model, productMode, cultureMode) {
       : productMode === "growth_associated"
         ? "q<sub>p</sub> = αμ"
         : "q<sub>p</sub> = β";
-  updateGrowthHero(model);
-}
-
-function updateGrowthHero(model) {
-  const svg = document.getElementById("growth-svg");
-  const note = document.getElementById("growth-hero-note");
-  const dot = document.getElementById("g-active-dot");
-  const ksMarker = document.getElementById("g-ks-marker");
-  const ksLabel = document.getElementById("g-ks-label");
-  const meta = growthHeroMeta[model] ?? growthHeroMeta.monod;
-  if (!svg) return;
-  for (const key of Object.keys(growthHeroMeta)) {
-    svg.classList.remove(`model-${key}`);
-  }
-  svg.classList.add(`model-${model}`);
-  if (dot) {
-    dot.setAttribute("cx", String(meta.dot.x));
-    dot.setAttribute("cy", String(meta.dot.y));
-  }
-  if (ksMarker) {
-    ksMarker.setAttribute("x1", String(meta.ks));
-    ksMarker.setAttribute("x2", String(meta.ks));
-  }
-  if (ksLabel) {
-    ksLabel.setAttribute("x", String(meta.ks - 4));
-  }
-  if (note) {
-    note.textContent = meta.note;
-  }
 }
 
 function setRuntimeStatus(message, ready = false) {
