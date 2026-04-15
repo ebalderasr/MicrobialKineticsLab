@@ -371,25 +371,31 @@ a { color: inherit; }
   display: block;
 }
 
-.g-curve,
+.g-substrate-haldane,
+.g-cells-children,
 .g-inhibition {
   display: none;
 }
 
-.growth-svg.model-monod .g-curve-monod,
-.growth-svg.model-monod_cell_death .g-curve-monod,
-.growth-svg.model-haldane .g-curve-haldane,
-.growth-svg.model-product_competitive .g-curve-product,
-.growth-svg.model-product_noncompetitive .g-curve-product,
-.growth-svg.model-product_linear .g-curve-product,
-.growth-svg.model-product_exponential .g-curve-product {
+.growth-svg.model-haldane .g-substrate-haldane {
+  display: block;
+}
+
+.growth-svg.model-monod .g-children-monod,
+.growth-svg.model-monod_cell_death .g-children-inhibited,
+.growth-svg.model-haldane .g-children-haldane,
+.growth-svg.model-product_competitive .g-children-inhibited,
+.growth-svg.model-product_noncompetitive .g-children-inhibited,
+.growth-svg.model-product_linear .g-children-inhibited,
+.growth-svg.model-product_exponential .g-children-inhibited {
   display: block;
 }
 
 .growth-svg.model-product_competitive .g-inhibition,
 .growth-svg.model-product_noncompetitive .g-inhibition,
 .growth-svg.model-product_linear .g-inhibition,
-.growth-svg.model-product_exponential .g-inhibition {
+.growth-svg.model-product_exponential .g-inhibition,
+.growth-svg.model-monod_cell_death .g-inhibition {
   display: block;
 }
 
@@ -399,13 +405,28 @@ a { color: inherit; }
   animation: g-sub-drift 3.2s ease-in-out infinite;
 }
 
-.g-arrow {
+.g-consume {
   fill: none;
-  stroke: #4f8de9;
+  stroke: rgba(235, 184, 24, 0.82);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-dasharray: 2 10;
+  animation: g-consume-flow 1.9s linear infinite;
+}
+
+.g-produce {
+  fill: none;
+  stroke: rgba(45, 127, 211, 0.9);
   stroke-width: 2;
   stroke-linecap: round;
-  stroke-dasharray: 3 8;
-  animation: g-arrow-flow 2.2s linear infinite;
+  stroke-dasharray: 3 9;
+  animation: g-produce-flow 2.1s linear infinite;
+}
+
+.g-product {
+  fill: #2d7fd3;
+  opacity: 0.92;
+  animation: g-product-drift 3s ease-in-out infinite;
 }
 
 .g-cell {
@@ -436,6 +457,17 @@ a { color: inherit; }
   opacity: 0.75;
 }
 
+.g-cell-child {
+  opacity: 0;
+  animation: g-child-appear 4.2s ease-in-out infinite;
+}
+
+.g-cell-child:nth-child(2) { animation-delay: -0.35s; }
+.g-cell-child:nth-child(3) { animation-delay: -0.7s; }
+.g-cell-child:nth-child(4) { animation-delay: -1.05s; }
+.g-cell-child:nth-child(5) { animation-delay: -1.4s; }
+.g-cell-child:nth-child(6) { animation-delay: -1.75s; }
+
 .g-halo {
   fill: none;
   stroke: rgba(238, 139, 66, 0.45);
@@ -456,13 +488,28 @@ a { color: inherit; }
   50% { transform: translate(-3px, 4px) scale(1.05); }
 }
 
-@keyframes g-arrow-flow {
-  to { stroke-dashoffset: -22; }
+@keyframes g-consume-flow {
+  to { stroke-dashoffset: -26; }
+}
+
+@keyframes g-produce-flow {
+  to { stroke-dashoffset: -24; }
+}
+
+@keyframes g-product-drift {
+  0%, 100% { transform: translate(0, 0) scale(0.94); }
+  50% { transform: translate(4px, -3px) scale(1.08); }
 }
 
 @keyframes g-cell-pulse {
   0%, 100% { transform: scale(0.96); }
   50% { transform: scale(1.08); }
+}
+
+@keyframes g-child-appear {
+  0%, 28% { opacity: 0; transform: scale(0.72); }
+  40%, 78% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0.12; transform: scale(0.92); }
 }
 
 @keyframes g-halo-spin {
