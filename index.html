@@ -394,7 +394,8 @@
                   El término de dilución proviene de expandir
                   <span class="inline-equation"><span class="frac frac-inline"><span class="top">d(X &middot; V)</span><span class="bottom">dt</span></span></span>:
                   al crecer <span class="inline-math">V</span> con el caudal <span class="inline-math">F</span>, parte de
-                  <span class="inline-math">X</span> se diluye aunque no exista corriente de salida. Aquí <span class="inline-math">F/V</span> no es constante: disminuye conforme el reactor se llena.
+                  <span class="inline-math">X</span> se diluye aunque no exista corriente de salida. La dilución instantánea es <span class="inline-math">F/V</span>:
+                  si <span class="inline-math">F</span> es constante y <span class="inline-math">V</span> aumenta con el tiempo, entonces <span class="inline-math">F/V</span> disminuye conforme el reactor se llena.
                 </span>
               </div>
               <div class="balance-row">
@@ -442,7 +443,9 @@
                 <span class="balance-eq"><span class="frac frac-inline"><span class="top">dS</span><span class="bottom">dt</span></span> = <span class="frac frac-inline"><span class="top">F</span><span class="bottom">V</span></span>(S<sub>r</sub> &minus; S) &minus; <span class="frac frac-inline"><span class="top">&mu;X</span><span class="bottom">Y<sub>x/s</sub></span></span></span>
                 <span class="balance-note">
                   No hay salida de líquido, pero la concentración se diluye porque el volumen crece. El término
-                  <span class="inline-math">(F/V)(S<sub>r</sub> &minus; S)</span> cambia con el tiempo porque <span class="inline-math">V</span> aumenta.
+                  <span class="inline-math">(F/V)(S<sub>r</sub> &minus; S)</span> usa la misma dilución instantánea <span class="inline-math">F/V</span>.
+                  Si el alimento entra con una concentración mayor que la del reactor (<span class="inline-math">S<sub>r</sub> &gt; S</span>), ese término eleva la concentración de sustrato;
+                  si fueran iguales, no aportaría cambio neto; y como <span class="inline-math">V</span> aumenta, su efecto se va amortiguando con el tiempo.
                 </span>
               </div>
               <div class="balance-row">

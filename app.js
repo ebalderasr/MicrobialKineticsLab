@@ -496,6 +496,8 @@ function renderRatePlot(series) {
 
 function renderVolumePlot(series) {
   const volumeValues = Array.isArray(series.V) ? series.V : [];
+  const flowRange = computeAxisRange(series.F, { includeZero: true, minPad: 0.05 });
+  const dilutionRange = computeAxisRange(series.dilution, { includeZero: true, minPad: 0.02 });
   const vMin = Math.min(...volumeValues);
   const vMax = Math.max(...volumeValues);
   const isConstantVolume = volumeValues.length > 0 && Math.abs(vMax - vMin) < 1e-9;
@@ -525,15 +527,67 @@ function renderVolumePlot(series) {
         fill: isConstantVolume ? "none" : "tozeroy",
         fillcolor: "rgba(121,85,72,0.12)",
       },
+      {
+        x: series.t,
+        y: series.F,
+        type: "scatter",
+        mode: "lines",
+        name: "F",
+        yaxis: "y2",
+        line: { color: "#1a6fe8", width: 2.5 },
+      },
+      {
+        x: series.t,
+        y: series.dilution,
+        type: "scatter",
+        mode: "lines",
+        name: "F/V o D",
+        yaxis: "y3",
+        line: { color: "#9a3d57", width: 2.5, dash: "dot" },
+      },
     ],
     {
       paper_bgcolor: "rgba(0,0,0,0)",
       plot_bgcolor:  "rgba(0,0,0,0)",
-      margin: { l: 52, r: 24, t: 14, b: 52 },
+      margin: { l: 60, r: 190, t: 14, b: 52 },
       font: { family: "IBM Plex Sans, sans-serif", color: "#1f2a1f" },
       legend: { orientation: "h", y: 1.12, x: 0 },
       xaxis:  { title: "Tiempo (h)", gridcolor: "rgba(31,42,31,0.08)" },
-      yaxis,
+      yaxis: {
+        ...yaxis,
+        side: "left",
+        automargin: true,
+        titlefont: { color: "#795548" },
+        tickfont: { color: "#795548" },
+      },
+      yaxis2: {
+        title: "F (L/h)",
+        overlaying: "y",
+        anchor: "free",
+        side: "right",
+        showgrid: false,
+        autoshift: true,
+        shift: 60,
+        automargin: true,
+        title_standoff: 10,
+        titlefont: { color: "#1a6fe8" },
+        tickfont: { color: "#1a6fe8" },
+        range: flowRange,
+      },
+      yaxis3: {
+        title: "F/V o D (h⁻¹)",
+        overlaying: "y",
+        anchor: "free",
+        side: "right",
+        showgrid: false,
+        autoshift: true,
+        shift: 120,
+        automargin: true,
+        title_standoff: 10,
+        titlefont: { color: "#9a3d57" },
+        tickfont: { color: "#9a3d57" },
+        range: dilutionRange,
+      },
     },
     { responsive: true, displayModeBar: false },
   );

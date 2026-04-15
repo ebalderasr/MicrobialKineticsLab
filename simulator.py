@@ -101,6 +101,22 @@ def _d_fedbatch(params: dict, v: float) -> float:
     return params.get("F", 0.0) / max(v, 1e-9)
 
 
+def _flow_rate(params: dict, mode: str, v: float | None) -> float:
+    if mode == "fedbatch":
+        return params.get("F", 0.0)
+    if mode == "continuous":
+        return params.get("D", 0.0) * max(v or 0.0, 0.0)
+    return 0.0
+
+
+def _dilution_rate(params: dict, mode: str, v: float | None) -> float:
+    if mode == "fedbatch":
+        return _d_fedbatch(params, v or 1.0)
+    if mode == "continuous":
+        return params.get("D", 0.0)
+    return 0.0
+
+
 def rk4_step(
     x: float,
     s: float,
@@ -183,6 +199,8 @@ def simulate(params: dict) -> dict:
     substrate_rates = [-(initial_mu * x) / params["Yxs"] + d0 * (params.get("S_r", 0.0) - s)]
     product_rates = [initial_qp * x - d0 * p]
     volumes = [v if v is not None else 0.0]
+    flow_rates = [_flow_rate(params, mode, v)]
+    dilution_rates = [_dilution_rate(params, mode, v)]
 
     depletion_time = None
     n_steps = int(math.ceil(t_final / dt))
@@ -201,6 +219,8 @@ def simulate(params: dict) -> dict:
         substrate_rates.append(ds_dt)
         product_rates.append(dp_dt)
         volumes.append(v if v is not None else 0.0)
+        flow_rates.append(_flow_rate(params, mode, v))
+        dilution_rates.append(_dilution_rate(params, mode, v))
         if depletion_time is None and s <= max(0.02 * params["S0"], 0.05):
             depletion_time = current_time
 
@@ -216,6 +236,8 @@ def simulate(params: dict) -> dict:
             "dSdt": substrate_rates,
             "dPdt": product_rates,
             "V": volumes,
+            "F": flow_rates,
+            "dilution": dilution_rates,
         },
         "summary": {
             "final_X": biomass[-1],
