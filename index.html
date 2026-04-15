@@ -283,8 +283,9 @@
               </p>
               <div class="guide-topics">
                 <span class="guide-topic">Velocidad específica μ</span>
-                <span class="guide-topic">Balance de masa</span>
-                <span class="guide-topic">Biomasa · Sustrato · Producto</span>
+                <span class="guide-topic">Tasa de dilución D</span>
+                <span class="guide-topic">Balances de masa</span>
+                <span class="guide-topic">Modos de cultivo</span>
                 <span class="guide-topic">Integración numérica RK4</span>
               </div>
             </div>
@@ -337,22 +338,23 @@
           <article class="teaching-card">
             <h3>¿Qué es μ, la velocidad específica de crecimiento?</h3>
             <p>
-              <span class="inline-math">&mu;</span> tiene unidades de <span class="inline-math">h<sup>&minus;1</sup></span>. El calificativo <em>específica</em> significa que está
-              normalizada por la biomasa existente: el producto <strong class="inline-math">&mu; &middot; X</strong> da la velocidad
-              volumétrica real de producción de células (g<sub>X</sub>/L·h). Si duplicas la biomasa con la
-              misma <span class="inline-math">&mu;</span>, el cultivo crece el doble de rápido en conjunto, pero cada célula trabaja igual.
+              <span class="inline-math">&mu;</span> tiene unidades de <span class="inline-math">h<sup>&minus;1</sup></span>. El calificativo <em>específica</em> significa que está normalizada por la biomasa presente: el producto <span class="inline-math">&mu; &middot; X</span> da la velocidad volumétrica real de producción de células
+              <span class="inline-equation">(<span class="frac frac-inline"><span class="top">g<sub>X</sub></span><span class="bottom">L &middot; h</span></span>)</span>.
+              Si duplicas la biomasa con la misma <span class="inline-math">&mu;</span>, el cultivo crece el doble de rápido en conjunto, pero cada célula trabaja igual.
             </p>
             <div class="concept-box">
-              <strong class="inline-math">&mu;<sub>max</sub></strong> &mdash; velocidad máxima cuando el sustrato es abundante (<span class="inline-math">S &Gt;&Gt; K<sub>s</sub></span>).<br>
-              <strong class="inline-math">K<sub>s</sub></strong> &mdash; concentración de sustrato a la que <span class="inline-math">&mu; = &mu;<sub>max</sub>/2</span>.
-              Cuanto menor <span class="inline-math">K<sub>s</sub></span>, mayor afinidad del microorganismo por el sustrato; puede acercarse
-              a <span class="inline-math">&mu;<sub>max</sub></span> incluso con muy poco sustrato disponible.
+              <strong class="inline-math">&mu;<sub>max</sub></strong> &mdash; velocidad máxima cuando el sustrato es abundante
+              (<span class="inline-math">S &gg; K<sub>s</sub></span>).<br>
+              <strong class="inline-math">K<sub>s</sub></strong> &mdash; concentración de sustrato a la que
+              <span class="inline-math">&mu; = &mu;<sub>max</sub> / 2</span>.
+              Cuanto menor <span class="inline-math">K<sub>s</sub></span>, mayor afinidad del microorganismo por el sustrato.
             </div>
             <p>
-              La ecuación de Monod captura la <em>saturación</em>: a concentraciones bajas de <span class="inline-math">S</span>, <span class="inline-math">&mu; &asymp; (&mu;<sub>max</sub>/K<sub>s</sub>) &middot; S</span>
-              y el crecimiento es casi proporcional a <span class="inline-math">S</span>; a concentraciones altas, <span class="inline-math">&mu; &rarr; &mu;<sub>max</sub></span> y agregar
-              más sustrato no acelera el crecimiento. Los modelos de Haldane e inhibición por producto extienden
-              esta idea cuando el sustrato en exceso o el producto acumulado dañan al microorganismo.
+              Monod captura la <em>saturación cinética</em>: a <span class="inline-math">S</span> bajo,
+              <span class="inline-equation">&mu; &asymp; <span class="frac frac-inline"><span class="top">&mu;<sub>max</sub></span><span class="bottom">K<sub>s</sub></span></span> &middot; S</span>
+              y el crecimiento es casi proporcional a <span class="inline-math">S</span>; a <span class="inline-math">S</span> alto,
+              <span class="inline-math">&mu; &rarr; &mu;<sub>max</sub></span> y añadir más sustrato no acelera el crecimiento.
+              Los modelos de Haldane e inhibición por producto extienden esta idea cuando el sustrato en exceso o el producto acumulado perjudican al microorganismo.
             </p>
           </article>
 
@@ -360,8 +362,7 @@
           <article class="teaching-card">
             <h3>El balance de masa: principio general</h3>
             <p>
-              Todo modelo dinámico de un biorreactor parte de la conservación de masa aplicada a un volumen
-              de control bien mezclado. En su forma más general:
+              Todo modelo dinámico de un biorreactor parte de la conservación de masa aplicada a un volumen de control bien mezclado:
             </p>
             <div class="concept-box concept-box-equation">
               Acumulación = Entrada &minus; Salida + Generación por reacción
@@ -371,57 +372,93 @@
               <span class="inline-equation"><span class="frac frac-inline"><span class="top">d(C &middot; V)</span><span class="bottom">dt</span></span></span>.
               Cuando <span class="inline-math">V</span> es constante se simplifica a
               <span class="inline-equation"><span class="frac frac-inline"><span class="top">dC</span><span class="bottom">dt</span></span></span>.
-              En lote alimentado <span class="inline-math">V</span> crece y la expansión de
+              En lote alimentado <span class="inline-math">V</span> crece con el tiempo, por lo que expandir
               <span class="inline-equation"><span class="frac frac-inline"><span class="top">d(C &middot; V)</span><span class="bottom">dt</span></span></span>
-              genera un término de dilución adicional.
+              introduce un término proporcional a <span class="inline-equation"><span class="frac frac-inline"><span class="top">F</span><span class="bottom">V</span></span></span> que actúa como dilución de la concentración, incluso sin efluente.
             </p>
             <p>
-              <strong>Entrada / Salida</strong> dependen del modo de operación: en lote no hay flujos;
-              en continuo entran y salen caudales iguales; en lote alimentado solo hay entrada estéril.
+              <strong>Entrada&nbsp;/&nbsp;Salida</strong>: en lote no hay flujos; en lote alimentado solo hay entrada estéril; en continuo entran y salen caudales iguales.
             </p>
             <p>
-              <strong>Generación</strong> engloba la actividad biológica: crecimiento celular, consumo de
-              sustrato y síntesis de metabolitos. La forma de este término es lo que diferencia a cada
-              modelo cinético.
+              <strong>Generación</strong>: actividad biológica — crecimiento, consumo de sustrato y síntesis de metabolitos. La forma cinética de este término es lo que distingue cada modelo.
             </p>
+          </article>
+
+          <!-- Tasa de dilución D -->
+          <article class="teaching-card">
+            <h3>La tasa de dilución D</h3>
+            <p>
+              La tasa de dilución cuantifica qué fracción del volumen del reactor se renueva por unidad de tiempo:
+            </p>
+            <div class="textbook-equation textbook-equation-compact">
+              D = <span class="frac"><span class="top">F</span><span class="bottom">V</span></span>
+              &nbsp; <span style="font-size:0.65em; font-weight:400; opacity:0.7">(h<sup>&minus;1</sup>)</span>
+            </div>
+            <p>
+              Su interpretación y comportamiento difieren según el modo de cultivo:
+            </p>
+            <div class="balance-table">
+              <div class="balance-row">
+                <span class="balance-mode">Lote</span>
+                <span class="balance-eq">D = 0</span>
+                <span class="balance-note">No hay flujos. Los balances no incluyen término de dilución.</span>
+              </div>
+              <div class="balance-row">
+                <span class="balance-mode">Lote alimentado</span>
+                <span class="balance-eq">D(t) = <span class="frac frac-inline"><span class="top">F</span><span class="bottom">V(t)</span></span></span>
+                <span class="balance-note">
+                  <span class="inline-math">D</span> varía con el tiempo. Si <span class="inline-math">F</span> es constante y <span class="inline-math">V</span> crece,
+                  <span class="inline-math">D</span> disminuye progresivamente. La dilución es máxima al inicio:
+                  <span class="inline-equation">D<sub>0</sub> = <span class="frac frac-inline"><span class="top">F</span><span class="bottom">V<sub>0</sub></span></span></span>.
+                  Si se activa <span class="inline-math">V<sub>max</sub></span>, la alimentación se corta cuando <span class="inline-math">V = V<sub>max</sub></span> y <span class="inline-math">D</span> cae a cero.
+                </span>
+              </div>
+              <div class="balance-row">
+                <span class="balance-mode">Continuo (quimiostato)</span>
+                <span class="balance-eq">D = <span class="frac frac-inline"><span class="top">F</span><span class="bottom">V</span></span> = cte.</span>
+                <span class="balance-note">
+                  <span class="inline-math">V</span> se mantiene fijo porque <span class="inline-math">F<sub>in</sub> = F<sub>out</sub></span>. El operador controla <span class="inline-math">D</span> directamente.
+                  <strong>Estado estacionario:</strong> cuando <span class="inline-math">D = &mu;</span>, la biomasa se mantiene constante.
+                  <strong>Lavado (<em>washout</em>):</strong> si <span class="inline-math">D &gt; &mu;</span>, las células salen más rápido de lo que crecen y <span class="inline-math">X &rarr; 0</span>.
+                </span>
+              </div>
+            </div>
           </article>
 
           <!-- Balance de biomasa -->
           <article class="teaching-card">
             <h3>Balance de biomasa</h3>
             <p>
-              Aplicando el principio general a la biomasa <span class="inline-math">X</span> con alimentación estéril (sin células en la
-              entrada), la generación es <span class="inline-math">&mu;X</span> y la salida depende del modo de operación:
+              Con alimentación estéril (sin células en la entrada), la generación es <span class="inline-math">&mu;X</span>
+              y el término de salida depende de si hay flujo y de si existe muerte celular:
             </p>
             <div class="balance-table">
               <div class="balance-row">
                 <span class="balance-mode">Lote</span>
                 <span class="balance-eq"><span class="frac frac-inline"><span class="top">dX</span><span class="bottom">dt</span></span> = &mu;X</span>
-                <span class="balance-note">Sin flujos de entrada ni salida. Las células únicamente crecen.</span>
+                <span class="balance-note">Sin flujos. La biomasa solo crece mientras haya sustrato.</span>
               </div>
               <div class="balance-row">
                 <span class="balance-mode">Lote alimentado</span>
-                <span class="balance-eq"><span class="frac frac-inline"><span class="top">dX</span><span class="bottom">dt</span></span> = (&mu; &minus; <span class="frac frac-inline"><span class="top">F</span><span class="bottom">V</span></span>)X</span>
+                <span class="balance-eq"><span class="frac frac-inline"><span class="top">dX</span><span class="bottom">dt</span></span> = <span style="white-space:nowrap">(&mu; &minus; D(t))X</span></span>
                 <span class="balance-note">
-                  El término de dilución proviene de expandir
-                  <span class="inline-equation"><span class="frac frac-inline"><span class="top">d(X &middot; V)</span><span class="bottom">dt</span></span></span>:
-                  al crecer <span class="inline-math">V</span> con el caudal <span class="inline-math">F</span>, parte de
-                  <span class="inline-math">X</span> se diluye aunque no exista corriente de salida. La dilución instantánea es <span class="inline-math">F/V</span>:
-                  si <span class="inline-math">F</span> es constante y <span class="inline-math">V</span> aumenta con el tiempo, entonces <span class="inline-math">F/V</span> disminuye conforme el reactor se llena.
+                  El término <span class="inline-math">&minus;D(t)X</span> proviene de expandir
+                  <span class="inline-equation"><span class="frac frac-inline"><span class="top">d(XV)</span><span class="bottom">dt</span></span></span>:
+                  al crecer <span class="inline-math">V</span>, parte de <span class="inline-math">X</span> se diluye aunque no exista efluente.
+                  Como <span class="inline-math">D(t) = F/V(t)</span> decrece con el tiempo, su efecto se atenúa conforme el reactor se llena.
                 </span>
               </div>
               <div class="balance-row">
                 <span class="balance-mode">Continuo</span>
                 <span class="balance-eq"><span class="frac frac-inline"><span class="top">dX</span><span class="bottom">dt</span></span> = (&mu; &minus; D)X</span>
                 <span class="balance-note">
-                  En quimiostato el volumen es constante y <span class="inline-math">D = F/V</span> se fija por el caudal de entrada y salida iguales.
-                  Si <span class="inline-math">D &gt; &mu;</span> ocurre el <em>washout</em> porque la biomasa sale más rápido de lo que crece.
+                  <span class="inline-math">D</span> es constante. Si <span class="inline-math">D &gt; &mu;</span> la biomasa declina hasta desaparecer (<em>washout</em>).
                 </span>
               </div>
               <div class="balance-row">
                 <span class="balance-mode">Con muerte celular</span>
-                <span class="balance-eq"><span class="frac frac-inline"><span class="top">dX</span><span class="bottom">dt</span></span> = (&mu; &minus; k<sub>d</sub>)X</span>
-                <span class="balance-note"><span class="inline-math">k<sub>d</sub></span> representa la tasa de decaimiento endógeno. En fed-batch o continuo se suma además el término de dilución correspondiente.</span>
+                <span class="balance-eq"><span class="frac frac-inline"><span class="top">dX</span><span class="bottom">dt</span></span> = (&mu; &minus; k<sub>d</sub> &minus; D)X</span>
+                <span class="balance-note"><span class="inline-math">k<sub>d</sub></span> (h<sup>&minus;1</sup>) es la tasa de decaimiento endógeno. Actúa como un término de pérdida adicional, análogo a una dilución interna.</span>
               </div>
             </div>
           </article>
@@ -430,41 +467,41 @@
           <article class="teaching-card">
             <h3>Balance de sustrato y rendimiento</h3>
             <p>
-              Las células consumen sustrato para crecer. El <strong>rendimiento biomasa–sustrato
-              <span class="inline-math">Y<sub>x/s</sub></span></strong>
+              El rendimiento biomasa–sustrato <span class="inline-math">Y<sub>x/s</sub></span>
               <span class="inline-equation">(<span class="frac frac-inline"><span class="top">g<sub>X</sub></span><span class="bottom">g<sub>S</sub></span></span>)</span>
-              relaciona la biomasa producida con el
-              sustrato consumido. La velocidad específica de consumo de sustrato es:
+              indica cuánta biomasa se produce por gramo de sustrato consumido.
+              La velocidad específica de consumo es:
             </p>
             <div class="textbook-equation textbook-equation-compact">
               q<sub>s</sub> = <span class="frac"><span class="top">&mu;</span><span class="bottom">Y<sub>x/s</sub></span></span>
             </div>
             <p>
-              Un <span class="inline-math">Y<sub>x/s</sub></span> alto indica que se obtiene mucha biomasa por gramo de sustrato. El término
-              de consumo en el balance es
-              <span class="inline-equation">&minus;q<sub>s</sub>X = &minus;<span class="frac frac-inline"><span class="top">&mu;X</span><span class="bottom">Y<sub>x/s</sub></span></span></span>.
+              El término de consumo en los balances es
+              <span class="inline-equation">&minus;<span class="frac frac-inline"><span class="top">&mu;X</span><span class="bottom">Y<sub>x/s</sub></span></span></span>.
+              Un <span class="inline-math">Y<sub>x/s</sub></span> alto indica menor costo metabólico de sustrato por gramo de biomasa producida.
             </p>
             <div class="balance-table">
               <div class="balance-row">
                 <span class="balance-mode">Lote</span>
                 <span class="balance-eq"><span class="frac frac-inline"><span class="top">dS</span><span class="bottom">dt</span></span> = &minus;<span class="frac frac-inline"><span class="top">&mu;X</span><span class="bottom">Y<sub>x/s</sub></span></span></span>
-                <span class="balance-note">Solo consumo. El sustrato únicamente puede disminuir hasta agotarse.</span>
+                <span class="balance-note">Solo consumo. <span class="inline-math">S</span> únicamente decrece, hasta agotarse o hasta que el crecimiento cesa.</span>
               </div>
               <div class="balance-row">
                 <span class="balance-mode">Lote alimentado</span>
-                <span class="balance-eq"><span class="frac frac-inline"><span class="top">dS</span><span class="bottom">dt</span></span> = <span class="frac frac-inline"><span class="top">F</span><span class="bottom">V</span></span>(S<sub>r</sub> &minus; S) &minus; <span class="frac frac-inline"><span class="top">&mu;X</span><span class="bottom">Y<sub>x/s</sub></span></span></span>
+                <span class="balance-eq"><span class="frac frac-inline"><span class="top">dS</span><span class="bottom">dt</span></span> = D(t)(S<sub>r</sub> &minus; S) &minus; <span class="frac frac-inline"><span class="top">&mu;X</span><span class="bottom">Y<sub>x/s</sub></span></span></span>
                 <span class="balance-note">
-                  No hay salida de líquido, pero la concentración se diluye porque el volumen crece. El término
-                  <span class="inline-math">(F/V)(S<sub>r</sub> &minus; S)</span> usa la misma dilución instantánea <span class="inline-math">F/V</span>.
-                  Si el alimento entra con una concentración mayor que la del reactor (<span class="inline-math">S<sub>r</sub> &gt; S</span>), ese término eleva la concentración de sustrato;
-                  si fueran iguales, no aportaría cambio neto; y como <span class="inline-math">V</span> aumenta, su efecto se va amortiguando con el tiempo.
+                  <span class="inline-math">S<sub>r</sub></span> es la concentración de sustrato en la alimentación.
+                  El término <span class="inline-math">D(t)(S<sub>r</sub> &minus; S)</span> aporta sustrato cuando
+                  <span class="inline-math">S<sub>r</sub> &gt; S</span> y lo diluye cuando <span class="inline-math">S<sub>r</sub> &lt; S</span>.
+                  Como <span class="inline-math">D(t)</span> decrece con el tiempo, el aporte neto de la alimentación también se atenúa.
                 </span>
               </div>
               <div class="balance-row">
                 <span class="balance-mode">Continuo</span>
                 <span class="balance-eq"><span class="frac frac-inline"><span class="top">dS</span><span class="bottom">dt</span></span> = D(S<sub>r</sub> &minus; S) &minus; <span class="frac frac-inline"><span class="top">&mu;X</span><span class="bottom">Y<sub>x/s</sub></span></span></span>
                 <span class="balance-note">
-                  Aquí sí existe una corriente de salida. <span class="inline-math">D &middot; S<sub>r</sub></span> entra con la alimentación y <span class="inline-math">D &middot; S</span> sale con el efluente, manteniendo <span class="inline-math">V</span> constante.
+                  <span class="inline-math">D</span> es constante. <span class="inline-math">D &cdot; S<sub>r</sub></span> entra con la alimentación y <span class="inline-math">D &cdot; S</span> sale con el efluente. En estado estacionario el sustrato residual
+                  <span class="inline-math">S</span> se mantiene constante, fijado por <span class="inline-math">D</span> y la cinética.
                 </span>
               </div>
             </div>
@@ -472,69 +509,78 @@
 
           <!-- Balance de producto -->
           <article class="teaching-card">
-            <h3>Balance de producto</h3>
+            <h3>Balance de producto: Luedeking–Piret</h3>
             <p>
-              La velocidad específica de formación de producto <span class="inline-math">q<sub>p</sub></span> se modela con la expresión de
-              <strong>Luedeking–Piret</strong>:
+              La velocidad específica de formación de producto <span class="inline-math">q<sub>p</sub></span>
+              se modela con la expresión de <strong>Luedeking–Piret</strong>, que combina un término ligado al crecimiento y uno independiente:
             </p>
             <div class="textbook-equation textbook-equation-compact">
               q<sub>p</sub> = &alpha;&mu; + &beta;
             </div>
             <div class="concept-box">
-              <strong class="inline-math">&alpha;</strong> (g<sub>P</sub>/g<sub>X</sub>) &mdash; coeficiente asociado al crecimiento.
-              El producto se forma en proporción a <span class="inline-math">&mu;</span>; si las células dejan de crecer, este término desaparece.<br><br>
-              <strong class="inline-math">&beta;</strong> (g<sub>P</sub>/g<sub>X</sub>/h) &mdash; coeficiente no asociado al crecimiento.
-              Las células producen aunque estén en reposo (p. ej. metabolitos de mantenimiento).<br><br>
-              Si se elige <strong>sin formación de producto</strong>, entonces <span class="inline-math">q<sub>p</sub> = 0</span> y el término de generación desaparece.
+              <strong class="inline-math">&alpha;</strong>
+              <span class="inline-equation">(<span class="frac frac-inline"><span class="top">g<sub>P</sub></span><span class="bottom">g<sub>X</sub></span></span>)</span>
+              &mdash; coeficiente asociado al crecimiento.
+              El producto se forma en proporción a <span class="inline-math">&mu;</span>; si las células dejan de crecer (<span class="inline-math">&mu; = 0</span>), este término desaparece.<br><br>
+              <strong class="inline-math">&beta;</strong>
+              <span class="inline-equation">(<span class="frac frac-inline"><span class="top">g<sub>P</sub></span><span class="bottom">g<sub>X</sub> &middot; h</span></span>)</span>
+              &mdash; coeficiente no asociado al crecimiento. Las células siguen produciendo aunque estén en reposo (p.&nbsp;ej. metabolitos de mantenimiento).<br><br>
+              Esta app implementa los dos casos límite: <span class="inline-math">&beta; = 0</span> (solo asociado) y <span class="inline-math">&alpha; = 0</span> (solo no asociado). Si se elige <em>sin producto</em>, <span class="inline-math">q<sub>p</sub> = 0</span>.
             </div>
             <div class="balance-table">
               <div class="balance-row">
                 <span class="balance-mode">Lote</span>
                 <span class="balance-eq"><span class="frac frac-inline"><span class="top">dP</span><span class="bottom">dt</span></span> = q<sub>p</sub>X</span>
-                <span class="balance-note">El producto se acumula dentro del reactor; no hay salida.</span>
+                <span class="balance-note">El producto solo se acumula; no hay salida.</span>
               </div>
               <div class="balance-row">
                 <span class="balance-mode">Lote alimentado</span>
-                <span class="balance-eq"><span class="frac frac-inline"><span class="top">dP</span><span class="bottom">dt</span></span> = q<sub>p</sub>X &minus; <span class="frac frac-inline"><span class="top">F</span><span class="bottom">V</span></span>P</span>
-                <span class="balance-note">No existe efluente, pero la concentración de producto se diluye al aumentar el volumen del medio.</span>
+                <span class="balance-eq"><span class="frac frac-inline"><span class="top">dP</span><span class="bottom">dt</span></span> = q<sub>p</sub>X &minus; D(t)P</span>
+                <span class="balance-note">No hay efluente, pero la concentración de producto cae por dilución al aumentar <span class="inline-math">V</span>.</span>
               </div>
               <div class="balance-row">
                 <span class="balance-mode">Continuo</span>
                 <span class="balance-eq"><span class="frac frac-inline"><span class="top">dP</span><span class="bottom">dt</span></span> = q<sub>p</sub>X &minus; DP</span>
-                <span class="balance-note">El término &minus;DP representa el producto que sale arrastrado por el efluente en un volumen constante.</span>
+                <span class="balance-note">El término <span class="inline-math">&minus;DP</span> representa el producto arrastrado por el efluente. En estado estacionario, <span class="inline-math">q<sub>p</sub>X = DP</span>.</span>
               </div>
             </div>
           </article>
 
+          <!-- Volumen, V₀ y Vmax -->
           <article class="teaching-card">
-            <h3>Cómo funciona el volumen en cada modo</h3>
+            <h3>Volumen del reactor: V<sub>0</sub> y V<sub>max</sub></h3>
             <p>
-              El volumen <span class="inline-math">V</span> no juega el mismo papel en los tres modos de cultivo. Esa diferencia es la que determina
-              si aparece o no un término de dilución en los balances de concentración.
+              El volumen <span class="inline-math">V</span> no juega el mismo papel en los tres modos de cultivo,
+              y su evolución determina si aparece un término de dilución en los balances de concentración:
             </p>
             <div class="balance-table">
               <div class="balance-row">
                 <span class="balance-mode">Lote</span>
                 <span class="balance-eq"><span class="frac frac-inline"><span class="top">dV</span><span class="bottom">dt</span></span> = 0</span>
-                <span class="balance-note">No entra ni sale líquido. El volumen permanece constante y no existe dilución por expansión.</span>
+                <span class="balance-note">No entra ni sale líquido. <span class="inline-math">V = V<sub>0</sub></span> durante toda la operación; no existe dilución por expansión.</span>
               </div>
               <div class="balance-row">
                 <span class="balance-mode">Lote alimentado</span>
                 <span class="balance-eq"><span class="frac frac-inline"><span class="top">dV</span><span class="bottom">dt</span></span> = F</span>
-                <span class="balance-note">El volumen aumenta por la alimentación. La dilución instantánea es <span class="inline-math">F/V</span>, así que si <span class="inline-math">F</span> es constante su efecto se debilita a medida que <span class="inline-math">V</span> crece.</span>
+                <span class="balance-note">
+                  El volumen crece desde <span class="inline-math">V<sub>0</sub></span> (volumen inicial de operación). Si se activa el límite de reactor,
+                  la alimentación se corta automáticamente cuando <span class="inline-math">V = V<sub>max</sub></span> (capacidad física máxima).
+                  Se requiere <span class="inline-math">V<sub>0</sub> &le; V<sub>max</sub></span>; la simulación lo impone.
+                </span>
               </div>
               <div class="balance-row">
                 <span class="balance-mode">Continuo</span>
                 <span class="balance-eq"><span class="frac frac-inline"><span class="top">dV</span><span class="bottom">dt</span></span> = F<sub>in</sub> &minus; F<sub>out</sub> = 0</span>
-                <span class="balance-note">En quimiostato entran y salen caudales iguales, por eso el volumen se mantiene constante y la dilución se resume en <span class="inline-math">D = F/V</span>.</span>
+                <span class="balance-note">Entran y salen caudales iguales. <span class="inline-math">V = V<sub>0</sub></span> constante; <span class="inline-math">D = F/V<sub>0</sub></span> fijo.</span>
               </div>
             </div>
             <p>
-              En esta app, <span class="inline-math">V<sub>max</sub></span> en fed-batch es opcional. Si se activa, la alimentación se corta al llegar al volumen máximo del reactor; si no, el modo se trata como un tanque idealizado sin límite geométrico.
+              En lote alimentado, <span class="inline-math">V<sub>max</sub></span> modela la capacidad real del biorreactor. Operaciones cerca del límite implican
+              que <span class="inline-math">D(t) = F/V(t)</span> disminuye rápidamente y el efecto de la alimentación sobre la concentración de sustrato se atenúa antes de lo esperado.
             </p>
           </article>
 
-          <!-- Divider: biology/math ↔ numerical simulation -->
+          <!-- Divider -->
           <div class="teaching-divider">
             <span>Cómo funciona la simulación numérica</span>
           </div>
@@ -543,45 +589,47 @@
           <article class="teaching-card">
             <h3>¿Qué significa la simulación?</h3>
             <p>
-              El sistema de ecuaciones acopladas no tiene solución analítica cerrada cuando <span class="inline-math">&mu;</span> depende de <span class="inline-math">S</span> de
-              forma no lineal. La app parte de las condiciones iniciales
-              <strong class="inline-math">X<sub>0</sub></strong>, <strong class="inline-math">S<sub>0</sub></strong> y <strong class="inline-math">P<sub>0</sub></strong>
-              y avanza el sistema paso a paso en el tiempo.
+              El sistema de ecuaciones diferenciales acopladas no tiene solución analítica cerrada cuando <span class="inline-math">&mu;</span> depende de <span class="inline-math">S</span> de forma no lineal.
+              La app parte de las condiciones iniciales
+              <span class="inline-math">X<sub>0</sub></span>, <span class="inline-math">S<sub>0</sub></span> y <span class="inline-math">P<sub>0</sub></span>
+              y avanza el sistema discretizado en pequeños pasos <span class="inline-math">&Delta;t</span>.
             </p>
             <p>
-              En cada paso calcula primero <span class="inline-math">&mu;</span> a partir del <span class="inline-math">S</span> actual, luego evalúa simultáneamente
-              <strong class="inline-equation"><span class="frac frac-inline"><span class="top">dX</span><span class="bottom">dt</span></span></strong>,
-              <strong class="inline-equation"><span class="frac frac-inline"><span class="top">dS</span><span class="bottom">dt</span></span></strong> y
-              <strong class="inline-equation"><span class="frac frac-inline"><span class="top">dP</span><span class="bottom">dt</span></span></strong>, y con esas pendientes
-              actualiza el estado del cultivo. El resultado es una trayectoria numérica de <span class="inline-math">X(t)</span>, <span class="inline-math">S(t)</span> y <span class="inline-math">P(t)</span>.
+              En cada paso:
+              (1)&nbsp;calcula <span class="inline-math">&mu;</span> a partir del <span class="inline-math">S</span> y <span class="inline-math">P</span> actuales,
+              (2)&nbsp;evalúa simultáneamente
+              <span class="inline-equation"><span class="frac frac-inline"><span class="top">dX</span><span class="bottom">dt</span></span></span>,
+              <span class="inline-equation"><span class="frac frac-inline"><span class="top">dS</span><span class="bottom">dt</span></span></span> y
+              <span class="inline-equation"><span class="frac frac-inline"><span class="top">dP</span><span class="bottom">dt</span></span></span>,
+              y (3)&nbsp;actualiza el estado del cultivo. El resultado es la trayectoria numérica <span class="inline-math">X(t)</span>, <span class="inline-math">S(t)</span>, <span class="inline-math">P(t)</span> — y <span class="inline-math">V(t)</span> en lote alimentado.
             </p>
             <p>
-              Si cambias un parámetro, cambias la pendiente local del sistema en cada punto: por eso todas
-              las curvas responden simultáneamente.
+              Cambiar un parámetro modifica la pendiente local del sistema en cada punto: por eso todas las curvas responden simultáneamente al mover un control.
             </p>
           </article>
 
           <!-- RK4 -->
           <article class="teaching-card">
-            <h3>Integración numérica: Runge-Kutta de cuarto orden</h3>
+            <h3>Integración numérica: Runge-Kutta de 4.º orden</h3>
             <p>
-              El método de Euler evalúa una sola pendiente al inicio del intervalo y la usa para proyectar
-              el estado al siguiente punto: conceptualmente simple, pero el error se acumula con rapidez.
-              Runge-Kutta de cuarto orden corrige esto evaluando <strong>cuatro pendientes intermedias</strong>
-              dentro del mismo intervalo y combinándolas con pesos optimizados:
+              El método de Euler usa una sola pendiente por intervalo: sencillo, pero el error se acumula en
+              <span class="inline-math">O(&Delta;t<sup>2</sup>)</span>.
+              Runge-Kutta de cuarto orden evalúa <strong>cuatro pendientes</strong> dentro del mismo intervalo y las combina con pesos óptimos:
             </p>
             <div class="rk-block">
-              <div>k<sub>1</sub> = &Delta;t f(t<sub>n</sub>, y<sub>n</sub>) &nbsp;&mdash;&nbsp; pendiente al inicio del intervalo</div>
-              <div>k<sub>2</sub> = &Delta;t f(t<sub>n</sub> + &Delta;t/2, y<sub>n</sub> + k<sub>1</sub>/2) &nbsp;&mdash;&nbsp; pendiente al punto medio, corregida con k<sub>1</sub></div>
-              <div>k<sub>3</sub> = &Delta;t f(t<sub>n</sub> + &Delta;t/2, y<sub>n</sub> + k<sub>2</sub>/2) &nbsp;&mdash;&nbsp; segunda corrección del punto medio</div>
-              <div>k<sub>4</sub> = &Delta;t f(t<sub>n</sub> + &Delta;t, y<sub>n</sub> + k<sub>3</sub>) &nbsp;&mdash;&nbsp; pendiente al final del intervalo</div>
-              <div class="rk-result">y<sub>n+1</sub> = y<sub>n</sub> + (k<sub>1</sub> + 2k<sub>2</sub> + 2k<sub>3</sub> + k<sub>4</sub>) / 6</div>
+              <div>k<sub>1</sub> = &Delta;t &middot; f(t<sub>n</sub>,&thinsp; y<sub>n</sub>) &nbsp;&mdash;&nbsp; pendiente al inicio</div>
+              <div>k<sub>2</sub> = &Delta;t &middot; f(t<sub>n</sub> + &Delta;t/2,&thinsp; y<sub>n</sub> + k<sub>1</sub>/2) &nbsp;&mdash;&nbsp; primer punto medio</div>
+              <div>k<sub>3</sub> = &Delta;t &middot; f(t<sub>n</sub> + &Delta;t/2,&thinsp; y<sub>n</sub> + k<sub>2</sub>/2) &nbsp;&mdash;&nbsp; segundo punto medio</div>
+              <div>k<sub>4</sub> = &Delta;t &middot; f(t<sub>n</sub> + &Delta;t,&thinsp; y<sub>n</sub> + k<sub>3</sub>) &nbsp;&mdash;&nbsp; pendiente al final</div>
+            </div>
+            <div class="textbook-equation textbook-equation-compact" style="margin-top:0.2rem;">
+              y<sub>n+1</sub> = y<sub>n</sub> +
+              <span class="frac"><span class="top">k<sub>1</sub> + 2k<sub>2</sub> + 2k<sub>3</sub> + k<sub>4</sub></span><span class="bottom">6</span></span>
             </div>
             <p>
-              Aquí <strong class="inline-math">y</strong> es el vector de estado <span class="inline-math">[X, S, P]</span> (más <span class="inline-math">V</span> en lote alimentado). Las cuatro
-              evaluaciones dentro del mismo intervalo permiten corregir la dirección de integración antes de
-              comprometerse con el siguiente punto, logrando un error global de <span class="inline-math">O(&Delta;t<sup>4</sup>)</span>. Por eso
-              se puede usar un <span class="inline-math">&Delta;t</span> razonablemente grande sin que las curvas diverjan.
+              El vector de estado <span class="inline-math">y = [X, S, P]</span> (más <span class="inline-math">V</span> en lote alimentado) avanza con error global de
+              <span class="inline-math">O(&Delta;t<sup>4</sup>)</span>: cuatro órdenes de magnitud mejor que Euler por cada reducción a la mitad de <span class="inline-math">&Delta;t</span>.
+              Por eso se pueden usar pasos de <span class="inline-math">&Delta;t = 0.05</span>&nbsp;h sin que las curvas diverjan.
             </p>
           </article>
 
