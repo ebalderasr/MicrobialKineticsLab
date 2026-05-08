@@ -82,7 +82,7 @@ function debounce(fn, delay) {
   };
 }
 
-const debouncedRun = debounce(runSimulation, 100);
+const debouncedRun = debounce(runSimulation, 400);
 
 function fmt(value, digits = 3, unit = "") {
   if (value === null || value === undefined || Number.isNaN(value)) {
@@ -436,47 +436,30 @@ function renderTimeSeries(series) {
   }, PLOT_CONFIG);
 }
 
-// ── Chart 2 — Formation rates ─────────────────────────────────────────────────
-function renderRatePlot(series) {
-  const dPdtRange = computeAxisRange(series.dPdt, { includeZero: true, minPad: 0.05 });
-  const qpRange   = computeAxisRange(series.qp,   { includeZero: true, minPad: 0.02 });
-
-  Plotly.newPlot("rate-plot", [
+// ── Chart 2 — Biomass–Substrate phase portrait ────────────────────────────────
+function renderPhasePlot(series) {
+  const xRange = computeAxisRange(series.X, { includeZero: true, minPad: 0.1 });
+  const sRange = computeAxisRange(series.S, { includeZero: true, minPad: 0.1 });
+  Plotly.newPlot("phase-plot", [
     {
-      x: series.t, y: series.dXdt,
-      name: "dX/dt", type: "scatter", mode: "lines",
-      line: { color: C.biomass,   width: 2.5 },
+      x: series.X, y: series.S,
+      name: "Trayectoria", type: "scatter", mode: "lines",
+      line: { color: C.substrate, width: 2.8 },
     },
     {
-      x: series.t, y: series.dSdt,
-      name: "dS/dt", type: "scatter", mode: "lines",
-      line: { color: C.substrate, width: 2.5 },
+      x: [series.X[0]], y: [series.S[0]],
+      name: "Inicio", type: "scatter", mode: "markers",
+      marker: { color: C.biomass, size: 10, line: { color: "#ffffff", width: 1.5 } },
     },
     {
-      x: series.t, y: series.dPdt,
-      name: "dP/dt", type: "scatter", mode: "lines", yaxis: "y2",
-      line: { color: C.product,   width: 2.5, dash: "dash" },
-    },
-    {
-      x: series.t, y: series.qp,
-      name: "q<sub>p</sub>", type: "scatter", mode: "lines", yaxis: "y3",
-      line: { color: C.kinetics,  width: 2, dash: "dot" },
+      x: [series.X[series.X.length - 1]], y: [series.S[series.S.length - 1]],
+      name: "Final", type: "scatter", mode: "markers",
+      marker: { color: C.kinetics, size: 10, symbol: "diamond", line: { color: "#ffffff", width: 1.5 } },
     },
   ], {
     ...basePlotLayout(),
-    xaxis:  xAxisCfg(),
-    yaxis:  leftAxisCfg(
-      "dX/dt, dS/dt (g L<sup>−1</sup> h<sup>−1</sup>)", C.biomass,
-      { zeroline: true, zerolinecolor: "rgba(31,42,31,0.25)", zerolinewidth: 1.5 },
-    ),
-    yaxis2: rightAxisCfg(
-      "dP/dt (g L<sup>−1</sup> h<sup>−1</sup>)", C.product, 60,
-      { range: dPdtRange },
-    ),
-    yaxis3: rightAxisCfg(
-      "q<sub>p</sub> (g<sub>P</sub> g<sub>X</sub><sup>−1</sup> h<sup>−1</sup>)", C.kinetics, 128,
-      { range: qpRange },
-    ),
+    xaxis: { title: "Biomasa X (g L<sup>−1</sup>)", gridcolor: "rgba(31,42,31,0.08)", linecolor: "rgba(31,42,31,0.15)", automargin: true, range: xRange },
+    yaxis: { title: "Sustrato S (g L<sup>−1</sup>)", gridcolor: "rgba(31,42,31,0.08)", linecolor: "rgba(31,42,31,0.15)", automargin: true, range: sRange },
   }, PLOT_CONFIG);
 }
 
@@ -520,19 +503,33 @@ function renderVolumePlot(series) {
   }, PLOT_CONFIG);
 }
 
+const MAX_SIM_STEPS = 200_000;
+
 async function runSimulation() {
-  if (!isReady) {
+  if (!isReady) return;
+  const params = collectParams();
+  const nSteps = Math.ceil(params.t_final / params.dt);
+  if (nSteps > MAX_SIM_STEPS) {
+    const minDt = (params.t_final / MAX_SIM_STEPS).toFixed(4);
+    const el = document.getElementById("insight-text");
+    if (el) el.textContent = `Δt = ${params.dt} h genera ${nSteps.toLocaleString()} pasos — demasiado para el navegador. Aumenta Δt (mínimo recomendado: ${minDt} h).`;
+    setRuntimeStatus("Pyodide listo", true);
     return;
   }
-  const params = collectParams();
   setRuntimeStatus("Ejecutando simulación...", false);
-  const raw = await pyodide.globals.get("run_simulation")(JSON.stringify(params));
-  const result = JSON.parse(raw);
-  updateMetrics(result.summary);
-  updateInsight(result.summary, params);
-  renderTimeSeries(result.series);
-  renderRatePlot(result.series);
-  renderVolumePlot(result.series);
+  try {
+    const raw = await pyodide.globals.get("run_simulation")(JSON.stringify(params));
+    const result = JSON.parse(raw);
+    updateMetrics(result.summary);
+    updateInsight(result.summary, params);
+    renderTimeSeries(result.series);
+    renderPhasePlot(result.series);
+    renderVolumePlot(result.series);
+  } catch (err) {
+    console.error("Simulation error:", err);
+    const el = document.getElementById("insight-text");
+    if (el) el.textContent = "Error en la simulación. Verifica que todos los parámetros sean válidos.";
+  }
   setRuntimeStatus("Pyodide listo", true);
 }
 
@@ -661,3 +658,35 @@ initPyodideApp().catch((error) => {
       "La app no pudo cargar el runtime de Python. Revisa el acceso a la red o ejecuta desde un servidor local.";
   }
 });
+
+// ── Mode chips ────────────────────────────────────────────────────────────────
+(function () {
+  const chips  = document.querySelectorAll(".mode-chip");
+  const select = document.getElementById("culture_mode");
+  if (!select) return;
+  function syncChips(mode) {
+    chips.forEach((chip) => chip.classList.toggle("active", chip.dataset.mode === mode));
+  }
+  chips.forEach((chip) => {
+    chip.addEventListener("click", () => {
+      select.value = chip.dataset.mode;
+      syncChips(chip.dataset.mode);
+      select.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+  });
+  select.addEventListener("input", () => syncChips(select.value));
+  syncChips(select.value);
+})();
+
+// ── Accordion sections ────────────────────────────────────────────────────────
+(function () {
+  document.querySelectorAll(".acc-section").forEach((section) => {
+    const btn = section.querySelector(".acc-header");
+    if (!btn) return;
+    btn.addEventListener("click", () => {
+      const willOpen = !section.classList.contains("open");
+      section.classList.toggle("open", willOpen);
+      btn.setAttribute("aria-expanded", willOpen);
+    });
+  });
+})();

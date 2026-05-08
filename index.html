@@ -35,741 +35,786 @@
   </header>
 
   <div class="page-shell">
-    <header class="hero">
-      <div class="hero-copy">
-        <p class="eyebrow">Pyodide Teaching App</p>
-        <h1>Microbial Kinetics Lab</h1>
-        <p class="lede">
-          Explora la cinética de crecimiento microbiano en cultivo batch, fed-batch y continuo.
-          Ajusta parámetros fisiológicos y observa cómo cambian biomasa,
-          sustrato, producto/inhibidor, tasa específica y velocidades de formación.
-        </p>
-      </div>
-      <div class="hero-card">
+    <div class="app-layout">
 
-        <!-- ── Animated bioreactor diagram ── -->
-        <figure class="reactor-figure" aria-label="Diagrama conceptual del modo de cultivo activo">
-          <svg id="reactor-svg" class="reactor-svg mode-batch"
-               viewBox="0 0 260 185" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <clipPath id="rvc">
-                <rect x="71" y="36" width="118" height="124" rx="2"/>
-              </clipPath>
-            </defs>
+      <!-- ══════════════════════════════════════
+           SIDEBAR
+           ══════════════════════════════════════ -->
+      <div class="sidebar-wrapper">
 
-            <!-- shadow -->
-            <rect x="71" y="25" width="124" height="141" rx="9" fill="rgba(0,0,0,0.05)"/>
-            <!-- vessel body -->
-            <rect x="68" y="22" width="124" height="140" rx="8"
-                  fill="#f5f8fa" stroke="#8fa0b0" stroke-width="2"/>
-            <!-- top cap -->
-            <rect x="68" y="22" width="124" height="16" rx="8" fill="#dde6ef"/>
-            <!-- sensor ports -->
-            <rect x="95"  y="16" width="5" height="8" rx="1.5" fill="#8fa0b0"/>
-            <rect x="163" y="16" width="5" height="8" rx="1.5" fill="#8fa0b0"/>
-
-            <!-- liquid (translateY animated per mode) -->
-            <g id="r-liquid" clip-path="url(#rvc)">
-              <g id="r-liq-inner">
-                <rect x="71" y="36" width="118" height="124" fill="#bde2cc"/>
-                <line x1="71" y1="38" x2="189" y2="38"
-                      stroke="rgba(255,255,255,0.55)" stroke-width="2.5"/>
+        <!-- Reactor: prominente, encima del recuadro de interacción -->
+        <div class="sidebar-reactor-display">
+          <figure class="sidebar-reactor-fig" aria-label="Diagrama del modo de cultivo activo">
+            <svg id="reactor-svg" class="mode-batch" viewBox="0 0 260 185"
+                 xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;">
+              <defs>
+                <clipPath id="rvc">
+                  <rect x="71" y="36" width="118" height="124" rx="2"/>
+                </clipPath>
+              </defs>
+              <!-- shadow -->
+              <rect x="71" y="25" width="124" height="141" rx="9" fill="rgba(0,0,0,0.05)"/>
+              <!-- vessel body -->
+              <rect x="68" y="22" width="124" height="140" rx="8"
+                    fill="#f5f8fa" stroke="#8fa0b0" stroke-width="2"/>
+              <!-- top cap -->
+              <rect x="68" y="22" width="124" height="16" rx="8" fill="#dde6ef"/>
+              <!-- sensor ports -->
+              <rect x="95"  y="16" width="5" height="8" rx="1.5" fill="#8fa0b0"/>
+              <rect x="163" y="16" width="5" height="8" rx="1.5" fill="#8fa0b0"/>
+              <!-- liquid -->
+              <g id="r-liquid" clip-path="url(#rvc)">
+                <g id="r-liq-inner">
+                  <rect x="71" y="36" width="118" height="124" fill="#bde2cc"/>
+                  <line x1="71" y1="38" x2="189" y2="38"
+                        stroke="rgba(255,255,255,0.55)" stroke-width="2.5"/>
+                </g>
               </g>
-            </g>
-
-            <!-- cells -->
-            <g clip-path="url(#rvc)">
-              <circle class="r-cell" cx="88"  cy="122" r="3.0" fill="#0d7c66"/>
-              <circle class="r-cell" cx="110" cy="138" r="2.5" fill="#0d7c66"/>
-              <circle class="r-cell" cx="130" cy="120" r="3.0" fill="#0d7c66"/>
-              <circle class="r-cell" cx="152" cy="135" r="2.5" fill="#0d7c66"/>
-              <circle class="r-cell" cx="170" cy="123" r="3.0" fill="#0d7c66"/>
-              <circle class="r-cell" cx="100" cy="150" r="2.0" fill="#0d7c66"/>
-              <circle class="r-cell" cx="155" cy="149" r="2.5" fill="#0d7c66"/>
-              <circle class="r-cell" cx="130" cy="152" r="2.0" fill="#0d7c66"/>
-              <circle class="r-cell" cx="85"  cy="143" r="2.0" fill="#0d7c66"/>
-              <circle class="r-cell" cx="172" cy="144" r="2.0" fill="#0d7c66"/>
-            </g>
-
-            <!-- agitator -->
-            <g clip-path="url(#rvc)">
-              <line x1="130" y1="36" x2="130" y2="148"
-                    stroke="#a0b4c2" stroke-width="2.5"/>
-              <g id="r-impeller">
-                <circle cx="130" cy="118" r="5.2" fill="#f5f8fa" stroke="#8fa0b0" stroke-width="2"/>
-                <line x1="130" y1="118" x2="151" y2="112"
-                      stroke="#8fa0b0" stroke-width="3.2" stroke-linecap="round"/>
-                <line x1="130" y1="118" x2="145" y2="131"
-                      stroke="#8fa0b0" stroke-width="3.2" stroke-linecap="round"/>
-                <line x1="130" y1="118" x2="109" y2="124"
-                      stroke="#8fa0b0" stroke-width="3.2" stroke-linecap="round"/>
-                <line x1="130" y1="118" x2="115" y2="105"
-                      stroke="#8fa0b0" stroke-width="3.2" stroke-linecap="round"/>
-                <circle cx="130" cy="118" r="18" fill="none" stroke="#8fa0b0" stroke-width="1.2" opacity="0.22"/>
+              <!-- cells -->
+              <g clip-path="url(#rvc)">
+                <circle class="r-cell" cx="88"  cy="122" r="3.0" fill="#0d7c66"/>
+                <circle class="r-cell" cx="110" cy="138" r="2.5" fill="#0d7c66"/>
+                <circle class="r-cell" cx="130" cy="120" r="3.0" fill="#0d7c66"/>
+                <circle class="r-cell" cx="152" cy="135" r="2.5" fill="#0d7c66"/>
+                <circle class="r-cell" cx="170" cy="123" r="3.0" fill="#0d7c66"/>
+                <circle class="r-cell" cx="100" cy="150" r="2.0" fill="#0d7c66"/>
+                <circle class="r-cell" cx="155" cy="149" r="2.5" fill="#0d7c66"/>
+                <circle class="r-cell" cx="130" cy="152" r="2.0" fill="#0d7c66"/>
+                <circle class="r-cell" cx="85"  cy="143" r="2.0" fill="#0d7c66"/>
+                <circle class="r-cell" cx="172" cy="144" r="2.0" fill="#0d7c66"/>
               </g>
-            </g>
-
-            <!-- vessel border (re-drawn on top) -->
-            <rect x="68" y="22" width="124" height="140" rx="8"
-                  fill="none" stroke="#8fa0b0" stroke-width="2"/>
-
-            <!-- ── inlet (fed-batch + continuous) ── -->
-            <g id="r-inlet" class="r-inlet">
-              <line x1="26" y1="54" x2="68" y2="54"
-                    stroke="#4285f4" stroke-width="4.2" stroke-linecap="round"/>
-              <line x1="68" y1="54" x2="88" y2="54"
-                    stroke="#78aefb" stroke-width="3.2" stroke-linecap="round" opacity="0.95"/>
-              <circle cx="38" cy="54" r="8" fill="#e8f0fe" stroke="#4285f4" stroke-width="1.8"/>
-              <path d="M35,51 L43,54 L35,57 Z" fill="#4285f4"/>
-              <circle class="r-flow-in" cx="44" cy="54" r="2.3" fill="#4285f4"/>
-              <circle class="r-flow-in" cx="58" cy="54" r="1.9" fill="#4285f4"
-                      style="animation-delay:-0.75s"/>
-              <circle class="r-flow-in" cx="75" cy="54" r="1.7" fill="#4285f4"
-                      style="animation-delay:-0.38s"/>
-              <circle class="r-feed-drop" cx="88" cy="58" r="2.4" fill="#bde2cc"/>
-              <circle class="r-feed-drop" cx="88" cy="58" r="2.0" fill="#bde2cc" style="animation-delay:-0.65s"/>
-              <circle class="r-feed-drop" cx="88" cy="58" r="1.8" fill="#bde2cc" style="animation-delay:-1.1s"/>
-              <text class="r-port-label" x="26" y="43">F</text>
-            </g>
-
-            <!-- ── outlet (continuous only) ── -->
-            <g id="r-outlet" class="r-outlet">
-              <line x1="192" y1="138" x2="230" y2="138"
-                    stroke="#ee8b42" stroke-width="3.5" stroke-linecap="round"/>
-              <line x1="174" y1="138" x2="192" y2="138"
-                    stroke="#f1ad78" stroke-width="3" stroke-linecap="round" opacity="0.95"/>
-              <circle class="r-flow-out" cx="200" cy="138" r="2.2" fill="#ee8b42"/>
-              <circle class="r-flow-out" cx="215" cy="138" r="1.8" fill="#ee8b42"
-                      style="animation-delay:-0.75s"/>
-              <circle class="r-flow-out" cx="183" cy="138" r="1.7" fill="#ee8b42"
-                      style="animation-delay:-0.38s"/>
-              <circle cx="240" cy="138" r="8" fill="#fff3e8" stroke="#ee8b42" stroke-width="1.8"/>
-              <path d="M237,135 L245,138 L237,141 Z" fill="#ee8b42"/>
-              <text class="r-port-label r-port-label-out" x="226" y="126">F</text>
-            </g>
-
-            <!-- ── Vmax line (fed-batch) ── -->
-            <g id="r-vmax" class="r-vmax">
-              <line x1="68" y1="55" x2="192" y2="55"
-                    stroke="#9a3d57" stroke-width="1.5" stroke-dasharray="5,3" opacity="0.85"/>
-              <text x="196" y="59" font-size="8.5" fill="#9a3d57" font-weight="600"
-                    font-family="IBM Plex Sans, sans-serif">V<tspan dy="3" font-size="6.5">max</tspan></text>
-            </g>
-
-            <!-- ── V₀ marker (fed-batch) ── -->
-            <g id="r-v0m" class="r-v0m">
-              <line x1="60" y1="117" x2="71" y2="117" stroke="#607080" stroke-width="1.5"/>
-              <text x="56" y="121" font-size="8.5" fill="#607080" text-anchor="end"
-                    font-family="IBM Plex Sans, sans-serif">V<tspan dy="3" font-size="6.5">0</tspan></text>
-            </g>
-
-            <!-- ── mode equation label ── -->
-            <text id="r-eq-text" x="130" y="178" text-anchor="middle"
-                  font-size="9.5" font-weight="600" fill="#3a4a5a"
-                  font-family="IBM Plex Sans, sans-serif">Sin flujos · V constante</text>
-          </svg>
-        </figure>
-
-        <!-- model + mode meta row -->
-        <div class="reactor-meta">
-          <div class="reactor-meta-item">
-            <span class="reactor-meta-label">Modelo</span>
-            <strong id="hero-model-name" class="reactor-meta-value">Monod</strong>
-          </div>
-          <div class="reactor-meta-item">
-            <span class="reactor-meta-label">Modo</span>
-            <strong id="hero-culture-name" class="reactor-meta-value">Lote (Batch)</strong>
+              <!-- agitator -->
+              <g clip-path="url(#rvc)">
+                <line x1="130" y1="36" x2="130" y2="148"
+                      stroke="#a0b4c2" stroke-width="2.5"/>
+                <g id="r-impeller">
+                  <circle cx="130" cy="118" r="5.2" fill="#f5f8fa" stroke="#8fa0b0" stroke-width="2"/>
+                  <line x1="130" y1="118" x2="151" y2="112"
+                        stroke="#8fa0b0" stroke-width="3.2" stroke-linecap="round"/>
+                  <line x1="130" y1="118" x2="145" y2="131"
+                        stroke="#8fa0b0" stroke-width="3.2" stroke-linecap="round"/>
+                  <line x1="130" y1="118" x2="109" y2="124"
+                        stroke="#8fa0b0" stroke-width="3.2" stroke-linecap="round"/>
+                  <line x1="130" y1="118" x2="115" y2="105"
+                        stroke="#8fa0b0" stroke-width="3.2" stroke-linecap="round"/>
+                  <circle cx="130" cy="118" r="18" fill="none" stroke="#8fa0b0" stroke-width="1.2" opacity="0.22"/>
+                </g>
+              </g>
+              <!-- vessel border (re-drawn on top) -->
+              <rect x="68" y="22" width="124" height="140" rx="8"
+                    fill="none" stroke="#8fa0b0" stroke-width="2"/>
+              <!-- inlet (fed-batch + continuous) -->
+              <g id="r-inlet" class="r-inlet">
+                <line x1="26" y1="54" x2="68" y2="54"
+                      stroke="#4285f4" stroke-width="4.2" stroke-linecap="round"/>
+                <line x1="68" y1="54" x2="88" y2="54"
+                      stroke="#78aefb" stroke-width="3.2" stroke-linecap="round" opacity="0.95"/>
+                <circle cx="38" cy="54" r="8" fill="#e8f0fe" stroke="#4285f4" stroke-width="1.8"/>
+                <path d="M35,51 L43,54 L35,57 Z" fill="#4285f4"/>
+                <circle class="r-flow-in" cx="44" cy="54" r="2.3" fill="#4285f4"/>
+                <circle class="r-flow-in" cx="58" cy="54" r="1.9" fill="#4285f4"
+                        style="animation-delay:-0.75s"/>
+                <circle class="r-flow-in" cx="75" cy="54" r="1.7" fill="#4285f4"
+                        style="animation-delay:-0.38s"/>
+                <circle class="r-feed-drop" cx="88" cy="58" r="2.4" fill="#bde2cc"/>
+                <circle class="r-feed-drop" cx="88" cy="58" r="2.0" fill="#bde2cc" style="animation-delay:-0.65s"/>
+                <circle class="r-feed-drop" cx="88" cy="58" r="1.8" fill="#bde2cc" style="animation-delay:-1.1s"/>
+                <text class="r-port-label" x="26" y="43">F</text>
+              </g>
+              <!-- outlet (continuous only) -->
+              <g id="r-outlet" class="r-outlet">
+                <line x1="192" y1="138" x2="230" y2="138"
+                      stroke="#ee8b42" stroke-width="3.5" stroke-linecap="round"/>
+                <line x1="174" y1="138" x2="192" y2="138"
+                      stroke="#f1ad78" stroke-width="3" stroke-linecap="round" opacity="0.95"/>
+                <circle class="r-flow-out" cx="200" cy="138" r="2.2" fill="#ee8b42"/>
+                <circle class="r-flow-out" cx="215" cy="138" r="1.8" fill="#ee8b42"
+                        style="animation-delay:-0.75s"/>
+                <circle class="r-flow-out" cx="183" cy="138" r="1.7" fill="#ee8b42"
+                        style="animation-delay:-0.38s"/>
+                <circle cx="240" cy="138" r="8" fill="#fff3e8" stroke="#ee8b42" stroke-width="1.8"/>
+                <path d="M237,135 L245,138 L237,141 Z" fill="#ee8b42"/>
+                <text class="r-port-label r-port-label-out" x="226" y="126">F</text>
+              </g>
+              <!-- Vmax line (fed-batch) -->
+              <g id="r-vmax" class="r-vmax">
+                <line x1="68" y1="55" x2="192" y2="55"
+                      stroke="#9a3d57" stroke-width="1.5" stroke-dasharray="5,3" opacity="0.85"/>
+                <text x="196" y="59" font-size="8.5" fill="#9a3d57" font-weight="600"
+                      font-family="IBM Plex Sans, sans-serif">V<tspan dy="3" font-size="6.5">max</tspan></text>
+              </g>
+              <!-- V₀ marker (fed-batch) -->
+              <g id="r-v0m" class="r-v0m">
+                <line x1="60" y1="117" x2="71" y2="117" stroke="#607080" stroke-width="1.5"/>
+                <text x="56" y="121" font-size="8.5" fill="#607080" text-anchor="end"
+                      font-family="IBM Plex Sans, sans-serif">V<tspan dy="3" font-size="6.5">0</tspan></text>
+              </g>
+              <!-- mode equation label -->
+              <text id="r-eq-text" x="130" y="178" text-anchor="middle"
+                    font-size="9.5" font-weight="600" fill="#3a4a5a"
+                    font-family="IBM Plex Sans, sans-serif">Sin flujos · V constante</text>
+            </svg>
+          </figure>
+          <div class="sidebar-reactor-info">
+            <strong id="hero-model-name">Monod</strong>
+            <span id="hero-culture-name">Lote (Batch)</span>
+            <span id="runtime-status" class="status-badge">Cargando...</span>
           </div>
         </div>
 
-      </div>
-    </header>
+        <aside class="sidebar">
 
-    <main class="layout">
-      <aside class="control-panel">
-        <section class="panel-section">
-          <div class="section-title">
-            <h2>Microorganismo</h2>
-            <p>Modelo de crecimiento y parámetros cinéticos.</p>
-          </div>
-          <div class="control-list">
-            <label class="control">
-              <span>Ecuación de crecimiento</span>
-              <select id="growth_model" class="select-control">
-                <option value="monod">Monod</option>
-                <option value="monod_cell_death">Monod con muerte celular</option>
-                <option value="haldane">Haldane / Andrews</option>
-                <option value="product_competitive">Inhibición competitiva por producto</option>
-                <option value="product_noncompetitive">Inhibición no competitiva por producto</option>
-                <option value="product_linear">Inhibición lineal por producto</option>
-                <option value="product_exponential">Inhibición exponencial por producto</option>
-              </select>
-            </label>
-            <label class="control">
-              <span>&mu;<sub>max</sub> (h<sup>-1</sup>)</span>
-              <input id="mu_max" type="range" min="0.05" max="1.8" step="0.01" value="1">
-              <output for="mu_max" id="mu_max_value"></output>
-            </label>
-            <label class="control">
-              <span>K<sub>s</sub> (g/L)</span>
-              <input id="Ks" type="range" min="0.01" max="8" step="0.01" value="1">
-              <output for="Ks" id="Ks_value"></output>
-            </label>
-            <label class="control parameter-conditional" data-models="haldane">
-              <span>K<sub>i</sub> (g/L)</span>
-              <input id="Ki" type="range" min="0.1" max="120" step="0.1" value="25">
-              <output for="Ki" id="Ki_value"></output>
-            </label>
-            <label class="control parameter-conditional" data-models="product_competitive,product_noncompetitive">
-              <span>K<sub>ip</sub> (g/L)</span>
-              <input id="Kip" type="range" min="0.1" max="80" step="0.1" value="12">
-              <output for="Kip" id="Kip_value"></output>
-            </label>
-            <label class="control parameter-conditional" data-models="product_linear,product_exponential">
-              <span>k<sub>p</sub> (L/g)</span>
-              <input id="kp" type="range" min="0.001" max="1" step="0.001" value="0.08">
-              <output for="kp" id="kp_value"></output>
-            </label>
-            <label class="control">
-              <span>Y<sub>x/s</sub> (g/g)</span>
-              <input id="Yxs" type="range" min="0.05" max="0.95" step="0.01" value="0.5">
-              <output for="Yxs" id="Yxs_value"></output>
-            </label>
-            <label class="control parameter-conditional" data-models="monod_cell_death">
-              <span>k<sub>d</sub> (h<sup>-1</sup>)</span>
-              <input id="kd" type="range" min="0" max="0.4" step="0.005" value="0.02">
-              <output for="kd" id="kd_value"></output>
-            </label>
-            <label class="control">
-              <span>Modelo de q<sub>p</sub></span>
-              <select id="product_mode" class="select-control">
-                <option value="none">Sin formación de producto</option>
-                <option value="growth_associated" selected>Asociado al crecimiento</option>
-                <option value="nongrowth_associated">No asociado al crecimiento</option>
-              </select>
-            </label>
-            <label class="control parameter-conditional" data-models="product_mode_growth_associated">
-              <span>&alpha; (g<sub>P</sub>/g<sub>X</sub>)</span>
-              <input id="alpha" type="range" min="0" max="2" step="0.01" value="0.35">
-              <output for="alpha" id="alpha_value"></output>
-            </label>
-            <label class="control parameter-conditional" data-models="product_mode_nongrowth_associated">
-              <span>&beta; (g<sub>P</sub>/g<sub>X</sub>/h)</span>
-              <input id="beta" type="range" min="0" max="1" step="0.001" value="0.04">
-              <output for="beta" id="beta_value"></output>
-            </label>
-          </div>
-        </section>
+          <!-- ── Top: mode chips + primary selects ── -->
+          <div class="sidebar-top">
 
-        <section class="panel-section">
-          <div class="section-title">
-            <h2>Biorreactor</h2>
-            <p>Modo de operación y condiciones del reactor.</p>
-          </div>
-          <div class="control-list">
-            <label class="control">
-              <span>Modo de cultivo</span>
-              <select id="culture_mode" class="select-control">
-                <option value="batch">Lote (Batch)</option>
-                <option value="fedbatch">Lote alimentado (Fed-batch)</option>
-                <option value="continuous">Continuo (Chemostat)</option>
-              </select>
-            </label>
-            <label class="control">
-              <span id="working-volume-label">Volumen de trabajo V<sub>0</sub> (L)</span>
-              <input id="V_working" type="range" min="0.5" max="20" step="0.1" value="2">
-              <output for="V_working" id="V_working_value"></output>
-            </label>
-            <label class="control parameter-conditional" data-culture="fedbatch">
-              <span>F (L/h)</span>
-              <input id="F" type="range" min="0.01" max="2" step="0.01" value="0.1">
-              <output for="F" id="F_value"></output>
-            </label>
-            <label class="control parameter-conditional" data-culture="fedbatch">
-              <span>Límite de volumen</span>
-              <select id="vmax_mode" class="select-control">
-                <option value="idealized" selected>Idealizado</option>
-                <option value="limited">Usar Vmax del reactor</option>
-              </select>
-            </label>
-            <label class="control parameter-conditional" data-culture="fedbatch" data-models="vmax_limited">
-              <span>Capacidad máxima del reactor V<sub>max</sub> (L)</span>
-              <input id="V_max" type="range" min="0.5" max="40" step="0.1" value="10">
-              <output for="V_max" id="V_max_value"></output>
-            </label>
-            <label class="control parameter-conditional" data-culture="fedbatch,continuous">
-              <span>S<sub>r</sub> (sustrato en la alimentación, g/L)</span>
-              <input id="S_r" type="range" min="1" max="200" step="1" value="100">
-              <output for="S_r" id="S_r_value"></output>
-            </label>
-            <label class="control parameter-conditional" data-culture="continuous">
-              <span>D (h<sup>-1</sup>)</span>
-              <input id="D" type="range" min="0.01" max="1.5" step="0.01" value="0.5">
-              <output for="D" id="D_value"></output>
-            </label>
-          </div>
-        </section>
+            <div class="mode-chips" role="group" aria-label="Modo de cultivo">
+              <button class="mode-chip active" data-mode="batch" type="button">Lote</button>
+              <button class="mode-chip" data-mode="fedbatch" type="button">Fed-batch</button>
+              <button class="mode-chip" data-mode="continuous" type="button">Continuo</button>
+            </div>
+            <!-- Hidden select, kept in sync with chips by JS -->
+            <select id="culture_mode" class="visually-hidden" tabindex="-1" aria-hidden="true">
+              <option value="batch" selected>Lote (Batch)</option>
+              <option value="fedbatch">Lote alimentado (Fed-batch)</option>
+              <option value="continuous">Continuo (Chemostat)</option>
+            </select>
 
-        <section class="panel-section">
-          <div class="section-title">
-            <h2>Simulación</h2>
-            <p>Condiciones iniciales y configuración numérica.</p>
-          </div>
-          <div class="control-list">
-            <label class="control">
-              <span>X<sub>0</sub> (g/L)</span>
-              <input id="X0" type="range" min="0.01" max="4" step="0.01" value="0.2">
-              <output for="X0" id="X0_value"></output>
-            </label>
-            <label class="control">
-              <span>S<sub>0</sub> (g/L)</span>
-              <input id="S0" type="range" min="0.1" max="500" step="0.1" value="10">
-              <output for="S0" id="S0_value"></output>
-            </label>
-            <label class="control">
-              <span>P<sub>0</sub> (g/L)</span>
-              <input id="P0" type="range" min="0" max="40" step="0.1" value="0">
-              <output for="P0" id="P0_value"></output>
-            </label>
-            <label class="control">
-              <span>&Delta;t (h)</span>
-              <input id="dt" type="range" min="0.01" max="0.5" step="0.01" value="0.05">
-              <output for="dt" id="dt_value"></output>
-            </label>
-            <label class="control">
-              <span>Tiempo final (h)</span>
-              <input id="t_final" type="range" min="4" max="72" step="1" value="24">
-              <output for="t_final" id="t_final_value"></output>
-            </label>
-          </div>
-        </section>
+            <div class="sidebar-primaries">
+              <div class="sidebar-primary-field">
+                <label class="sidebar-field-label" for="growth_model">Cinética de crecimiento</label>
+                <select id="growth_model" class="select-control select-control-emphasis">
+                  <option value="monod">Monod</option>
+                  <option value="monod_cell_death">Monod + muerte celular</option>
+                  <option value="haldane">Haldane / Andrews</option>
+                  <option value="product_competitive">Inhibición competitiva (P)</option>
+                  <option value="product_noncompetitive">Inhibición no competitiva (P)</option>
+                  <option value="product_linear">Inhibición lineal (P)</option>
+                  <option value="product_exponential">Inhibición exponencial (P)</option>
+                </select>
+              </div>
+              <div class="sidebar-primary-field">
+                <label class="sidebar-field-label" for="product_mode">Modelo de producto</label>
+                <select id="product_mode" class="select-control select-control-emphasis">
+                  <option value="none">Sin formación de producto</option>
+                  <option value="growth_associated" selected>Asociado al crecimiento</option>
+                  <option value="nongrowth_associated">No asociado al crecimiento</option>
+                </select>
+              </div>
+            </div>
 
-      </aside>
+          </div><!-- /sidebar-top -->
 
-      <section class="content">
-        <section class="metrics-grid">
-          <article class="metric-card">
-            <span>Biomasa final</span>
-            <strong id="final-x">-</strong>
-          </article>
-          <article class="metric-card">
-            <span>Sustrato final</span>
-            <strong id="final-s">-</strong>
-          </article>
-          <article class="metric-card">
-            <span>Producto final</span>
-            <strong id="final-p">-</strong>
-          </article>
-          <article class="metric-card">
+          <!-- ── Accordion sections ── -->
+          <div class="sidebar-body">
+
+            <!-- ① Microorganismo -->
+            <div class="acc-section" data-acc-id="micro">
+              <button class="acc-header" type="button" aria-expanded="false" aria-controls="acc-micro">
+                <span class="acc-icon-wrap acc-blue">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </span>
+                <span class="acc-title">Microorganismo</span>
+                <svg class="acc-chevron" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="acc-body-grid" id="acc-micro">
+                <div class="acc-body-inner">
+                  <div class="control-list">
+                    <label class="control">
+                      <span>&mu;<sub>max</sub> (h<sup>-1</sup>)</span>
+                      <input id="mu_max" type="range" min="0.05" max="1.8" step="0.01" value="1">
+                      <output for="mu_max" id="mu_max_value"></output>
+                    </label>
+                    <label class="control">
+                      <span>K<sub>s</sub> (g/L)</span>
+                      <input id="Ks" type="range" min="0.01" max="8" step="0.01" value="1">
+                      <output for="Ks" id="Ks_value"></output>
+                    </label>
+                    <label class="control parameter-conditional" data-models="haldane">
+                      <span>K<sub>i</sub> (g/L)</span>
+                      <input id="Ki" type="range" min="0.1" max="120" step="0.1" value="25">
+                      <output for="Ki" id="Ki_value"></output>
+                    </label>
+                    <label class="control parameter-conditional" data-models="product_competitive,product_noncompetitive">
+                      <span>K<sub>ip</sub> (g/L)</span>
+                      <input id="Kip" type="range" min="0.1" max="80" step="0.1" value="12">
+                      <output for="Kip" id="Kip_value"></output>
+                    </label>
+                    <label class="control parameter-conditional" data-models="product_linear,product_exponential">
+                      <span>k<sub>p</sub> (L/g)</span>
+                      <input id="kp" type="range" min="0.001" max="1" step="0.001" value="0.08">
+                      <output for="kp" id="kp_value"></output>
+                    </label>
+                    <label class="control">
+                      <span>Y<sub>x/s</sub> (g/g)</span>
+                      <input id="Yxs" type="range" min="0.05" max="0.95" step="0.01" value="0.5">
+                      <output for="Yxs" id="Yxs_value"></output>
+                    </label>
+                    <label class="control parameter-conditional" data-models="monod_cell_death">
+                      <span>k<sub>d</sub> (h<sup>-1</sup>)</span>
+                      <input id="kd" type="range" min="0" max="0.4" step="0.005" value="0.02">
+                      <output for="kd" id="kd_value"></output>
+                    </label>
+                    <label class="control parameter-conditional" data-models="product_mode_growth_associated">
+                      <span>&alpha; (g<sub>P</sub>/g<sub>X</sub>)</span>
+                      <input id="alpha" type="range" min="0" max="2" step="0.01" value="0.35">
+                      <output for="alpha" id="alpha_value"></output>
+                    </label>
+                    <label class="control parameter-conditional" data-models="product_mode_nongrowth_associated">
+                      <span>&beta; (g<sub>P</sub>/g<sub>X</sub>/h)</span>
+                      <input id="beta" type="range" min="0" max="1" step="0.001" value="0.04">
+                      <output for="beta" id="beta_value"></output>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ② Biorreactor -->
+            <div class="acc-section" data-acc-id="reactor">
+              <button class="acc-header" type="button" aria-expanded="false" aria-controls="acc-reactor">
+                <span class="acc-icon-wrap acc-green">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 3h6v4l3 4v8a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-8l3-4V3z"/>
+                    <line x1="6" y1="11" x2="18" y2="11"/>
+                  </svg>
+                </span>
+                <span class="acc-title">Biorreactor</span>
+                <svg class="acc-chevron" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="acc-body-grid" id="acc-reactor">
+                <div class="acc-body-inner">
+                  <div class="control-list">
+                    <label class="control">
+                      <span id="working-volume-label">Volumen de trabajo V<sub>0</sub> (L)</span>
+                      <input id="V_working" type="range" min="0.5" max="20" step="0.1" value="2">
+                      <output for="V_working" id="V_working_value"></output>
+                    </label>
+                    <label class="control parameter-conditional" data-culture="fedbatch">
+                      <span>F (L/h)</span>
+                      <input id="F" type="range" min="0.01" max="2" step="0.01" value="0.1">
+                      <output for="F" id="F_value"></output>
+                    </label>
+                    <label class="control parameter-conditional" data-culture="fedbatch">
+                      <span>Límite de volumen</span>
+                      <select id="vmax_mode" class="select-control">
+                        <option value="idealized" selected>Idealizado</option>
+                        <option value="limited">Usar Vmax del reactor</option>
+                      </select>
+                    </label>
+                    <label class="control parameter-conditional" data-culture="fedbatch" data-models="vmax_limited">
+                      <span>Capacidad máxima V<sub>max</sub> (L)</span>
+                      <input id="V_max" type="range" min="0.5" max="40" step="0.1" value="10">
+                      <output for="V_max" id="V_max_value"></output>
+                    </label>
+                    <label class="control parameter-conditional" data-culture="fedbatch,continuous">
+                      <span>S<sub>r</sub> (sustrato en la alimentación, g/L)</span>
+                      <input id="S_r" type="range" min="1" max="200" step="1" value="100">
+                      <output for="S_r" id="S_r_value"></output>
+                    </label>
+                    <label class="control parameter-conditional" data-culture="continuous">
+                      <span>D (h<sup>-1</sup>)</span>
+                      <input id="D" type="range" min="0.01" max="1.5" step="0.01" value="0.5">
+                      <output for="D" id="D_value"></output>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ③ Simulación -->
+            <div class="acc-section" data-acc-id="sim">
+              <button class="acc-header" type="button" aria-expanded="false" aria-controls="acc-sim">
+                <span class="acc-icon-wrap acc-orange">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="12 6 12 12 16 14"/>
+                  </svg>
+                </span>
+                <span class="acc-title">Simulación</span>
+                <svg class="acc-chevron" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="acc-body-grid" id="acc-sim">
+                <div class="acc-body-inner">
+                  <div class="control-list">
+                    <label class="control">
+                      <span>X<sub>0</sub> (g/L)</span>
+                      <input id="X0" type="range" min="0.01" max="4" step="0.01" value="0.2">
+                      <output for="X0" id="X0_value"></output>
+                    </label>
+                    <label class="control">
+                      <span>S<sub>0</sub> (g/L)</span>
+                      <input id="S0" type="range" min="0.1" max="500" step="0.1" value="10">
+                      <output for="S0" id="S0_value"></output>
+                    </label>
+                    <label class="control">
+                      <span>P<sub>0</sub> (g/L)</span>
+                      <input id="P0" type="range" min="0" max="40" step="0.1" value="0">
+                      <output for="P0" id="P0_value"></output>
+                    </label>
+                    <label class="control">
+                      <span>&Delta;t (h)</span>
+                      <input id="dt" type="range" min="0.01" max="0.5" step="0.01" value="0.05">
+                      <output for="dt" id="dt_value"></output>
+                    </label>
+                    <label class="control">
+                      <span>Tiempo final (h)</span>
+                      <input id="t_final" type="range" min="4" max="72" step="1" value="24">
+                      <output for="t_final" id="t_final_value"></output>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /sidebar-body -->
+        </aside><!-- /sidebar -->
+      </div><!-- /sidebar-wrapper -->
+
+      <!-- ══════════════════════════════════════
+           MAIN CONTENT
+           ══════════════════════════════════════ -->
+      <div class="main-content">
+
+        <!-- Metrics strip -->
+        <div class="metrics-strip">
+          <div class="metric-pill">
+            <span>X final</span>
+            <strong id="final-x">—</strong>
+          </div>
+          <div class="metric-pill">
+            <span>S final</span>
+            <strong id="final-s">—</strong>
+          </div>
+          <div class="metric-pill">
+            <span>P final</span>
+            <strong id="final-p">—</strong>
+          </div>
+          <div class="metric-pill">
             <span>&mu; pico</span>
-            <strong id="peak-mu">-</strong>
-          </article>
-          <article class="metric-card">
-            <span>Tiempo de agotamiento</span>
-            <strong id="depletion-time">-</strong>
-          </article>
-          <article class="metric-card parameter-hidden" id="final-v-card">
-            <span>Volumen final</span>
-            <strong id="final-v">-</strong>
-          </article>
-        </section>
+            <strong id="peak-mu">—</strong>
+          </div>
+          <div class="metric-pill">
+            <span>Agotamiento</span>
+            <strong id="depletion-time">—</strong>
+          </div>
+          <div class="metric-pill parameter-hidden" id="final-v-card">
+            <span>V final</span>
+            <strong id="final-v">—</strong>
+          </div>
+        </div>
 
-        <section class="plot-card">
-          <div class="card-header">
+        <!-- Insight banner -->
+        <div class="insight-banner">
+          <p id="insight-text">Cargando simulador...</p>
+        </div>
+
+        <!-- Main chart: time series -->
+        <div class="chart-card">
+          <div class="chart-header">
             <h2>Trayectorias temporales</h2>
+            <p>Biomasa X (verde), sustrato S (naranja), producto P (azul) y velocidad específica &mu;.</p>
           </div>
-          <div id="time-series-plot" class="plot"></div>
-        </section>
+          <div id="time-series-plot" class="chart-plot chart-plot-main"></div>
+        </div>
 
-        <section class="plot-card">
-          <div class="card-header">
-            <h2>Cambios netos y tasa específica de producto</h2>
-          </div>
-          <div id="rate-plot" class="plot"></div>
-        </section>
+        <!-- Secondary charts: phase + volume -->
+        <div class="charts-row-pair">
 
-        <section class="plot-card">
-          <div class="card-header">
-            <h2>Evolución del volumen</h2>
-            <p>Constante en lote y quimiostato; creciente en lote alimentado.</p>
-          </div>
-          <div id="volume-plot" class="plot"></div>
-        </section>
-
-        <section class="guide-section">
-
-          <!-- Banner: always visible — clicking toggles the guide panel -->
-          <div class="guide-banner" id="guide-banner" role="button" tabindex="0"
-               aria-expanded="false" aria-controls="guide-panel">
-            <div class="guide-banner-main">
-              <span class="guide-kicker">Guía de interpretación</span>
-              <h2 class="guide-title">De los principios biológicos a las ecuaciones que mueven la simulación</h2>
-              <p class="guide-copy">
-                Explora de dónde vienen las ecuaciones del modelo: qué significa μ,
-                cómo se construye un balance de masa para un biorreactor y qué representa
-                cada término en los balances de biomasa, sustrato, producto y volumen.
-              </p>
-              <div class="guide-topics">
-                <span class="guide-topic">Velocidad específica μ</span>
-                <span class="guide-topic">Tasa de dilución D</span>
-                <span class="guide-topic">Balances de masa</span>
-                <span class="guide-topic">Modos de cultivo</span>
-                <span class="guide-topic">Integración numérica RK4</span>
-              </div>
+          <div class="chart-card">
+            <div class="chart-header">
+              <h2>Diagrama de fases X–S</h2>
+              <p>Trayectoria del cultivo en el plano biomasa–sustrato.</p>
             </div>
-            <div class="guide-banner-action">
-              <span class="guide-action-label">Abrir guía</span>
-              <svg class="guide-chevron" width="22" height="22" viewBox="0 0 24 24" fill="none"
-                   stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-                   stroke-linejoin="round" aria-hidden="true">
-                <polyline points="6 9 12 15 18 9"/>
-              </svg>
-            </div>
+            <div id="phase-plot" class="chart-plot chart-plot-sm"></div>
           </div>
 
-          <!-- Collapsible guide panel -->
-          <div class="guide-panel" id="guide-panel" aria-hidden="true">
-            <div class="guide-panel-inner">
-
-        <section class="teaching-panel">
-
-          <!-- Ecuación de crecimiento activa -->
-          <article class="teaching-card equation-card">
-            <h3 id="equation-card-title">Ecuación de crecimiento: Monod</h3>
-            <div class="textbook-equation" id="equation-label">
-              &mu;(S) = <span class="frac"><span class="top">&mu;<sub>max</sub>S</span><span class="bottom">K<sub>s</sub> + S</span></span>
+          <div class="chart-card">
+            <div class="chart-header">
+              <h2>Evolución del volumen</h2>
+              <p>Constante en lote y quimiostato; creciente en lote alimentado.</p>
             </div>
-            <p id="equation-description">
-              La velocidad específica de crecimiento aumenta con el sustrato y se aproxima a un máximo cuando el medio deja de ser limitante.
-            </p>
-            <div class="equation-system">
-              <div class="system-title" id="system-title">Balances del cultivo en lote</div>
-              <div class="textbook-equation" id="biomass-balance">
-                <span class="derivative">dX/dt</span> = &mu;X
-              </div>
-              <div class="textbook-equation" id="substrate-balance">
-                <span class="derivative">dS/dt</span> = &minus;<span class="frac"><span class="top">&mu;X</span><span class="bottom">Y<sub>x/s</sub></span></span>
-              </div>
-              <div class="textbook-equation" id="product-balance">
-                <span class="derivative">dP/dt</span> = q<sub>p</sub>X
-              </div>
-              <div class="textbook-equation parameter-hidden" id="volume-balance">
-                <span class="derivative">dV/dt</span> = F
-              </div>
-              <div class="textbook-equation" id="product-mode-equation">
-                q<sub>p</sub> = &alpha;&mu;
-              </div>
-            </div>
-          </article>
-
-          <!-- ¿Qué es μ? -->
-          <article class="teaching-card">
-            <h3>¿Qué es μ, la velocidad específica de crecimiento?</h3>
-            <p>
-              <span class="inline-math">&mu;</span> tiene unidades de <span class="inline-math">h<sup>&minus;1</sup></span>. El calificativo <em>específica</em> significa que está normalizada por la biomasa presente: el producto <span class="inline-math">&mu; &middot; X</span> da la velocidad volumétrica real de producción de células
-              <span class="inline-equation">(<span class="frac frac-inline"><span class="top">g<sub>X</sub></span><span class="bottom">L &middot; h</span></span>)</span>.
-              Si duplicas la biomasa con la misma <span class="inline-math">&mu;</span>, el cultivo crece el doble de rápido en conjunto, pero cada célula trabaja igual.
-            </p>
-            <div class="concept-box">
-              <strong class="inline-math">&mu;<sub>max</sub></strong> &mdash; velocidad máxima cuando el sustrato es abundante
-              (<span class="inline-math">S &gg; K<sub>s</sub></span>).<br>
-              <strong class="inline-math">K<sub>s</sub></strong> &mdash; concentración de sustrato a la que
-              <span class="inline-math">&mu; = &mu;<sub>max</sub> / 2</span>.
-              Cuanto menor <span class="inline-math">K<sub>s</sub></span>, mayor afinidad del microorganismo por el sustrato.
-            </div>
-            <p>
-              Monod captura la <em>saturación cinética</em>: a <span class="inline-math">S</span> bajo,
-              <span class="inline-equation">&mu; &asymp; <span class="frac frac-inline"><span class="top">&mu;<sub>max</sub></span><span class="bottom">K<sub>s</sub></span></span> &middot; S</span>
-              y el crecimiento es casi proporcional a <span class="inline-math">S</span>; a <span class="inline-math">S</span> alto,
-              <span class="inline-math">&mu; &rarr; &mu;<sub>max</sub></span> y añadir más sustrato no acelera el crecimiento.
-              Los modelos de Haldane e inhibición por producto extienden esta idea cuando el sustrato en exceso o el producto acumulado perjudican al microorganismo.
-            </p>
-          </article>
-
-          <!-- Balance de masa: principio general -->
-          <article class="teaching-card">
-            <h3>El balance de masa: principio general</h3>
-            <p>
-              Todo modelo dinámico de un biorreactor parte de la conservación de masa aplicada a un volumen de control bien mezclado:
-            </p>
-            <div class="concept-box concept-box-equation">
-              Acumulación = Entrada &minus; Salida + Generación por reacción
-            </div>
-            <p>
-              <strong>Acumulación</strong> es
-              <span class="inline-equation"><span class="frac frac-inline"><span class="top">d(C &middot; V)</span><span class="bottom">dt</span></span></span>.
-              Cuando <span class="inline-math">V</span> es constante se simplifica a
-              <span class="inline-equation"><span class="frac frac-inline"><span class="top">dC</span><span class="bottom">dt</span></span></span>.
-              En lote alimentado <span class="inline-math">V</span> crece con el tiempo, por lo que expandir
-              <span class="inline-equation"><span class="frac frac-inline"><span class="top">d(C &middot; V)</span><span class="bottom">dt</span></span></span>
-              introduce un término proporcional a <span class="inline-equation"><span class="frac frac-inline"><span class="top">F</span><span class="bottom">V</span></span></span> que actúa como dilución de la concentración, incluso sin efluente.
-            </p>
-            <p>
-              <strong>Entrada&nbsp;/&nbsp;Salida</strong>: en lote no hay flujos; en lote alimentado solo hay entrada estéril; en continuo entran y salen caudales iguales.
-            </p>
-            <p>
-              <strong>Generación</strong>: actividad biológica — crecimiento, consumo de sustrato y síntesis de metabolitos. La forma cinética de este término es lo que distingue cada modelo.
-            </p>
-          </article>
-
-          <!-- Tasa de dilución D -->
-          <article class="teaching-card">
-            <h3>La tasa de dilución D</h3>
-            <p>
-              La tasa de dilución cuantifica qué fracción del volumen del reactor se renueva por unidad de tiempo:
-            </p>
-            <div class="textbook-equation textbook-equation-compact">
-              D = <span class="frac"><span class="top">F</span><span class="bottom">V</span></span>
-              &nbsp; <span style="font-size:0.65em; font-weight:400; opacity:0.7">(h<sup>&minus;1</sup>)</span>
-            </div>
-            <p>
-              Su interpretación y comportamiento difieren según el modo de cultivo:
-            </p>
-            <div class="balance-table">
-              <div class="balance-row">
-                <span class="balance-mode">Lote</span>
-                <span class="balance-eq">D = 0</span>
-                <span class="balance-note">No hay flujos. Los balances no incluyen término de dilución.</span>
-              </div>
-              <div class="balance-row">
-                <span class="balance-mode">Lote alimentado</span>
-                <span class="balance-eq">D(t) = <span class="frac frac-inline"><span class="top">F</span><span class="bottom">V(t)</span></span></span>
-                <span class="balance-note">
-                  <span class="inline-math">D</span> varía con el tiempo. Si <span class="inline-math">F</span> es constante y <span class="inline-math">V</span> crece,
-                  <span class="inline-math">D</span> disminuye progresivamente. La dilución es máxima al inicio:
-                  <span class="inline-equation">D<sub>0</sub> = <span class="frac frac-inline"><span class="top">F</span><span class="bottom">V<sub>0</sub></span></span></span>.
-                  Si se activa <span class="inline-math">V<sub>max</sub></span>, la alimentación se corta cuando <span class="inline-math">V = V<sub>max</sub></span> y <span class="inline-math">D</span> cae a cero.
-                </span>
-              </div>
-              <div class="balance-row">
-                <span class="balance-mode">Continuo (quimiostato)</span>
-                <span class="balance-eq">D = <span class="frac frac-inline"><span class="top">F</span><span class="bottom">V</span></span> = cte.</span>
-                <span class="balance-note">
-                  <span class="inline-math">V</span> se mantiene fijo porque <span class="inline-math">F<sub>in</sub> = F<sub>out</sub></span>. El operador controla <span class="inline-math">D</span> directamente.
-                  <strong>Estado estacionario:</strong> cuando <span class="inline-math">D = &mu;</span>, la biomasa se mantiene constante.
-                  <strong>Lavado (<em>washout</em>):</strong> si <span class="inline-math">D &gt; &mu;</span>, las células salen más rápido de lo que crecen y <span class="inline-math">X &rarr; 0</span>.
-                </span>
-              </div>
-            </div>
-          </article>
-
-          <!-- Balance de biomasa -->
-          <article class="teaching-card">
-            <h3>Balance de biomasa</h3>
-            <p>
-              Con alimentación estéril (sin células en la entrada), la generación es <span class="inline-math">&mu;X</span>
-              y el término de salida depende de si hay flujo y de si existe muerte celular:
-            </p>
-            <div class="balance-table">
-              <div class="balance-row">
-                <span class="balance-mode">Lote</span>
-                <span class="balance-eq"><span class="frac frac-inline"><span class="top">dX</span><span class="bottom">dt</span></span> = &mu;X</span>
-                <span class="balance-note">Sin flujos. La biomasa solo crece mientras haya sustrato.</span>
-              </div>
-              <div class="balance-row">
-                <span class="balance-mode">Lote alimentado</span>
-                <span class="balance-eq"><span class="frac frac-inline"><span class="top">dX</span><span class="bottom">dt</span></span> = <span style="white-space:nowrap">(&mu; &minus; D(t))X</span></span>
-                <span class="balance-note">
-                  El término <span class="inline-math">&minus;D(t)X</span> proviene de expandir
-                  <span class="inline-equation"><span class="frac frac-inline"><span class="top">d(XV)</span><span class="bottom">dt</span></span></span>:
-                  al crecer <span class="inline-math">V</span>, parte de <span class="inline-math">X</span> se diluye aunque no exista efluente.
-                  Como <span class="inline-equation">D(t) = <span class="frac frac-inline"><span class="top">F</span><span class="bottom">V(t)</span></span></span> decrece con el tiempo, su efecto se atenúa conforme el reactor se llena.
-                </span>
-              </div>
-              <div class="balance-row">
-                <span class="balance-mode">Continuo</span>
-                <span class="balance-eq"><span class="frac frac-inline"><span class="top">dX</span><span class="bottom">dt</span></span> = (&mu; &minus; D)X</span>
-                <span class="balance-note">
-                  <span class="inline-math">D</span> es constante. Si <span class="inline-math">D &gt; &mu;</span> la biomasa declina hasta desaparecer (<em>washout</em>).
-                </span>
-              </div>
-              <div class="balance-row">
-                <span class="balance-mode">Con muerte celular</span>
-                <span class="balance-eq"><span class="frac frac-inline"><span class="top">dX</span><span class="bottom">dt</span></span> = (&mu; &minus; k<sub>d</sub> &minus; D)X</span>
-                <span class="balance-note"><span class="inline-math">k<sub>d</sub></span> (h<sup>&minus;1</sup>) es la tasa de decaimiento endógeno. Actúa como un término de pérdida adicional, análogo a una dilución interna.</span>
-              </div>
-            </div>
-          </article>
-
-          <!-- Balance de sustrato -->
-          <article class="teaching-card">
-            <h3>Balance de sustrato y rendimiento</h3>
-            <p>
-              El rendimiento biomasa–sustrato <span class="inline-math">Y<sub>x/s</sub></span>
-              <span class="inline-equation">(<span class="frac frac-inline"><span class="top">g<sub>X</sub></span><span class="bottom">g<sub>S</sub></span></span>)</span>
-              indica cuánta biomasa se produce por gramo de sustrato consumido.
-              La velocidad específica de consumo es:
-            </p>
-            <div class="textbook-equation textbook-equation-compact">
-              q<sub>s</sub> = <span class="frac"><span class="top">&mu;</span><span class="bottom">Y<sub>x/s</sub></span></span>
-            </div>
-            <p>
-              El término de consumo en los balances es
-              <span class="inline-equation">&minus;<span class="frac frac-inline"><span class="top">&mu;X</span><span class="bottom">Y<sub>x/s</sub></span></span></span>.
-              Un <span class="inline-math">Y<sub>x/s</sub></span> alto indica menor costo metabólico de sustrato por gramo de biomasa producida.
-            </p>
-            <div class="balance-table">
-              <div class="balance-row">
-                <span class="balance-mode">Lote</span>
-                <span class="balance-eq"><span class="frac frac-inline"><span class="top">dS</span><span class="bottom">dt</span></span> = &minus;<span class="frac frac-inline"><span class="top">&mu;X</span><span class="bottom">Y<sub>x/s</sub></span></span></span>
-                <span class="balance-note">Solo consumo. <span class="inline-math">S</span> únicamente decrece, hasta agotarse o hasta que el crecimiento cesa.</span>
-              </div>
-              <div class="balance-row">
-                <span class="balance-mode">Lote alimentado</span>
-                <span class="balance-eq"><span class="frac frac-inline"><span class="top">dS</span><span class="bottom">dt</span></span> = D(t)(S<sub>r</sub> &minus; S) &minus; <span class="frac frac-inline"><span class="top">&mu;X</span><span class="bottom">Y<sub>x/s</sub></span></span></span>
-                <span class="balance-note">
-                  <span class="inline-math">S<sub>r</sub></span> es la concentración de sustrato en la alimentación.
-                  El término <span class="inline-math">D(t)(S<sub>r</sub> &minus; S)</span> aporta sustrato cuando
-                  <span class="inline-math">S<sub>r</sub> &gt; S</span> y lo diluye cuando <span class="inline-math">S<sub>r</sub> &lt; S</span>.
-                  Como <span class="inline-math">D(t)</span> decrece con el tiempo, el aporte neto de la alimentación también se atenúa.
-                </span>
-              </div>
-              <div class="balance-row">
-                <span class="balance-mode">Continuo</span>
-                <span class="balance-eq"><span class="frac frac-inline"><span class="top">dS</span><span class="bottom">dt</span></span> = D(S<sub>r</sub> &minus; S) &minus; <span class="frac frac-inline"><span class="top">&mu;X</span><span class="bottom">Y<sub>x/s</sub></span></span></span>
-                <span class="balance-note">
-                  <span class="inline-math">D</span> es constante. <span class="inline-math">D &cdot; S<sub>r</sub></span> entra con la alimentación y <span class="inline-math">D &cdot; S</span> sale con el efluente. En estado estacionario el sustrato residual
-                  <span class="inline-math">S</span> se mantiene constante, fijado por <span class="inline-math">D</span> y la cinética.
-                </span>
-              </div>
-            </div>
-          </article>
-
-          <!-- Balance de producto -->
-          <article class="teaching-card">
-            <h3>Balance de producto: Luedeking–Piret</h3>
-            <p>
-              La velocidad específica de formación de producto <span class="inline-math">q<sub>p</sub></span>
-              se modela con la expresión de <strong>Luedeking–Piret</strong>, que combina un término ligado al crecimiento y uno independiente:
-            </p>
-            <div class="textbook-equation textbook-equation-compact">
-              q<sub>p</sub> = &alpha;&mu; + &beta;
-            </div>
-            <div class="concept-box">
-              <strong class="inline-math">&alpha;</strong>
-              <span class="inline-equation">(<span class="frac frac-inline"><span class="top">g<sub>P</sub></span><span class="bottom">g<sub>X</sub></span></span>)</span>
-              &mdash; coeficiente asociado al crecimiento.
-              El producto se forma en proporción a <span class="inline-math">&mu;</span>; si las células dejan de crecer (<span class="inline-math">&mu; = 0</span>), este término desaparece.<br><br>
-              <strong class="inline-math">&beta;</strong>
-              <span class="inline-equation">(<span class="frac frac-inline"><span class="top">g<sub>P</sub></span><span class="bottom">g<sub>X</sub> &middot; h</span></span>)</span>
-              &mdash; coeficiente no asociado al crecimiento. Las células siguen produciendo aunque estén en reposo (p.&nbsp;ej. metabolitos de mantenimiento).<br><br>
-              Esta app implementa los dos casos límite: <span class="inline-math">&beta; = 0</span> (solo asociado) y <span class="inline-math">&alpha; = 0</span> (solo no asociado). Si se elige <em>sin producto</em>, <span class="inline-math">q<sub>p</sub> = 0</span>.
-            </div>
-            <div class="balance-table">
-              <div class="balance-row">
-                <span class="balance-mode">Lote</span>
-                <span class="balance-eq"><span class="frac frac-inline"><span class="top">dP</span><span class="bottom">dt</span></span> = q<sub>p</sub>X</span>
-                <span class="balance-note">El producto solo se acumula; no hay salida.</span>
-              </div>
-              <div class="balance-row">
-                <span class="balance-mode">Lote alimentado</span>
-                <span class="balance-eq"><span class="frac frac-inline"><span class="top">dP</span><span class="bottom">dt</span></span> = q<sub>p</sub>X &minus; D(t)P</span>
-                <span class="balance-note">No hay efluente, pero la concentración de producto cae por dilución al aumentar <span class="inline-math">V</span>.</span>
-              </div>
-              <div class="balance-row">
-                <span class="balance-mode">Continuo</span>
-                <span class="balance-eq"><span class="frac frac-inline"><span class="top">dP</span><span class="bottom">dt</span></span> = q<sub>p</sub>X &minus; DP</span>
-                <span class="balance-note">El término <span class="inline-math">&minus;DP</span> representa el producto arrastrado por el efluente. En estado estacionario, <span class="inline-math">q<sub>p</sub>X = DP</span>.</span>
-              </div>
-            </div>
-          </article>
-
-          <!-- Volumen, V₀ y Vmax -->
-          <article class="teaching-card">
-            <h3>Volumen del reactor: V<sub>0</sub> y V<sub>max</sub></h3>
-            <p>
-              El volumen <span class="inline-math">V</span> no juega el mismo papel en los tres modos de cultivo,
-              y su evolución determina si aparece un término de dilución en los balances de concentración:
-            </p>
-            <div class="balance-table">
-              <div class="balance-row">
-                <span class="balance-mode">Lote</span>
-                <span class="balance-eq"><span class="frac frac-inline"><span class="top">dV</span><span class="bottom">dt</span></span> = 0</span>
-                <span class="balance-note">No entra ni sale líquido. <span class="inline-math">V = V<sub>0</sub></span> durante toda la operación; no existe dilución por expansión.</span>
-              </div>
-              <div class="balance-row">
-                <span class="balance-mode">Lote alimentado</span>
-                <span class="balance-eq"><span class="frac frac-inline"><span class="top">dV</span><span class="bottom">dt</span></span> = F</span>
-                <span class="balance-note">
-                  El volumen crece desde <span class="inline-math">V<sub>0</sub></span> (volumen inicial de operación). Si se activa el límite de reactor,
-                  la alimentación se corta automáticamente cuando <span class="inline-math">V = V<sub>max</sub></span> (capacidad física máxima).
-                  Se requiere <span class="inline-math">V<sub>0</sub> &le; V<sub>max</sub></span>; la simulación lo impone.
-                </span>
-              </div>
-              <div class="balance-row">
-                <span class="balance-mode">Continuo</span>
-                <span class="balance-eq"><span class="frac frac-inline"><span class="top">dV</span><span class="bottom">dt</span></span> = F<sub>in</sub> &minus; F<sub>out</sub> = 0</span>
-                <span class="balance-note">Entran y salen caudales iguales. <span class="inline-math">V = V<sub>0</sub></span> constante; <span class="inline-equation">D = <span class="frac frac-inline"><span class="top">F</span><span class="bottom">V<sub>0</sub></span></span></span> fijo.</span>
-              </div>
-            </div>
-            <p>
-              En lote alimentado, <span class="inline-math">V<sub>max</sub></span> modela la capacidad real del biorreactor. Operaciones cerca del límite implican
-              que <span class="inline-equation">D(t) = <span class="frac frac-inline"><span class="top">F</span><span class="bottom">V(t)</span></span></span> disminuye rápidamente y el efecto de la alimentación sobre la concentración de sustrato se atenúa antes de lo esperado.
-            </p>
-          </article>
-
-          <!-- Divider -->
-          <div class="teaching-divider">
-            <span>Cómo funciona la simulación numérica</span>
+            <div id="volume-plot" class="chart-plot chart-plot-sm"></div>
           </div>
 
-          <!-- ¿Qué significa la simulación? -->
-          <article class="teaching-card">
-            <h3>¿Qué significa la simulación?</h3>
-            <p>
-              El sistema de ecuaciones diferenciales acopladas no tiene solución analítica cerrada cuando <span class="inline-math">&mu;</span> depende de <span class="inline-math">S</span> de forma no lineal.
-              La app parte de las condiciones iniciales
-              <span class="inline-math">X<sub>0</sub></span>, <span class="inline-math">S<sub>0</sub></span> y <span class="inline-math">P<sub>0</sub></span>
-              y avanza el sistema discretizado en pequeños pasos <span class="inline-math">&Delta;t</span>.
-            </p>
-            <p>
-              En cada paso:
-              (1)&nbsp;calcula <span class="inline-math">&mu;</span> a partir del <span class="inline-math">S</span> y <span class="inline-math">P</span> actuales,
-              (2)&nbsp;evalúa simultáneamente
-              <span class="inline-equation"><span class="frac frac-inline"><span class="top">dX</span><span class="bottom">dt</span></span></span>,
-              <span class="inline-equation"><span class="frac frac-inline"><span class="top">dS</span><span class="bottom">dt</span></span></span> y
-              <span class="inline-equation"><span class="frac frac-inline"><span class="top">dP</span><span class="bottom">dt</span></span></span>,
-              y (3)&nbsp;actualiza el estado del cultivo. El resultado es la trayectoria numérica <span class="inline-math">X(t)</span>, <span class="inline-math">S(t)</span>, <span class="inline-math">P(t)</span> — y <span class="inline-math">V(t)</span> en lote alimentado.
-            </p>
-            <p>
-              Cambiar un parámetro modifica la pendiente local del sistema en cada punto: por eso todas las curvas responden simultáneamente al mover un control.
-            </p>
-          </article>
+        </div><!-- /charts-row-pair -->
 
-          <!-- RK4 -->
-          <article class="teaching-card">
-            <h3>Integración numérica: Runge-Kutta de 4.º orden</h3>
-            <p>
-              El método de Euler usa una sola pendiente por intervalo: sencillo, pero el error se acumula en
-              <span class="inline-math">O(&Delta;t<sup>2</sup>)</span>.
-              Runge-Kutta de cuarto orden evalúa <strong>cuatro pendientes</strong> dentro del mismo intervalo y las combina con pesos óptimos:
-            </p>
-            <div class="rk-block">
-              <div>k<sub>1</sub> = &Delta;t &middot; f(t<sub>n</sub>,&thinsp; y<sub>n</sub>) &nbsp;&mdash;&nbsp; pendiente al inicio</div>
-              <div>k<sub>2</sub> = &Delta;t &middot; f(t<sub>n</sub> + &Delta;t/2,&thinsp; y<sub>n</sub> + k<sub>1</sub>/2) &nbsp;&mdash;&nbsp; primer punto medio</div>
-              <div>k<sub>3</sub> = &Delta;t &middot; f(t<sub>n</sub> + &Delta;t/2,&thinsp; y<sub>n</sub> + k<sub>2</sub>/2) &nbsp;&mdash;&nbsp; segundo punto medio</div>
-              <div>k<sub>4</sub> = &Delta;t &middot; f(t<sub>n</sub> + &Delta;t,&thinsp; y<sub>n</sub> + k<sub>3</sub>) &nbsp;&mdash;&nbsp; pendiente al final</div>
+      </div><!-- /main-content -->
+
+    </div><!-- /app-layout -->
+
+    <!-- ════════════════════════════════════════════════════════════
+         GUIDE SECTION
+         ════════════════════════════════════════════════════════════ -->
+    <section class="guide-section">
+
+      <!-- Banner: always visible — clicking toggles the guide panel -->
+      <div class="guide-banner" id="guide-banner" role="button" tabindex="0"
+           aria-expanded="false" aria-controls="guide-panel">
+        <div class="guide-banner-main">
+          <span class="guide-kicker">Guía de interpretación</span>
+          <h2 class="guide-title">De los principios biológicos a las ecuaciones que mueven la simulación</h2>
+          <p class="guide-copy">
+            Explora de dónde vienen las ecuaciones del modelo: qué significa μ,
+            cómo se construye un balance de masa para un biorreactor y qué representa
+            cada término en los balances de biomasa, sustrato, producto y volumen.
+          </p>
+          <div class="guide-topics">
+            <span class="guide-topic">Velocidad específica μ</span>
+            <span class="guide-topic">Tasa de dilución D</span>
+            <span class="guide-topic">Balances de masa</span>
+            <span class="guide-topic">Modos de cultivo</span>
+            <span class="guide-topic">Integración numérica RK4</span>
+          </div>
+        </div>
+        <div class="guide-banner-action">
+          <span class="guide-action-label">Abrir guía</span>
+          <svg class="guide-chevron" width="22" height="22" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+               stroke-linejoin="round" aria-hidden="true">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Collapsible guide panel -->
+      <div class="guide-panel" id="guide-panel" aria-hidden="true">
+        <div class="guide-panel-inner">
+
+      <section class="teaching-panel">
+
+        <!-- Ecuación de crecimiento activa -->
+        <article class="teaching-card equation-card">
+          <h3 id="equation-card-title">Ecuación de crecimiento: Monod</h3>
+          <div class="textbook-equation" id="equation-label">
+            &mu;(S) = <span class="frac"><span class="top">&mu;<sub>max</sub>S</span><span class="bottom">K<sub>s</sub> + S</span></span>
+          </div>
+          <p id="equation-description">
+            La velocidad específica de crecimiento aumenta con el sustrato y se aproxima a un máximo cuando el medio deja de ser limitante.
+          </p>
+          <div class="equation-system">
+            <div class="system-title" id="system-title">Balances del cultivo en lote</div>
+            <div class="textbook-equation" id="biomass-balance">
+              <span class="derivative">dX/dt</span> = &mu;X
             </div>
-            <div class="textbook-equation textbook-equation-compact" style="margin-top:0.2rem;">
-              y<sub>n+1</sub> = y<sub>n</sub> +
-              <span class="frac"><span class="top">k<sub>1</sub> + 2k<sub>2</sub> + 2k<sub>3</sub> + k<sub>4</sub></span><span class="bottom">6</span></span>
+            <div class="textbook-equation" id="substrate-balance">
+              <span class="derivative">dS/dt</span> = &minus;<span class="frac"><span class="top">&mu;X</span><span class="bottom">Y<sub>x/s</sub></span></span>
             </div>
-            <p>
-              El vector de estado <span class="inline-math">y = [X, S, P]</span> (más <span class="inline-math">V</span> en lote alimentado) avanza con error global de
-              <span class="inline-math">O(&Delta;t<sup>4</sup>)</span>: cuatro órdenes de magnitud mejor que Euler por cada reducción a la mitad de <span class="inline-math">&Delta;t</span>.
-              Por eso se pueden usar pasos de <span class="inline-math">&Delta;t = 0.05</span>&nbsp;h sin que las curvas diverjan.
-            </p>
-          </article>
+            <div class="textbook-equation" id="product-balance">
+              <span class="derivative">dP/dt</span> = q<sub>p</sub>X
+            </div>
+            <div class="textbook-equation parameter-hidden" id="volume-balance">
+              <span class="derivative">dV/dt</span> = F
+            </div>
+            <div class="textbook-equation" id="product-mode-equation">
+              q<sub>p</sub> = &alpha;&mu;
+            </div>
+          </div>
+        </article>
 
-        </section><!-- /teaching-panel -->
+        <!-- ¿Qué es μ? -->
+        <article class="teaching-card">
+          <h3>¿Qué es μ, la velocidad específica de crecimiento?</h3>
+          <p>
+            <span class="inline-math">&mu;</span> tiene unidades de <span class="inline-math">h<sup>&minus;1</sup></span>. El calificativo <em>específica</em> significa que está normalizada por la biomasa presente: el producto <span class="inline-math">&mu; &middot; X</span> da la velocidad volumétrica real de producción de células
+            <span class="inline-equation">(<span class="frac frac-inline"><span class="top">g<sub>X</sub></span><span class="bottom">L &middot; h</span></span>)</span>.
+            Si duplicas la biomasa con la misma <span class="inline-math">&mu;</span>, el cultivo crece el doble de rápido en conjunto, pero cada célula trabaja igual.
+          </p>
+          <div class="concept-box">
+            <strong class="inline-math">&mu;<sub>max</sub></strong> &mdash; velocidad máxima cuando el sustrato es abundante
+            (<span class="inline-math">S &gg; K<sub>s</sub></span>).<br>
+            <strong class="inline-math">K<sub>s</sub></strong> &mdash; concentración de sustrato a la que
+            <span class="inline-math">&mu; = &mu;<sub>max</sub> / 2</span>.
+            Cuanto menor <span class="inline-math">K<sub>s</sub></span>, mayor afinidad del microorganismo por el sustrato.
+          </div>
+          <p>
+            Monod captura la <em>saturación cinética</em>: a <span class="inline-math">S</span> bajo,
+            <span class="inline-equation">&mu; &asymp; <span class="frac frac-inline"><span class="top">&mu;<sub>max</sub></span><span class="bottom">K<sub>s</sub></span></span> &middot; S</span>
+            y el crecimiento es casi proporcional a <span class="inline-math">S</span>; a <span class="inline-math">S</span> alto,
+            <span class="inline-math">&mu; &rarr; &mu;<sub>max</sub></span> y añadir más sustrato no acelera el crecimiento.
+            Los modelos de Haldane e inhibición por producto extienden esta idea cuando el sustrato en exceso o el producto acumulado perjudican al microorganismo.
+          </p>
+        </article>
 
-            </div><!-- /guide-panel-inner -->
-          </div><!-- /guide-panel -->
+        <!-- Balance de masa: principio general -->
+        <article class="teaching-card">
+          <h3>El balance de masa: principio general</h3>
+          <p>
+            Todo modelo dinámico de un biorreactor parte de la conservación de masa aplicada a un volumen de control bien mezclado:
+          </p>
+          <div class="concept-box concept-box-equation">
+            Acumulación = Entrada &minus; Salida + Generación por reacción
+          </div>
+          <p>
+            <strong>Acumulación</strong> es
+            <span class="inline-equation"><span class="frac frac-inline"><span class="top">d(C &middot; V)</span><span class="bottom">dt</span></span></span>.
+            Cuando <span class="inline-math">V</span> es constante se simplifica a
+            <span class="inline-equation"><span class="frac frac-inline"><span class="top">dC</span><span class="bottom">dt</span></span></span>.
+            En lote alimentado <span class="inline-math">V</span> crece con el tiempo, por lo que expandir
+            <span class="inline-equation"><span class="frac frac-inline"><span class="top">d(C &middot; V)</span><span class="bottom">dt</span></span></span>
+            introduce un término proporcional a <span class="inline-equation"><span class="frac frac-inline"><span class="top">F</span><span class="bottom">V</span></span></span> que actúa como dilución de la concentración, incluso sin efluente.
+          </p>
+          <p>
+            <strong>Entrada&nbsp;/&nbsp;Salida</strong>: en lote no hay flujos; en lote alimentado solo hay entrada estéril; en continuo entran y salen caudales iguales.
+          </p>
+          <p>
+            <strong>Generación</strong>: actividad biológica — crecimiento, consumo de sustrato y síntesis de metabolitos. La forma cinética de este término es lo que distingue cada modelo.
+          </p>
+        </article>
 
-        </section><!-- /guide-section -->
-      </section>
-    </main>
-  </div>
+        <!-- Tasa de dilución D -->
+        <article class="teaching-card">
+          <h3>La tasa de dilución D</h3>
+          <p>
+            La tasa de dilución cuantifica qué fracción del volumen del reactor se renueva por unidad de tiempo:
+          </p>
+          <div class="textbook-equation textbook-equation-compact">
+            D = <span class="frac"><span class="top">F</span><span class="bottom">V</span></span>
+            &nbsp; <span style="font-size:0.65em; font-weight:400; opacity:0.7">(h<sup>&minus;1</sup>)</span>
+          </div>
+          <p>
+            Su interpretación y comportamiento difieren según el modo de cultivo:
+          </p>
+          <div class="balance-table">
+            <div class="balance-row">
+              <span class="balance-mode">Lote</span>
+              <span class="balance-eq">D = 0</span>
+              <span class="balance-note">No hay flujos. Los balances no incluyen término de dilución.</span>
+            </div>
+            <div class="balance-row">
+              <span class="balance-mode">Lote alimentado</span>
+              <span class="balance-eq">D(t) = <span class="frac frac-inline"><span class="top">F</span><span class="bottom">V(t)</span></span></span>
+              <span class="balance-note">
+                <span class="inline-math">D</span> varía con el tiempo. Si <span class="inline-math">F</span> es constante y <span class="inline-math">V</span> crece,
+                <span class="inline-math">D</span> disminuye progresivamente. La dilución es máxima al inicio:
+                <span class="inline-equation">D<sub>0</sub> = <span class="frac frac-inline"><span class="top">F</span><span class="bottom">V<sub>0</sub></span></span></span>.
+                Si se activa <span class="inline-math">V<sub>max</sub></span>, la alimentación se corta cuando <span class="inline-math">V = V<sub>max</sub></span> y <span class="inline-math">D</span> cae a cero.
+              </span>
+            </div>
+            <div class="balance-row">
+              <span class="balance-mode">Continuo (quimiostato)</span>
+              <span class="balance-eq">D = <span class="frac frac-inline"><span class="top">F</span><span class="bottom">V</span></span> = cte.</span>
+              <span class="balance-note">
+                <span class="inline-math">V</span> se mantiene fijo porque <span class="inline-math">F<sub>in</sub> = F<sub>out</sub></span>. El operador controla <span class="inline-math">D</span> directamente.
+                <strong>Estado estacionario:</strong> cuando <span class="inline-math">D = &mu;</span>, la biomasa se mantiene constante.
+                <strong>Lavado (<em>washout</em>):</strong> si <span class="inline-math">D &gt; &mu;</span>, las células salen más rápido de lo que crecen y <span class="inline-math">X &rarr; 0</span>.
+              </span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Balance de biomasa -->
+        <article class="teaching-card">
+          <h3>Balance de biomasa</h3>
+          <p>
+            Con alimentación estéril (sin células en la entrada), la generación es <span class="inline-math">&mu;X</span>
+            y el término de salida depende de si hay flujo y de si existe muerte celular:
+          </p>
+          <div class="balance-table">
+            <div class="balance-row">
+              <span class="balance-mode">Lote</span>
+              <span class="balance-eq"><span class="frac frac-inline"><span class="top">dX</span><span class="bottom">dt</span></span> = &mu;X</span>
+              <span class="balance-note">Sin flujos. La biomasa solo crece mientras haya sustrato.</span>
+            </div>
+            <div class="balance-row">
+              <span class="balance-mode">Lote alimentado</span>
+              <span class="balance-eq"><span class="frac frac-inline"><span class="top">dX</span><span class="bottom">dt</span></span> = <span style="white-space:nowrap">(&mu; &minus; D(t))X</span></span>
+              <span class="balance-note">
+                El término <span class="inline-math">&minus;D(t)X</span> proviene de expandir
+                <span class="inline-equation"><span class="frac frac-inline"><span class="top">d(XV)</span><span class="bottom">dt</span></span></span>:
+                al crecer <span class="inline-math">V</span>, parte de <span class="inline-math">X</span> se diluye aunque no exista efluente.
+                Como <span class="inline-equation">D(t) = <span class="frac frac-inline"><span class="top">F</span><span class="bottom">V(t)</span></span></span> decrece con el tiempo, su efecto se atenúa conforme el reactor se llena.
+              </span>
+            </div>
+            <div class="balance-row">
+              <span class="balance-mode">Continuo</span>
+              <span class="balance-eq"><span class="frac frac-inline"><span class="top">dX</span><span class="bottom">dt</span></span> = (&mu; &minus; D)X</span>
+              <span class="balance-note">
+                <span class="inline-math">D</span> es constante. Si <span class="inline-math">D &gt; &mu;</span> la biomasa declina hasta desaparecer (<em>washout</em>).
+              </span>
+            </div>
+            <div class="balance-row">
+              <span class="balance-mode">Con muerte celular</span>
+              <span class="balance-eq"><span class="frac frac-inline"><span class="top">dX</span><span class="bottom">dt</span></span> = (&mu; &minus; k<sub>d</sub> &minus; D)X</span>
+              <span class="balance-note"><span class="inline-math">k<sub>d</sub></span> (h<sup>&minus;1</sup>) es la tasa de decaimiento endógeno. Actúa como un término de pérdida adicional, análogo a una dilución interna.</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Balance de sustrato -->
+        <article class="teaching-card">
+          <h3>Balance de sustrato y rendimiento</h3>
+          <p>
+            El rendimiento biomasa–sustrato <span class="inline-math">Y<sub>x/s</sub></span>
+            <span class="inline-equation">(<span class="frac frac-inline"><span class="top">g<sub>X</sub></span><span class="bottom">g<sub>S</sub></span></span>)</span>
+            indica cuánta biomasa se produce por gramo de sustrato consumido.
+            La velocidad específica de consumo es:
+          </p>
+          <div class="textbook-equation textbook-equation-compact">
+            q<sub>s</sub> = <span class="frac"><span class="top">&mu;</span><span class="bottom">Y<sub>x/s</sub></span></span>
+          </div>
+          <p>
+            El término de consumo en los balances es
+            <span class="inline-equation">&minus;<span class="frac frac-inline"><span class="top">&mu;X</span><span class="bottom">Y<sub>x/s</sub></span></span></span>.
+            Un <span class="inline-math">Y<sub>x/s</sub></span> alto indica menor costo metabólico de sustrato por gramo de biomasa producida.
+          </p>
+          <div class="balance-table">
+            <div class="balance-row">
+              <span class="balance-mode">Lote</span>
+              <span class="balance-eq"><span class="frac frac-inline"><span class="top">dS</span><span class="bottom">dt</span></span> = &minus;<span class="frac frac-inline"><span class="top">&mu;X</span><span class="bottom">Y<sub>x/s</sub></span></span></span>
+              <span class="balance-note">Solo consumo. <span class="inline-math">S</span> únicamente decrece, hasta agotarse o hasta que el crecimiento cesa.</span>
+            </div>
+            <div class="balance-row">
+              <span class="balance-mode">Lote alimentado</span>
+              <span class="balance-eq"><span class="frac frac-inline"><span class="top">dS</span><span class="bottom">dt</span></span> = D(t)(S<sub>r</sub> &minus; S) &minus; <span class="frac frac-inline"><span class="top">&mu;X</span><span class="bottom">Y<sub>x/s</sub></span></span></span>
+              <span class="balance-note">
+                <span class="inline-math">S<sub>r</sub></span> es la concentración de sustrato en la alimentación.
+                El término <span class="inline-math">D(t)(S<sub>r</sub> &minus; S)</span> aporta sustrato cuando
+                <span class="inline-math">S<sub>r</sub> &gt; S</span> y lo diluye cuando <span class="inline-math">S<sub>r</sub> &lt; S</span>.
+              </span>
+            </div>
+            <div class="balance-row">
+              <span class="balance-mode">Continuo</span>
+              <span class="balance-eq"><span class="frac frac-inline"><span class="top">dS</span><span class="bottom">dt</span></span> = D(S<sub>r</sub> &minus; S) &minus; <span class="frac frac-inline"><span class="top">&mu;X</span><span class="bottom">Y<sub>x/s</sub></span></span></span>
+              <span class="balance-note">
+                <span class="inline-math">D</span> es constante. <span class="inline-math">D &cdot; S<sub>r</sub></span> entra con la alimentación y <span class="inline-math">D &cdot; S</span> sale con el efluente. En estado estacionario el sustrato residual
+                <span class="inline-math">S</span> se mantiene constante, fijado por <span class="inline-math">D</span> y la cinética.
+              </span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Balance de producto -->
+        <article class="teaching-card">
+          <h3>Balance de producto: Luedeking–Piret</h3>
+          <p>
+            La velocidad específica de formación de producto <span class="inline-math">q<sub>p</sub></span>
+            se modela con la expresión de <strong>Luedeking–Piret</strong>, que combina un término ligado al crecimiento y uno independiente:
+          </p>
+          <div class="textbook-equation textbook-equation-compact">
+            q<sub>p</sub> = &alpha;&mu; + &beta;
+          </div>
+          <div class="concept-box">
+            <strong class="inline-math">&alpha;</strong>
+            <span class="inline-equation">(<span class="frac frac-inline"><span class="top">g<sub>P</sub></span><span class="bottom">g<sub>X</sub></span></span>)</span>
+            &mdash; coeficiente asociado al crecimiento.
+            El producto se forma en proporción a <span class="inline-math">&mu;</span>; si las células dejan de crecer (<span class="inline-math">&mu; = 0</span>), este término desaparece.<br><br>
+            <strong class="inline-math">&beta;</strong>
+            <span class="inline-equation">(<span class="frac frac-inline"><span class="top">g<sub>P</sub></span><span class="bottom">g<sub>X</sub> &middot; h</span></span>)</span>
+            &mdash; coeficiente no asociado al crecimiento. Las células siguen produciendo aunque estén en reposo (p.&nbsp;ej. metabolitos de mantenimiento).<br><br>
+            Esta app implementa los dos casos límite: <span class="inline-math">&beta; = 0</span> (solo asociado) y <span class="inline-math">&alpha; = 0</span> (solo no asociado). Si se elige <em>sin producto</em>, <span class="inline-math">q<sub>p</sub> = 0</span>.
+          </div>
+          <div class="balance-table">
+            <div class="balance-row">
+              <span class="balance-mode">Lote</span>
+              <span class="balance-eq"><span class="frac frac-inline"><span class="top">dP</span><span class="bottom">dt</span></span> = q<sub>p</sub>X</span>
+              <span class="balance-note">El producto solo se acumula; no hay salida.</span>
+            </div>
+            <div class="balance-row">
+              <span class="balance-mode">Lote alimentado</span>
+              <span class="balance-eq"><span class="frac frac-inline"><span class="top">dP</span><span class="bottom">dt</span></span> = q<sub>p</sub>X &minus; D(t)P</span>
+              <span class="balance-note">No hay efluente, pero la concentración de producto cae por dilución al aumentar <span class="inline-math">V</span>.</span>
+            </div>
+            <div class="balance-row">
+              <span class="balance-mode">Continuo</span>
+              <span class="balance-eq"><span class="frac frac-inline"><span class="top">dP</span><span class="bottom">dt</span></span> = q<sub>p</sub>X &minus; DP</span>
+              <span class="balance-note">El término <span class="inline-math">&minus;DP</span> representa el producto arrastrado por el efluente. En estado estacionario, <span class="inline-math">q<sub>p</sub>X = DP</span>.</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Volumen -->
+        <article class="teaching-card">
+          <h3>Volumen del reactor: V<sub>0</sub> y V<sub>max</sub></h3>
+          <p>
+            El volumen <span class="inline-math">V</span> no juega el mismo papel en los tres modos de cultivo,
+            y su evolución determina si aparece un término de dilución en los balances de concentración:
+          </p>
+          <div class="balance-table">
+            <div class="balance-row">
+              <span class="balance-mode">Lote</span>
+              <span class="balance-eq"><span class="frac frac-inline"><span class="top">dV</span><span class="bottom">dt</span></span> = 0</span>
+              <span class="balance-note">No entra ni sale líquido. <span class="inline-math">V = V<sub>0</sub></span> durante toda la operación; no existe dilución por expansión.</span>
+            </div>
+            <div class="balance-row">
+              <span class="balance-mode">Lote alimentado</span>
+              <span class="balance-eq"><span class="frac frac-inline"><span class="top">dV</span><span class="bottom">dt</span></span> = F</span>
+              <span class="balance-note">
+                El volumen crece desde <span class="inline-math">V<sub>0</sub></span> (volumen inicial de operación). Si se activa el límite de reactor,
+                la alimentación se corta automáticamente cuando <span class="inline-math">V = V<sub>max</sub></span> (capacidad física máxima).
+                Se requiere <span class="inline-math">V<sub>0</sub> &le; V<sub>max</sub></span>; la simulación lo impone.
+              </span>
+            </div>
+            <div class="balance-row">
+              <span class="balance-mode">Continuo</span>
+              <span class="balance-eq"><span class="frac frac-inline"><span class="top">dV</span><span class="bottom">dt</span></span> = F<sub>in</sub> &minus; F<sub>out</sub> = 0</span>
+              <span class="balance-note">Entran y salen caudales iguales. <span class="inline-math">V = V<sub>0</sub></span> constante; <span class="inline-equation">D = <span class="frac frac-inline"><span class="top">F</span><span class="bottom">V<sub>0</sub></span></span></span> fijo.</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Divider -->
+        <div class="teaching-divider">
+          <span>Cómo funciona la simulación numérica</span>
+        </div>
+
+        <!-- ¿Qué significa la simulación? -->
+        <article class="teaching-card">
+          <h3>¿Qué significa la simulación?</h3>
+          <p>
+            El sistema de ecuaciones diferenciales acopladas no tiene solución analítica cerrada cuando <span class="inline-math">&mu;</span> depende de <span class="inline-math">S</span> de forma no lineal.
+            La app parte de las condiciones iniciales
+            <span class="inline-math">X<sub>0</sub></span>, <span class="inline-math">S<sub>0</sub></span> y <span class="inline-math">P<sub>0</sub></span>
+            y avanza el sistema discretizado en pequeños pasos <span class="inline-math">&Delta;t</span>.
+          </p>
+          <p>
+            En cada paso:
+            (1)&nbsp;calcula <span class="inline-math">&mu;</span> a partir del <span class="inline-math">S</span> y <span class="inline-math">P</span> actuales,
+            (2)&nbsp;evalúa simultáneamente
+            <span class="inline-equation"><span class="frac frac-inline"><span class="top">dX</span><span class="bottom">dt</span></span></span>,
+            <span class="inline-equation"><span class="frac frac-inline"><span class="top">dS</span><span class="bottom">dt</span></span></span> y
+            <span class="inline-equation"><span class="frac frac-inline"><span class="top">dP</span><span class="bottom">dt</span></span></span>,
+            y (3)&nbsp;actualiza el estado del cultivo. El resultado es la trayectoria numérica <span class="inline-math">X(t)</span>, <span class="inline-math">S(t)</span>, <span class="inline-math">P(t)</span> — y <span class="inline-math">V(t)</span> en lote alimentado.
+          </p>
+          <p>
+            Cambiar un parámetro modifica la pendiente local del sistema en cada punto: por eso todas las curvas responden simultáneamente al mover un control.
+          </p>
+        </article>
+
+        <!-- RK4 -->
+        <article class="teaching-card">
+          <h3>Integración numérica: Runge-Kutta de 4.º orden</h3>
+          <p>
+            El método de Euler usa una sola pendiente por intervalo: sencillo, pero el error se acumula en
+            <span class="inline-math">O(&Delta;t<sup>2</sup>)</span>.
+            Runge-Kutta de cuarto orden evalúa <strong>cuatro pendientes</strong> dentro del mismo intervalo y las combina con pesos óptimos:
+          </p>
+          <div class="rk-block">
+            <div>k<sub>1</sub> = &Delta;t &middot; f(t<sub>n</sub>,&thinsp; y<sub>n</sub>) &nbsp;&mdash;&nbsp; pendiente al inicio</div>
+            <div>k<sub>2</sub> = &Delta;t &middot; f(t<sub>n</sub> + &Delta;t/2,&thinsp; y<sub>n</sub> + k<sub>1</sub>/2) &nbsp;&mdash;&nbsp; primer punto medio</div>
+            <div>k<sub>3</sub> = &Delta;t &middot; f(t<sub>n</sub> + &Delta;t/2,&thinsp; y<sub>n</sub> + k<sub>2</sub>/2) &nbsp;&mdash;&nbsp; segundo punto medio</div>
+            <div>k<sub>4</sub> = &Delta;t &middot; f(t<sub>n</sub> + &Delta;t,&thinsp; y<sub>n</sub> + k<sub>3</sub>) &nbsp;&mdash;&nbsp; pendiente al final</div>
+          </div>
+          <div class="textbook-equation textbook-equation-compact" style="margin-top:0.2rem;">
+            y<sub>n+1</sub> = y<sub>n</sub> +
+            <span class="frac"><span class="top">k<sub>1</sub> + 2k<sub>2</sub> + 2k<sub>3</sub> + k<sub>4</sub></span><span class="bottom">6</span></span>
+          </div>
+          <p>
+            El vector de estado <span class="inline-math">y = [X, S, P]</span> (más <span class="inline-math">V</span> en lote alimentado) avanza con error global de
+            <span class="inline-math">O(&Delta;t<sup>4</sup>)</span>: cuatro órdenes de magnitud mejor que Euler por cada reducción a la mitad de <span class="inline-math">&Delta;t</span>.
+            Por eso se pueden usar pasos de <span class="inline-math">&Delta;t = 0.05</span>&nbsp;h sin que las curvas diverjan.
+          </p>
+        </article>
+
+      </section><!-- /teaching-panel -->
+
+          </div><!-- /guide-panel-inner -->
+        </div><!-- /guide-panel -->
+
+    </section><!-- /guide-section -->
+
+  </div><!-- /page-shell -->
 
   <footer class="hc-footer">
     <div class="hc-footer-inner">

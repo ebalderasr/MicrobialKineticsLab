@@ -1234,3 +1234,413 @@ a { color: inherit; }
   .hc-footer-author { margin-left: 0; }
   .hc-footer-github { margin-left: auto; }
 }
+
+/* ================================================================
+   NEW DASHBOARD LAYOUT
+   ================================================================ */
+
+/* ── Select emphasis ────────────────────────────────────────── */
+.select-control-emphasis {
+  background-color: rgba(26,111,232,.06);
+  border-color: rgba(26,111,232,.45);
+  color: var(--md-on-primary-container);
+  font-weight: 700;
+}
+.select-control-emphasis:hover {
+  border-color: var(--md-primary);
+  background-color: rgba(26,111,232,.09);
+}
+.select-control-emphasis:focus {
+  border: 2px solid var(--md-primary);
+  background-color: rgba(26,111,232,.12);
+}
+
+/* ── App layout grid ────────────────────────────────────────── */
+.app-layout {
+  display: grid;
+  grid-template-columns: 290px 1fr;
+  gap: 20px;
+  align-items: start;
+  margin-bottom: 32px;
+}
+
+/* ── Sidebar wrapper: sticky container for reactor + card ─────── */
+.sidebar-wrapper {
+  position: sticky;
+  top: calc(var(--hc-header-height) + 16px);
+  max-height: calc(100vh - var(--hc-header-height) - 32px);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: hidden;
+  align-self: start;
+}
+
+/* ── Sidebar card ────────────────────────────────────────────── */
+.sidebar {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--md-shape-extra-large);
+  background: var(--md-surface-container-lowest);
+  border: 1px solid var(--md-outline-variant);
+  box-shadow: var(--md-elev1);
+  overflow: hidden;
+}
+
+.sidebar-top {
+  padding: 14px 14px 10px;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--md-outline-variant);
+}
+
+.sidebar-body {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--md-outline-variant) transparent;
+}
+
+/* ── Reactor display: encima del recuadro ───────────────────── */
+.sidebar-reactor-display {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 0 8px;
+}
+
+.sidebar-reactor-fig {
+  margin: 0;
+  width: 180px;
+}
+
+.sidebar-reactor-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  text-align: center;
+  min-width: 0;
+}
+
+.sidebar-reactor-info strong {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--md-on-surface);
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidebar-reactor-info span {
+  font-size: 0.72rem;
+  color: var(--md-on-surface-variant);
+  line-height: 1.2;
+}
+
+.status-badge {
+  display: inline-block;
+  margin-top: 2px;
+  padding: 2px 7px;
+  border-radius: var(--md-shape-full);
+  background: var(--md-surface-container-high);
+  color: var(--md-on-surface-variant);
+  font-size: 0.66rem !important;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+/* ── Mode chips: segmented control ──────────────────────────── */
+.mode-chips {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3px;
+  padding: 3px;
+  margin-bottom: 10px;
+  background: var(--md-surface-container-low);
+  border-radius: var(--md-shape-small);
+  border: 1px solid var(--md-outline-variant);
+}
+
+.mode-chip {
+  padding: 7px 2px;
+  border: none;
+  border-radius: var(--md-shape-extra-small);
+  background: transparent;
+  color: var(--md-on-surface-variant);
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 100ms ease, color 100ms ease, box-shadow 100ms ease;
+  white-space: nowrap;
+  text-align: center;
+  line-height: 1.1;
+}
+
+.mode-chip:hover {
+  background: var(--md-surface-container-high);
+  color: var(--md-on-surface);
+}
+
+.mode-chip.active {
+  background: var(--md-primary);
+  color: var(--md-on-primary);
+  box-shadow: 0 1px 4px rgba(26,111,232,.30);
+}
+
+/* ── Primary selects ────────────────────────────────────────── */
+.sidebar-primaries {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sidebar-primary-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sidebar-field-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--md-on-surface-variant);
+}
+
+/* visually-hidden: for select elements synced by JS */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  border: 0;
+}
+
+/* ── Accordion ──────────────────────────────────────────────── */
+.acc-section {
+  border-top: 1px solid var(--md-outline-variant);
+}
+
+.acc-header {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 10px 14px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  transition: background 100ms ease;
+}
+
+.acc-header:hover {
+  background: var(--md-surface-container-low);
+}
+
+.acc-icon-wrap {
+  width: 26px;
+  height: 26px;
+  border-radius: var(--md-shape-small);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.acc-blue   { background: rgba(26,111,232,.11);  color: var(--md-primary); }
+.acc-green  { background: rgba(0,110,28,.10);    color: var(--md-tertiary); }
+.acc-orange { background: rgba(234,67,53,.09);   color: #c5221f; }
+.acc-purple { background: rgba(103,58,183,.10);  color: #6d4c41; }
+
+.acc-title {
+  flex: 1;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--md-on-surface);
+  letter-spacing: -0.01em;
+}
+
+.acc-chevron {
+  flex-shrink: 0;
+  color: var(--md-on-surface-variant);
+  transition: transform 240ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.acc-section.open > .acc-header .acc-chevron {
+  transform: rotate(180deg);
+}
+
+/* CSS grid trick for smooth accordion animation */
+.acc-body-grid {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 240ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.acc-section.open > .acc-body-grid {
+  grid-template-rows: 1fr;
+}
+
+.acc-body-inner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.acc-body-inner > .control-list {
+  padding: 2px 14px 14px;
+  margin-top: 0;
+}
+
+.acc-section-note {
+  margin: 0 0 10px;
+  font-size: 0.78rem;
+  color: var(--md-on-surface-variant);
+  line-height: 1.4;
+}
+
+/* ── Main content ───────────────────────────────────────────── */
+.main-content {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+/* ── Metrics strip ──────────────────────────────────────────── */
+.metrics-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.metric-pill {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 10px 14px;
+  border-radius: var(--md-shape-large);
+  background: var(--md-surface-container-lowest);
+  border: 1px solid var(--md-outline-variant);
+  min-width: 90px;
+  flex: 1;
+  box-shadow: none;
+  transition: box-shadow 120ms ease;
+}
+
+.metric-pill:hover { box-shadow: var(--md-elev1); }
+
+.metric-pill span {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--md-on-surface-variant);
+  white-space: nowrap;
+}
+
+.metric-pill strong {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--md-on-surface);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Insight banner ─────────────────────────────────────────── */
+.insight-banner {
+  padding: 10px 14px;
+  border-radius: var(--md-shape-medium);
+  background: var(--md-secondary-container);
+  border: 1px solid rgba(85,95,113,.15);
+}
+
+.insight-banner p {
+  margin: 0;
+  font-size: 0.84rem;
+  color: var(--md-on-secondary-container);
+  line-height: 1.5;
+}
+
+/* ── Chart cards ────────────────────────────────────────────── */
+.chart-card {
+  border-radius: var(--md-shape-extra-large);
+  padding: 18px 18px 8px;
+  background: var(--md-surface-container-lowest);
+  border: 1px solid var(--md-outline-variant);
+  box-shadow: var(--md-elev1);
+  transition: box-shadow 150ms ease;
+}
+
+.chart-card:hover { box-shadow: var(--md-elev2); }
+
+.chart-header {
+  margin-bottom: 4px;
+}
+
+.chart-header h2 {
+  margin: 0 0 2px;
+  font-family: "Space Grotesk", "IBM Plex Sans", sans-serif;
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--md-on-surface);
+}
+
+.chart-header p {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--md-on-surface-variant);
+  line-height: 1.4;
+}
+
+.chart-plot-main { min-height: 480px; }
+.chart-plot-sm   { min-height: 340px; }
+
+/* ── Fixed 2-column pair: phase + volume ───────────────────── */
+.charts-row-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+/* ── Guide section full-width below layout ──────────────────── */
+.guide-section {
+  margin-top: 0;
+}
+
+/* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .app-layout {
+    grid-template-columns: 1fr;
+  }
+  .sidebar-wrapper {
+    position: static;
+    max-height: none;
+    overflow: visible;
+  }
+  .sidebar-body {
+    overflow: visible;
+  }
+}
+
+@media (max-width: 720px) {
+  .app-layout { gap: 14px; }
+  .charts-row-pair  { grid-template-columns: 1fr; }
+  .chart-plot-main  { min-height: 300px; }
+  .chart-plot-sm    { min-height: 240px; }
+  .metrics-strip    { gap: 6px; }
+  .metric-pill      { min-width: 80px; padding: 8px 10px; }
+}
